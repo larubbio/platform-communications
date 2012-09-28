@@ -8,11 +8,10 @@
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-ivr-kookoo-bundle</artifactId>
+    <artifactId>motech-ivr-api-bundle</artifactId>
     <version>0.13.1-SNAPSHOT</version>
-    <name>MoTeCH IVR Kookoo Bundle</name>
+    <name>MoTeCH IVR API Bundle</name>
     <packaging>bundle</packaging>
-    <description>new kookoo module based on vm templates to return responses</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
@@ -20,18 +19,7 @@
         <!-- MOTECH dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-ivr-kookoo</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-platform-decisiontree</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-ivr-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->
@@ -61,25 +49,9 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.beans</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
-            <version>3.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -87,20 +59,9 @@
             <version>2.6.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>com.springsource.org.apache.velocity</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <!-- Non-OSGI dependencies -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20080701</version>
+            <groupId>org.asteriskjava</groupId>
+            <artifactId>asterisk-java</artifactId>
+            <version>1.0.0.M3</version>
         </dependency>
     </dependencies>
     <build>
@@ -112,36 +73,28 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>
+                            org.motechproject.ivr.domain,
+                            org.motechproject.ivr.event,
+                            org.motechproject.ivr.message,
+                            org.motechproject.ivr.model,
+                            org.motechproject.ivr.service
+                        </Export-Package>
                         <Bundle-Activator>
-                            org.motechproject.server.kookoo.osgi.Activator
+                            org.motechproject.ivr.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.motechproject.decisiontree.core,
-                            org.motechproject.decisiontree.server.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.context.support,
                             org.springframework.osgi.config,
-                            org.springframework.ui.velocity,
-                            org.springframework.web.context.support,
-                            org.springframework.web.servlet.config,
-                            org.springframework.web.servlet.mvc,
-                            org.springframework.web.servlet.support,
-                            org.springframework.web.servlet.view.velocity,
+                            org.springframework.stereotype,
                             *
                         </Import-Package>
-                        <Include-Resource>
-                            {maven-resources},
-                            {maven-dependencies},
-                            vm=${project.basedir}/../../ivr/kookoo/src/main/resources/vm
-                        </Include-Resource>
-                        <Embed-Dependency>motech-ivr-kookoo</Embed-Dependency>
+                        <Embed-Dependency>motech-ivr-api;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
