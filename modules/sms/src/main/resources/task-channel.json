@@ -1,0 +1,30 @@
+{
+    "displayName": "sms",
+    "moduleName": "${project.artifactId}",
+    "moduleVersion": "${parsedVersion.osgiVersion}",
+    "triggerTaskEvents" : [],
+    "actionTaskEvents": [
+        {
+            "displayName": "sms.send",
+            "subject": "SendSms",
+            "actionParameters": [
+                {
+                    "key": "fromAddress",
+                    "displayName": "sms.from.address"
+                },
+                {
+                    "key": "toAddress",
+                    "displayName": "sms.to.address"
+                },
+                {
+                    "key": "subject",
+                    "displayName": "sms.subject"
+                },
+                {
+                    "key": "message",
+                    "displayName": "sms.message"
+                }
+            ]
+        }
+    ]
+}

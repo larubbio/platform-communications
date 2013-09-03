@@ -1,0 +1,35 @@
+<!------------------------  Settings  ------------------------------------->
+<div class="row-fluid tab-frame">
+    <h4 class="frame-title">{{ msg('sms.settings.title')}}</h4>
+    <div class="inside">
+        <div class="clearfix margin-before">
+            <form id="smsSettingsForm" name="smsSettingsForm" class="form-horizontal" novalidate>
+
+                <div class="control-group" ng-class="{'error': !settings.prop1}">
+                    <label class="control-label" for="settingsProp1">{{msg('sms.settings.prop1')}}:</label>
+
+                    <div class="controls">
+                        <input ng-model="settings.prop1" type="text" id="settingsProp1" required/>
+                        <span ng-hide="settings.prop1" class="form-hint">{{msg('sms.field.required', msg('sms.settings.prop1'))}}</span>
+                    </div>
+                </div>
+
+                <div class="control-group" ng-class="{'error': !settings.prop2}">
+                    <label class="control-label" for="settingsProp2">{{msg('sms.settings.prop2')}}:</label>
+
+                    <div class="controls">
+                        <input ng-model="settings.prop2" type="text" id="settingsProp2" required/>
+                        <span ng-hide="settings.prop2" class="form-hint">{{msg('sms.field.required', msg('sms.settings.prop2'))}}</span>
+                        <span ng-hide="isNumeric('prop2')" class="form-hint">{{msg('sms.field.numeric', msg('sms.settings.prop2'))}}</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <input ng-disabled="smsSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('sms.settings.submit')}}" class="btn btn-primary"/>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
