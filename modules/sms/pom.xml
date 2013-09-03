@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <version>0.22-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <description>MOTECH Sms bundle</description>
+    <description>MOTECH SMS Module</description>
     <groupId>org.motechproject</groupId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,7 +14,7 @@
     </properties>
 
     <artifactId>motech-sms-bundle</artifactId>
-    <name>MOTECH Sms</name>
+    <name>MOTECH SMS</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
