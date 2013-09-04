@@ -23,7 +23,7 @@ public class SmsBundleIT extends BaseOsgiIT {
 
         SmsSenderService smsService = (SmsSenderService) applicationContext.getBean("smsSenderService");
 
-        smsService.send(new Sms("from@from.com", "to@to.com", "test", "test"));
+        smsService.send(new Sms("from@from.com", "to@to.com", "test"));
 
         //do test the service, dude!!! assertEquals("test", actualText.trim());
 

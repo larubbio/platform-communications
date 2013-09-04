@@ -10,7 +10,6 @@ public class SettingsDto {
     public static final String MAIL_HOST_PROPERTY = "sms.host";
     public static final String MAIL_PORT_PROPERTY = "sms.port";
     public static final String MAIL_LOG_ADDRESS_PROPERTY = "sms.log.address";
-    public static final String MAIL_LOG_SUBJECT_PROPERTY = "sms.log.subject";
     public static final String MAIL_LOG_BODY_PROPERTY = "sms.log.body";
     public static final String MAIL_LOG_PURGE_ENABLE_PROPERTY = "sms.log.purgeenable";
     public static final String MAIL_LOG_PURGE_TIME_PROPERY = "sms.log.purgetime";
@@ -19,14 +18,13 @@ public class SettingsDto {
     private String host;
     private String port;
     private String logAddress;
-    private String logSubject;
     private String logBody;
     private String logPurgeEnable;
     private String logPurgeTime;
     private String logPurgeTimeMultiplier;
 
     public SettingsDto() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 
     public SettingsDto(SettingsFacade settingsFacade) {
@@ -34,7 +32,6 @@ public class SettingsDto {
                 settingsFacade.getProperty(MAIL_HOST_PROPERTY, SMS_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_PORT_PROPERTY, SMS_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, SMS_PROPERTIES_FILE_NAME),
-                settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, SMS_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, SMS_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_PURGE_ENABLE_PROPERTY, SMS_PROPERTIES_FILE_NAME),
                 settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_PROPERY, SMS_PROPERTIES_FILE_NAME),
@@ -47,7 +44,6 @@ public class SettingsDto {
         properties.put(MAIL_HOST_PROPERTY, host);
         properties.put(MAIL_PORT_PROPERTY, port);
         properties.put(MAIL_LOG_ADDRESS_PROPERTY, logAddress);
-        properties.put(MAIL_LOG_SUBJECT_PROPERTY, logSubject);
         properties.put(MAIL_LOG_BODY_PROPERTY, logBody);
         properties.put(MAIL_LOG_PURGE_ENABLE_PROPERTY, logPurgeEnable);
         properties.put(MAIL_LOG_PURGE_TIME_PROPERY, logPurgeTime);
@@ -56,22 +52,20 @@ public class SettingsDto {
         return properties;
     }
 
-    public SettingsDto(String host, String port, String logAddress, String logSubject, String logBody, String logPurgeEnable) {
+    public SettingsDto(String host, String port, String logAddress, String logBody, String logPurgeEnable) {
         this.host = host;
         this.port = port;
         this.logAddress = logAddress;
-        this.logSubject = logSubject;
         this.logBody = logBody;
         this.logPurgeEnable = logPurgeEnable;
         this.logPurgeTime = "0";
         this.logPurgeTimeMultiplier = "0";
     }
 
-    public SettingsDto(String host, String port, String logAddress, String logSubject, String logBody, String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
+    public SettingsDto(String host, String port, String logAddress, String logBody, String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
         this.host = host;
         this.port = port;
         this.logAddress = logAddress;
-        this.logSubject = logSubject;
         this.logBody = logBody;
         this.logPurgeEnable = logPurgeEnable;
         this.logPurgeTime = logPurgeTime;
@@ -100,14 +94,6 @@ public class SettingsDto {
 
     public void setLogAddress(String logAddress) {
         this.logAddress = logAddress;
-    }
-
-    public String getLogSubject() {
-        return logSubject;
-    }
-
-    public void setLogSubject(String logSubject) {
-        this.logSubject = logSubject;
     }
 
     public String getLogBody() {
@@ -144,7 +130,7 @@ public class SettingsDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(host, port, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+        return Objects.hash(host, port, logAddress, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
     }
 
     @Override
@@ -165,8 +151,8 @@ public class SettingsDto {
     @Override
     public String toString() {
         return String.format(
-                "SettingsDto{host='%s', port='%s', logAddress='%s', logSubject='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}",
-                host, port, logAddress, logSubject, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
+                "SettingsDto{host='%s', port='%s', logAddress='%s', logBody='%s', logPurgeEnable='%s', logPurgeTime='%s', logPurgeTimeMultiplier='%s'}",
+                host, port, logAddress, logBody, logPurgeEnable, logPurgeTime, logPurgeTimeMultiplier);
     }
 
     private Boolean compareFields(SettingsDto other) {
@@ -175,8 +161,6 @@ public class SettingsDto {
         } else if (!Objects.equals(this.port, other.port)) {
             return false;
         } else if (!Objects.equals(this.logAddress, other.logAddress)) {
-            return false;
-        } else if (!Objects.equals(this.logSubject, other.logSubject)) {
             return false;
         } else if (!Objects.equals(this.logBody, other.logBody)) {
             return false;

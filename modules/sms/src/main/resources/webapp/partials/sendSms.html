@@ -5,35 +5,17 @@
             <form class="form-horizontal inside" ng-submit="sendSms()">
 
                 <div class="control-group">
-                    <label class="control-label" for="fromAddress">{{msg('sms.from.address')}}</label>
+                    <label class="control-label" for="to">{{msg('sms.to')}}</label>
                     <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.fromAddress" id="fromAddress">
-                        <span ng-hide="sms.fromAddress" class="form-hint">{{msg('sms.field.required', msg('sms.from.address'))}}</span>
+                        <input class="input-xlarge-fluid" type="text" ng-model="sms.to" id="to">
+                        <span ng-hide="sms.to" class="form-hint">{{msg('sms.field.required', msg('sms.to'))}}</span>
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label" for="toAddress">{{msg('sms.to.address')}}</label>
+                    <label class="control-label" for="message">{{msg('sms.message')}}</label>
                     <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.toAddress" id="toAddress">
-                        <span ng-hide="sms.toAddress" class="form-hint">{{msg('sms.field.required', msg('sms.to.address'))}}</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="subject">{{msg('sms.subject')}}</label>
-                    <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.subject" id="subject">
-                        <span ng-hide="sms.subject" class="form-hint">{{msg('sms.field.required', msg('sms.subject'))}}</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="text">{{msg('sms.message')}}</label>
-                    <div class="controls">
-                        <span id="text" rich-text-editor ng-model="sms.message">
-                            <textarea class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5"></textarea>
-                        </span>
+                        <textarea class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" id="message" ng-model="sms.message"></textarea>
                         <span ng-hide="sms.message" class="form-hint">{{msg('sms.field.required', msg('sms.message'))}}</span>
                     </div>
                 </div>

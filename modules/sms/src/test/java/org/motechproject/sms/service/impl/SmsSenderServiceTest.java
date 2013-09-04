@@ -22,7 +22,7 @@ public class SmsSenderServiceTest {
 
     @Test
     public void shouldSendCriticalNotification() throws Exception {
-        Sms sms = new Sms("from", "to", "subject", "text");
+        Sms sms = new Sms("from", "to", "text");
 
         smsSender.send(sms);
     }

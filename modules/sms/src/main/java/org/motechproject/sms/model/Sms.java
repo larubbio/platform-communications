@@ -7,36 +7,22 @@ import java.util.Objects;
 
 @JsonDeserialize(using = SmsDeserializer.class)
 public class Sms {
-    private String fromAddress;
-    private String toAddress;
-    private String subject;
+    private String from;
+    private String to;
     private String message;
 
-    public Sms(String fromAddress, String toAddress, String subject, String message) {
-        this.fromAddress = fromAddress;
-        this.toAddress = toAddress;
-        this.subject = subject;
+    public Sms(String from, String to, String message) {
+        this.from = from;
+        this.to = to;
         this.message = message;
     }
 
     public String getFromAddress() {
-        return fromAddress;
+        return from;
     }
 
     public String getToAddress() {
-        return toAddress;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
-     * @deprecated As of release 0.21, replaced by {@link #getMessage()}
-     */
-    @Deprecated
-    public String getText() {
-        return message;
+        return to;
     }
 
     public String getMessage() {
@@ -45,7 +31,7 @@ public class Sms {
 
     @Override
     public int hashCode() {
-        return Objects.hash(fromAddress, toAddress, subject, message);
+        return Objects.hash(from, to, message);
     }
 
     @Override
@@ -60,16 +46,15 @@ public class Sms {
 
         final Sms other = (Sms) obj;
 
-        return Objects.equals(this.fromAddress, other.fromAddress)
-                && Objects.equals(this.toAddress, other.toAddress)
-                && Objects.equals(this.subject, other.subject)
+        return Objects.equals(this.from, other.from)
+                && Objects.equals(this.to, other.to)
                 && Objects.equals(this.message, other.message);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Sms{fromAddress='%s', toAddress='%s', subject='%s', message='%s'}",
-                fromAddress, toAddress, subject, message);
+                "Sms{from='%s', to='%s', message='%s'}",
+                from, to, message);
     }
 }

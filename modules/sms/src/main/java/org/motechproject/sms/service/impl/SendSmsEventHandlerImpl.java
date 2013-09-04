@@ -14,14 +14,13 @@ public class SendSmsEventHandlerImpl {
     @Autowired
     private SmsSenderService smsSenderService;
 
-    @MotechListener (subjects = { SendSmsConstants.SEND_SMS_SUBJECT })
+    @MotechListener (subjects = { SendSmsConstants.SEND_SMS})
     public void handle(MotechEvent event) {
-        String fromAddress = (String) event.getParameters().get(SendSmsConstants.FROM_ADDRESS);
-        String toAddress = (String) event.getParameters().get(SendSmsConstants.TO_ADDRESS);
-        String subject = (String) event.getParameters().get(SendSmsConstants.SUBJECT);
+        String from = (String) event.getParameters().get(SendSmsConstants.FROM);
+        String to = (String) event.getParameters().get(SendSmsConstants.TO);
         String message = (String) event.getParameters().get(SendSmsConstants.MESSAGE);
 
-        smsSenderService.send(new Sms(fromAddress, toAddress, subject, message));
+        smsSenderService.send(new Sms(from, to, message));
     }
 }
 

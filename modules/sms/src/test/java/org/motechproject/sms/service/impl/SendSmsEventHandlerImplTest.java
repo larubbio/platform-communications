@@ -2,28 +2,20 @@ package org.motechproject.sms.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.sms.model.Sms;
 import org.motechproject.sms.service.SmsSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
-import static org.motechproject.sms.constants.SendSmsConstants.FROM_ADDRESS;
-import static org.motechproject.sms.constants.SendSmsConstants.MESSAGE;
-import static org.motechproject.sms.constants.SendSmsConstants.SEND_SMS_SUBJECT;
-import static org.motechproject.sms.constants.SendSmsConstants.SUBJECT;
-import static org.motechproject.sms.constants.SendSmsConstants.TO_ADDRESS;
+import static org.motechproject.sms.constants.SendSmsConstants.SEND_SMS;
 
 public class SendSmsEventHandlerImplTest {
 
@@ -43,7 +35,7 @@ public class SendSmsEventHandlerImplTest {
         Method handleMethod = smsEventHandler.getClass().getDeclaredMethod("handle", new Class[]{MotechEvent.class});
         assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-        assertArrayEquals(new String[]{SEND_SMS_SUBJECT}, annotation.subjects());
+        assertArrayEquals(new String[]{SEND_SMS}, annotation.subjects());
     }
 /*
     @Test
@@ -55,12 +47,12 @@ public class SendSmsEventHandlerImplTest {
         String subject = "test subject";
 
         Map<String, Object> values = new HashMap<>();
-        values.put(FROM_ADDRESS, from);
-        values.put(TO_ADDRESS, to);
+        values.put(FROM, from);
+        values.put(TO, to);
         values.put(MESSAGE, message);
         values.put(SUBJECT, subject);
 
-        smsEventHandler.handle(new MotechEvent(SEND_SMS_SUBJECT, values));
+        smsEventHandler.handle(new MotechEvent(SEND_SMS, values));
         ArgumentCaptor<Sms> captor = ArgumentCaptor.forClass(Sms.class);
         verify(smsSenderService).send(captor.capture());
 

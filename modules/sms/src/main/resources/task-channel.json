@@ -9,16 +9,12 @@
             "subject": "SendSms",
             "actionParameters": [
                 {
-                    "key": "fromAddress",
-                    "displayName": "sms.from.address"
+                    "key": "from",
+                    "displayName": "sms.from"
                 },
                 {
-                    "key": "toAddress",
-                    "displayName": "sms.to.address"
-                },
-                {
-                    "key": "subject",
-                    "displayName": "sms.subject"
+                    "key": "to",
+                    "displayName": "sms.to"
                 },
                 {
                     "key": "message",

@@ -10,10 +10,9 @@ import org.motechproject.sms.model.Sms;
 import java.io.IOException;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.sms.constants.SendSmsConstants.FROM_ADDRESS;
+import static org.motechproject.sms.constants.SendSmsConstants.FROM;
 import static org.motechproject.sms.constants.SendSmsConstants.MESSAGE;
-import static org.motechproject.sms.constants.SendSmsConstants.SUBJECT;
-import static org.motechproject.sms.constants.SendSmsConstants.TO_ADDRESS;
+import static org.motechproject.sms.constants.SendSmsConstants.TO;
 
 public class SmsDeserializer extends JsonDeserializer<Sms> {
     private JsonNode jsonNode;
@@ -22,10 +21,7 @@ public class SmsDeserializer extends JsonDeserializer<Sms> {
     public Sms deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
         jsonNode = jsonParser.readValueAsTree();
 
-        return new Sms(
-                getValue(FROM_ADDRESS), getValue(TO_ADDRESS),
-                getValue(SUBJECT), getValue(MESSAGE)
-        );
+        return new Sms(getValue(FROM), getValue(TO), getValue(MESSAGE));
     }
 
     private String getValue(String key) throws JsonMappingException {

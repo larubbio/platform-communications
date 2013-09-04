@@ -24,7 +24,6 @@ import static org.motechproject.sms.model.SettingsDto.SMS_PROPERTIES_FILE_NAME;
 import static org.motechproject.sms.model.SettingsDto.MAIL_HOST_PROPERTY;
 import static org.motechproject.sms.model.SettingsDto.MAIL_PORT_PROPERTY;
 import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_ADDRESS_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_SUBJECT_PROPERTY;
 import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_BODY_PROPERTY;
 import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_PURGE_ENABLE_PROPERTY;
 import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
@@ -44,7 +43,6 @@ public class SettingsControllerTest {
     private static final String HOST = "localhost";
     private static final String PORT = "8099";
     private static final String LOG_ADDRESS = "true";
-    private static final String LOG_SUBJECT = "true";
     private static final String LOG_BODY = "true";
     private static final String LOG_PURGE = "true";
     private static final String LOG_TIME = "1";
@@ -62,7 +60,6 @@ public class SettingsControllerTest {
         when(settingsFacade.getProperty(MAIL_HOST_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(HOST);
         when(settingsFacade.getProperty(MAIL_PORT_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(PORT);
         when(settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(LOG_ADDRESS);
-        when(settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(LOG_SUBJECT);
         when(settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(LOG_BODY);
         when(settingsFacade.getProperty(MAIL_LOG_PURGE_ENABLE_PROPERTY, SMS_PROPERTIES_FILE_NAME)).thenReturn(LOG_PURGE);
         when(settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_PROPERY, SMS_PROPERTIES_FILE_NAME)).thenReturn(LOG_TIME);
@@ -80,7 +77,7 @@ public class SettingsControllerTest {
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
                 content().string(jsonMatcher(
-                        settingsJson(HOST, PORT, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
+                        settingsJson(HOST, PORT, LOG_ADDRESS, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
                 ))
         );
     }
@@ -90,7 +87,6 @@ public class SettingsControllerTest {
         String remotehost = "remotehost";
         String port = "9999";
         String logAddress = "false";
-        String logSubject = "false";
         String logBody = "false";
         String logPurge = "false";
         String logPurgeTime = "0";
@@ -99,7 +95,7 @@ public class SettingsControllerTest {
         controller.perform(
                 post("/settings").body(
                         settingsJson(
-                                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,
+                                remotehost, port, logAddress, logBody, logPurge, logPurgeTime,
                                 logPurgeMultiplier
                         ).getBytes()
                 ).contentType(APPLICATION_JSON)
@@ -108,7 +104,7 @@ public class SettingsControllerTest {
         );
 
         Properties properties = new SettingsDto(
-                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                remotehost, port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
         ).toProperties();
 
         verify(settingsFacade).saveConfigProperties(SMS_PROPERTIES_FILE_NAME, properties);
@@ -118,7 +114,6 @@ public class SettingsControllerTest {
     public void shouldNotChangeSettingsWhenHostIsBlank() throws Exception {
         String port = "9999";
         String logAddress = "false";
-        String logSubject = "false";
         String logBody = "false";
         String logPurge = "false";
         String logPurgeTime = "0";
@@ -126,7 +121,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        "", port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        "", port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -141,7 +136,6 @@ public class SettingsControllerTest {
     public void shouldNotChangeSettingsWhenPortIsBlank() throws Exception {
         String remotehost = "remotehost";
         String logAddress = "false";
-        String logSubject = "false";
         String logBody = "false";
         String logPurge = "false";
         String logPurgeTime = "0";
@@ -149,7 +143,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        remotehost, "", logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        remotehost, "", logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -165,7 +159,6 @@ public class SettingsControllerTest {
         String remotehost = "remotehost";
         String port = "9999a";
         String logAddress = "false";
-        String logSubject = "false";
         String logBody = "false";
         String logPurge = "false";
         String logPurgeTime = "0";
@@ -173,7 +166,7 @@ public class SettingsControllerTest {
 
         controller.perform(
                 post("/settings").body(settingsJson(
-                        remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                        remotehost, port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
@@ -184,14 +177,13 @@ public class SettingsControllerTest {
         verify(settingsFacade, never()).saveConfigProperties(anyString(), any(Properties.class));
     }
 
-    private String settingsJson(String host, String port, String logAddress, String logSubject, String logBody,
+    private String settingsJson(String host, String port, String logAddress, String logBody,
                                 String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
 
         ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put("host", host);
         jsonNode.put("port", port);
         jsonNode.put("logAddress", logAddress);
-        jsonNode.put("logSubject", logSubject);
         jsonNode.put("logBody", logBody);
         jsonNode.put("logPurgeEnable", logPurgeEnable);
         jsonNode.put("logPurgeTime", logPurgeTime);
