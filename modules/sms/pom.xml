@@ -15,6 +15,7 @@
 
     <artifactId>motech-sms-bundle</artifactId>
     <name>MOTECH SMS</name>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
