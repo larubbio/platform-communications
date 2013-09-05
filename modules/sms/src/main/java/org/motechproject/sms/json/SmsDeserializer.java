@@ -10,9 +10,9 @@ import org.motechproject.sms.model.Sms;
 import java.io.IOException;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.sms.constants.SendSmsConstants.FROM;
+import static org.motechproject.sms.constants.SendSmsConstants.RECIPIENTS;
 import static org.motechproject.sms.constants.SendSmsConstants.MESSAGE;
-import static org.motechproject.sms.constants.SendSmsConstants.TO;
+import static org.motechproject.sms.constants.SendSmsConstants.DELIVERY_TIME;
 
 public class SmsDeserializer extends JsonDeserializer<Sms> {
     private JsonNode jsonNode;
@@ -21,7 +21,21 @@ public class SmsDeserializer extends JsonDeserializer<Sms> {
     public Sms deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
         jsonNode = jsonParser.readValueAsTree();
 
-        return new Sms(getValue(FROM), getValue(TO), getValue(MESSAGE));
+        return new Sms(getValue(RECIPIENTS), getValue(MESSAGE), getValue(DELIVERY_TIME));
+    }
+
+    private String getValue(String key) throws JsonMappingException {
+        String value = null;
+
+        if (jsonNode.has(key)) {
+            value = jsonNode.get(key).getTextValue();
+        }
+
+        if (isBlank(value)) {
+            throw new JsonMappingException(String.format("Property %s is required", key));
+        }
+
+        return value;
     }
 
     private String getValue(String key) throws JsonMappingException {

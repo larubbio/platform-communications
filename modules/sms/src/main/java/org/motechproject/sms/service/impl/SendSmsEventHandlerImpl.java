@@ -8,6 +8,8 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SendSmsEventHandlerImpl {
 
@@ -16,9 +18,9 @@ public class SendSmsEventHandlerImpl {
 
     @MotechListener (subjects = { SendSmsConstants.SEND_SMS})
     public void handle(MotechEvent event) {
-        String from = (String) event.getParameters().get(SendSmsConstants.FROM);
-        String to = (String) event.getParameters().get(SendSmsConstants.TO);
+        List<String> recipients = (List<String>) event.getParameters().get(SendSmsConstants.RECIPIENTS);
         String message = (String) event.getParameters().get(SendSmsConstants.MESSAGE);
+        String from = (String) event.getParameters().get(SendSmsConstants.AT);
 
         smsSenderService.send(new Sms(from, to, message));
     }

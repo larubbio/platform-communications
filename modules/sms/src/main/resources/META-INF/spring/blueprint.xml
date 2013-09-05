@@ -51,6 +51,10 @@
                   interface="org.motechproject.sms.service.SmsSenderService"
                   auto-export="interfaces"/>
 
+    <osgi:service ref="smsConfigService"
+                  interface="org.motechproject.sms.service.SmsConfigService"
+                  auto-export="interfaces"/>
+
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 

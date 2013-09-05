@@ -2,25 +2,117 @@
     "displayName": "sms",
     "moduleName": "${project.artifactId}",
     "moduleVersion": "${parsedVersion.osgiVersion}",
-    "triggerTaskEvents" : [],
+    "triggerTaskEvents" : [
+                              {
+                                "displayName" : "sms.outboundSuccess",
+                                "subject" : "outbound_sms_success",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "recipient",
+                                    "displayName" : "sms.recipient"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.messageId"
+                                  },
+                                  {
+                                    "eventKey" : "reference_id",
+                                    "displayName" : "sms.referenceId"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "type" : "DATE",
+                                    "displayName" : "sms.timestamp"
+                                  }
+                                ]
+                              },
+                              {
+                                "displayName" : "sms.outboundFailure",
+                                "subject" : "outbound_sms_failure",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "recipient",
+                                    "displayName" : "sms.recipient"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.messageId"
+                                  },
+                                  {
+                                    "eventKey" : "status",
+                                    "displayName" : "sms.status"
+                                  },
+                                  {
+                                    "eventKey" : "error_message",
+                                    "displayName" : "sms.errorMessage"
+                                  },
+                                  {
+                                    "eventKey" : "reference_id",
+                                    "displayName" : "sms.referenceId"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "type" : "DATE",
+                                    "displayName" : "sms.timestamp"
+                                  }
+                                ]
+                              },
+                              {
+                                "displayName" : "sms.inbound",
+                                "subject" : "inbound_sms",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "sender",
+                                    "displayName" : "sms.sender"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.messageId"
+                                  },
+                                  {
+                                    "eventKey" : "reference_id",
+                                    "displayName" : "sms.referenceId"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "displayName" : "sms.timestamp"
+                                  }
+                                ]
+                              }
+                            ],
     "actionTaskEvents": [
-        {
-            "displayName": "sms.send",
-            "subject": "SendSms",
-            "actionParameters": [
-                {
-                    "key": "from",
-                    "displayName": "sms.from"
-                },
-                {
-                    "key": "to",
-                    "displayName": "sms.to"
-                },
-                {
-                    "key": "message",
-                    "displayName": "sms.message"
-                }
-            ]
-        }
-    ]
+                            {
+                              "displayName" : "sms.send",
+                              "subject" : "send_sms",
+                              "actionParameters" : [
+                                {
+                                  "key" : "recipients",
+                                  "type" : "LIST",
+                                  "displayName" : "sms.recipients"
+                                },
+                                {
+                                  "key" : "message",
+                                  "displayName" : "sms.message"
+                                },
+                                {
+                                  "key" : "at",
+                                  "type" : "DATE",
+                                  "displayName" : "sms.at",
+                                  "required": false
+                                }
+                              ]
+                            }
+                          ]
 }

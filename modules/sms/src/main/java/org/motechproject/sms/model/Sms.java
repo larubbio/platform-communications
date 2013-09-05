@@ -1,37 +1,39 @@
 package org.motechproject.sms.model;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.joda.time.DateTime;
 import org.motechproject.sms.json.SmsDeserializer;
 
+import java.util.List;
 import java.util.Objects;
 
 @JsonDeserialize(using = SmsDeserializer.class)
 public class Sms {
-    private String from;
-    private String to;
+    private List<String> recipients;
     private String message;
+    private DateTime at;
 
-    public Sms(String from, String to, String message) {
-        this.from = from;
-        this.to = to;
+    public Sms(List<String> recipients, String message, DateTime at) {
+        this.recipients = recipients;
         this.message = message;
+        this.at = at;
     }
 
-    public String getFromAddress() {
-        return from;
-    }
-
-    public String getToAddress() {
-        return to;
+    public List<String> getRecipients() {
+        return recipients;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public DateTime getAt() {
+        return at;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, message);
+        return Objects.hash(recipients, message, at);
     }
 
     @Override
@@ -46,15 +48,13 @@ public class Sms {
 
         final Sms other = (Sms) obj;
 
-        return Objects.equals(this.from, other.from)
-                && Objects.equals(this.to, other.to)
-                && Objects.equals(this.message, other.message);
+        return Objects.equals(this.recipients, other.recipients)
+                && Objects.equals(this.message, other.message)
+                && Objects.equals(this.at, other.at);
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "Sms{from='%s', to='%s', message='%s'}",
-                from, to, message);
+        return String.format("Sms{recipients='%s', message='%s', at='%s'}", recipients, message, at);
     }
 }
