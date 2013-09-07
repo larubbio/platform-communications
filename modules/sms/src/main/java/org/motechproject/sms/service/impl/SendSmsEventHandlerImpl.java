@@ -1,7 +1,8 @@
 package org.motechproject.sms.service.impl;
 
+import org.joda.time.DateTime;
 import org.motechproject.sms.constants.SendSmsConstants;
-import org.motechproject.sms.model.Sms;
+import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.sms.service.SmsSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -16,13 +17,19 @@ public class SendSmsEventHandlerImpl {
     @Autowired
     private SmsSenderService smsSenderService;
 
-    @MotechListener (subjects = { SendSmsConstants.SEND_SMS})
+    @MotechListener (subjects = { SendSmsConstants.SEND_SMS })
     public void handle(MotechEvent event) {
         List<String> recipients = (List<String>) event.getParameters().get(SendSmsConstants.RECIPIENTS);
         String message = (String) event.getParameters().get(SendSmsConstants.MESSAGE);
-        String from = (String) event.getParameters().get(SendSmsConstants.AT);
+        //TODO: null is ok, make sure we can do that
+        DateTime deliveryTime = (DateTime) event.getParameters().get(SendSmsConstants.DELIVERY_TIME);
 
-        smsSenderService.send(new Sms(from, to, message));
+        try {
+        smsSenderService.send(new OutgoingSms(recipients, message, deliveryTime));
+        }
+        catch (Exception e) {
+            //TODO: nuke this try/catch
+        }
     }
 }
 

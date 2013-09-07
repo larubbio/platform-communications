@@ -12,10 +12,10 @@
                 {},
                 $scope.sms,
                 function () {
-                    motechAlert('sms.header.success', 'sms.sent');
+                    motechAlert('sms.send.alert.success', 'sms.send.alert.title');
                 },
                 function (response) {
-                    handleWithStackTrace('sms.header.error', 'server.error', response);
+                    handleWithStackTrace('sms.send.alert.title', 'sms.send.alert.failure', response);
                 }
             );
         };

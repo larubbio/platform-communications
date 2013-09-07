@@ -2,21 +2,27 @@ package org.motechproject.sms.model;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.joda.time.DateTime;
-import org.motechproject.sms.json.SmsDeserializer;
+import org.motechproject.sms.json.OutgoingSmsDeserializer;
 
 import java.util.List;
 import java.util.Objects;
 
-@JsonDeserialize(using = SmsDeserializer.class)
-public class Sms {
+@JsonDeserialize(using = OutgoingSmsDeserializer.class)
+public class OutgoingSms {
     private List<String> recipients;
     private String message;
-    private DateTime at;
+    private DateTime deliveryTime;
 
-    public Sms(List<String> recipients, String message, DateTime at) {
+    public OutgoingSms(List<String> recipients, String message, DateTime deliveryTime) {
         this.recipients = recipients;
         this.message = message;
-        this.at = at;
+        this.deliveryTime = deliveryTime;
+    }
+
+    public OutgoingSms(List<String> recipients, String message) {
+        this.recipients = recipients;
+        this.message = message;
+        this.deliveryTime = null;
     }
 
     public List<String> getRecipients() {
@@ -28,12 +34,12 @@ public class Sms {
     }
 
     public DateTime getAt() {
-        return at;
+        return deliveryTime;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recipients, message, at);
+        return Objects.hash(recipients, message, deliveryTime);
     }
 
     @Override
@@ -46,15 +52,15 @@ public class Sms {
             return false;
         }
 
-        final Sms other = (Sms) obj;
+        final OutgoingSms other = (OutgoingSms) obj;
 
         return Objects.equals(this.recipients, other.recipients)
                 && Objects.equals(this.message, other.message)
-                && Objects.equals(this.at, other.at);
+                && Objects.equals(this.deliveryTime, other.deliveryTime);
     }
 
     @Override
     public String toString() {
-        return String.format("Sms{recipients='%s', message='%s', at='%s'}", recipients, message, at);
+        return String.format("Sms{recipients='%s', message='%s', deliveryTime='%s'}", recipients, message, deliveryTime);
     }
 }

@@ -1,14 +1,14 @@
 <div class="row-fluid tab-frame">
     <div class="clearfix">
-        <h4 class="frame-title">{{ msg('sms.compose.title')}}</h4>
+        <h4 class="frame-title">{{ msg('sms.send.title')}}</h4>
         <div class="inside">
             <form class="form-horizontal inside" ng-submit="sendSms()">
 
                 <div class="control-group">
-                    <label class="control-label" for="to">{{msg('sms.to')}}</label>
+                    <label class="control-label" for="recipients">{{msg('sms.recipients')}}</label>
                     <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.to" id="to">
-                        <span ng-hide="sms.to" class="form-hint">{{msg('sms.field.required', msg('sms.to'))}}</span>
+                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients">
+                        <span ng-hide="sms.recipients" class="form-hint">{{msg('sms.field.required', msg('sms.recipients'))}}</span>
                     </div>
                 </div>
 

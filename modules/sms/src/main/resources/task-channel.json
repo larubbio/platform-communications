@@ -4,12 +4,12 @@
     "moduleVersion": "${parsedVersion.osgiVersion}",
     "triggerTaskEvents" : [
                               {
-                                "displayName" : "sms.outboundSuccess",
+                                "displayName" : "sms.outbound.success",
                                 "subject" : "outbound_sms_success",
                                 "eventParameters" : [
                                   {
-                                    "eventKey" : "recipient",
-                                    "displayName" : "sms.recipient"
+                                    "eventKey" : "recipients",
+                                    "displayName" : "sms.recipients"
                                   },
                                   {
                                     "eventKey" : "message",
@@ -17,11 +17,11 @@
                                   },
                                   {
                                     "eventKey" : "message_id",
-                                    "displayName" : "sms.messageId"
+                                    "displayName" : "sms.message.id"
                                   },
                                   {
                                     "eventKey" : "reference_id",
-                                    "displayName" : "sms.referenceId"
+                                    "displayName" : "sms.reference.id"
                                   },
                                   {
                                     "eventKey" : "timestamp",
@@ -31,12 +31,12 @@
                                 ]
                               },
                               {
-                                "displayName" : "sms.outboundFailure",
+                                "displayName" : "sms.outbound.failure",
                                 "subject" : "outbound_sms_failure",
                                 "eventParameters" : [
                                   {
-                                    "eventKey" : "recipient",
-                                    "displayName" : "sms.recipient"
+                                    "eventKey" : "recipients",
+                                    "displayName" : "sms.recipients"
                                   },
                                   {
                                     "eventKey" : "message",
@@ -44,7 +44,7 @@
                                   },
                                   {
                                     "eventKey" : "message_id",
-                                    "displayName" : "sms.messageId"
+                                    "displayName" : "sms.message.id"
                                   },
                                   {
                                     "eventKey" : "status",
@@ -52,11 +52,11 @@
                                   },
                                   {
                                     "eventKey" : "error_message",
-                                    "displayName" : "sms.errorMessage"
+                                    "displayName" : "sms.error.message"
                                   },
                                   {
                                     "eventKey" : "reference_id",
-                                    "displayName" : "sms.referenceId"
+                                    "displayName" : "sms.reference.id"
                                   },
                                   {
                                     "eventKey" : "timestamp",
@@ -79,11 +79,11 @@
                                   },
                                   {
                                     "eventKey" : "message_id",
-                                    "displayName" : "sms.messageId"
+                                    "displayName" : "sms.message.id"
                                   },
                                   {
                                     "eventKey" : "reference_id",
-                                    "displayName" : "sms.referenceId"
+                                    "displayName" : "sms.reference.id"
                                   },
                                   {
                                     "eventKey" : "timestamp",
@@ -107,9 +107,9 @@
                                   "displayName" : "sms.message"
                                 },
                                 {
-                                  "key" : "at",
+                                  "key" : "delivery_time",
                                   "type" : "DATE",
-                                  "displayName" : "sms.at",
+                                  "displayName" : "sms.delivery.time",
                                   "required": false
                                 }
                               ]

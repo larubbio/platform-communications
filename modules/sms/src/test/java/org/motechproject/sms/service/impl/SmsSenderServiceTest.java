@@ -3,9 +3,10 @@ package org.motechproject.sms.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.motechproject.sms.model.Sms;
+import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.sms.service.SmsSenderService;
+
+import java.util.Arrays;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -22,9 +23,9 @@ public class SmsSenderServiceTest {
 
     @Test
     public void shouldSendCriticalNotification() throws Exception {
-        Sms sms = new Sms("from", "to", "text");
+        OutgoingSms outgoingSms = new OutgoingSms(Arrays.asList(new String[]{"+12065551212"}), "sample message");
 
-        smsSender.send(sms);
+        smsSender.send(outgoingSms);
     }
 
 }

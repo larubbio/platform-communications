@@ -1,6 +1,6 @@
 package org.motechproject.sms.web;
 
-import org.motechproject.sms.model.Sms;
+import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.sms.service.SmsSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +25,9 @@ public class SendSmsController {
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void sendSms(@RequestBody Sms sms) {
-        senderService.send(sms);
+    public void sendSms(@RequestBody OutgoingSms outgoingSms) throws Exception {
+        //todo: kill thr 'throws' above
+        senderService.send(outgoingSms);
     }
 
     @ExceptionHandler(Exception.class)

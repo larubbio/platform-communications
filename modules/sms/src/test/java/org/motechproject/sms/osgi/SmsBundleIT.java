@@ -2,11 +2,12 @@ package org.motechproject.sms.osgi;
 
 import org.junit.After;
 import org.junit.Before;
-import org.motechproject.sms.model.Sms;
+import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.sms.service.SmsSenderService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -19,11 +20,11 @@ public class SmsBundleIT extends BaseOsgiIT {
     public void onSetUp() {
     }
 
-    public void testSmsService() throws IOException {
+    public void testSmsService() throws IOException, Exception {
 
         SmsSenderService smsService = (SmsSenderService) applicationContext.getBean("smsSenderService");
 
-        smsService.send(new Sms("from@from.com", "to@to.com", "test"));
+        smsService.send(new OutgoingSms(Arrays.asList(new String[]{"+12065551212"}), "test message"));
 
         //do test the service, dude!!! assertEquals("test", actualText.trim());
 
