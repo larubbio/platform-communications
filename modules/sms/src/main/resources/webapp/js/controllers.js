@@ -47,10 +47,6 @@
             );
         };
 
-        $scope.isNumeric = function (prop) {
-            return $scope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($scope.settings[prop]);
-        };
-
         $scope.purgeTimeControlsDisabled = function () {
             if ($scope.settings.logPurgeEnable.localeCompare("true") === 0) {
                 return false;
