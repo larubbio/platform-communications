@@ -1,10 +1,12 @@
 <!------------------------  Settings  ------------------------------------->
 <div class="row-fluid tab-frame">
-    <h4 class="frame-title">{{ msg('sms.settings.title')}}</h4>
+    <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
         <div class="clearfix margin-before">
             <form id="smsSettingsForm" name="smsSettingsForm" class="form-horizontal" novalidate>
 
+
+<!--
                 <div class="control-group" ng-class="{'error': !prop1}">
                     <label class="control-label" for="prop1">{{msg('sms.settings.prop1')}}:</label>
 
@@ -27,12 +29,18 @@
                 <div class="controls">
                     <input ng-disabled="smsSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('sms.settings.save')}}" class="btn btn-primary"/>
                 </div>
+-->
+
+                <div class="alert alert-error">
+                    You have not created any configurations, you will not be able to send of receive messages without one.
+                </div>
+
+                <div>settings: {{settings}}</div>
+                <div class="control-group">
+                    <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
+                </div>
 
             </form>
-            <div>
-                <div>smsSettingsForm.prop2={{smsSettingsForm.prop2}}</div>
-                <div>smsSettingsForm.prop2.$error={{smsSettingsForm.prop2.$error}}</div>
-            </div>
         </div>
     </div>
 </div>

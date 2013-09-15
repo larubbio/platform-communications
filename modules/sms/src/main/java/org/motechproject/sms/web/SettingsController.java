@@ -2,6 +2,7 @@ package org.motechproject.sms.web;
 
 import org.motechproject.sms.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.model.SmsSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -14,12 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;
-import static org.motechproject.sms.model.SettingsDto.SMS_PROPERTIES_FILE_NAME;
-import static org.motechproject.sms.model.SettingsDto.MAIL_HOST_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_PORT_PROPERTY;
 
 @Controller
 public class SettingsController {
@@ -30,16 +29,18 @@ public class SettingsController {
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public SettingsController(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
+    public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     @ResponseBody
-    public SettingsDto getSettings() {
-        return new SettingsDto(settingsFacade);
+    public SmsSettings getSettings() {
+        SettingsDto settings = new SettingsDto(settingsFacade);
+        return settings.getSettings();
     }
 
+/*
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void setSettings(@RequestBody SettingsDto settings) {
@@ -69,6 +70,7 @@ public class SettingsController {
 
         settingsFacade.saveConfigProperties(SMS_PROPERTIES_FILE_NAME, settings.toProperties());
     }
+*/
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

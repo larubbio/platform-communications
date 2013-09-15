@@ -1,4 +1,4 @@
-package org.motechproject.sms.service.impl;
+package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.sms.constants.SendSmsConstants;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SendSmsEventHandlerImpl {
+public class SendSmsEventHandler {
 
     @Autowired
     private SmsSenderService smsSenderService;

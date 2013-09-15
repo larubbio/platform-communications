@@ -1,4 +1,4 @@
-package org.motechproject.sms.service.impl;
+package org.motechproject.sms.service;
 
 import org.motechproject.sms.service.SmsConfigService;
 import org.motechproject.sms.service.SmsSenderService;
@@ -18,6 +18,9 @@ public class SmsConfigServiceImpl implements SmsConfigService {
         List<String> ret = new ArrayList<String>();
 
         //TODO
+        ret.add("ClickaTell");
+        ret.add("Nuntium");
+        ret.add("Voxeo");
 
         return ret;
     }

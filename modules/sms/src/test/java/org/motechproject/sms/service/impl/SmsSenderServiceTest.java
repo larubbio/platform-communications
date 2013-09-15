@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.sms.service.SmsSenderService;
+import org.motechproject.sms.service.SmsSenderServiceImpl;
 
 import java.util.Arrays;
 

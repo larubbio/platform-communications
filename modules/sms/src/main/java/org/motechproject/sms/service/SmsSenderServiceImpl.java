@@ -1,4 +1,4 @@
-package org.motechproject.sms.service.impl;
+package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.sms.model.OutgoingSms;

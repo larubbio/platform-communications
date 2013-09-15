@@ -26,7 +26,7 @@ public class SendSmsController {
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void sendSms(@RequestBody OutgoingSms outgoingSms) throws Exception {
-        //todo: kill thr 'throws' above
+        //todo: kill the 'throws' above
         senderService.send(outgoingSms);
     }
 

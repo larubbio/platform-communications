@@ -20,14 +20,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.model.SettingsDto.SMS_PROPERTIES_FILE_NAME;
-import static org.motechproject.sms.model.SettingsDto.MAIL_HOST_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_PORT_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_ADDRESS_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_BODY_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_PURGE_ENABLE_PROPERTY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
-import static org.motechproject.sms.model.SettingsDto.MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY;
 import static org.motechproject.testing.utils.rest.RestTestUtil.jsonMatcher;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
@@ -52,7 +44,7 @@ public class SettingsControllerTest {
     private SettingsFacade settingsFacade;
 
     private MockMvc controller;
-
+/*
     @Before
     public void setUp() throws Exception {
         initMocks(this);
@@ -192,4 +184,5 @@ public class SettingsControllerTest {
 
         return jsonNode.toString();
     }
+*/
 }

@@ -16,20 +16,20 @@
 
     <bean id="smsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="motech-sms"/>
-        <property name="configFiles">
+        <property name="rawConfigFiles">
             <list>
-                <value>classpath:motech-sms.properties</value>
+                <value>classpath:sms-config.json</value>
             </list>
         </property>
     </bean>
 
     <bean id="motechSmsProperties" factory-bean="smsSettings" factory-method="getProperties">
-        <constructor-arg name="filename" value="motech-sms.properties"/>
+        <constructor-arg name="filename" value="sms-config.properties"/>
     </bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../sms/resources/index.html"/>
-        <constructor-arg name="moduleName" value="sms"/>
+        <constructor-arg name="moduleName" value="motech-sms"/>
         <constructor-arg name="angularModules">
             <list>
                 <value>motech-sms</value>

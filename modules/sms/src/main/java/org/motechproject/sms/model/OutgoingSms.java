@@ -2,12 +2,12 @@ package org.motechproject.sms.model;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.joda.time.DateTime;
-import org.motechproject.sms.json.OutgoingSmsDeserializer;
+//import org.motechproject.sms.json.OutgoingSmsDeserializer;
 
 import java.util.List;
 import java.util.Objects;
 
-@JsonDeserialize(using = OutgoingSmsDeserializer.class)
+//@JsonDeserialize(using = OutgoingSmsDeserializer.class)
 public class OutgoingSms {
     private List<String> recipients;
     private String message;

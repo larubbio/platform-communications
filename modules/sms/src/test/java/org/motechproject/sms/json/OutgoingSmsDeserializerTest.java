@@ -22,9 +22,9 @@ public class OutgoingSmsDeserializerTest {
     private static final String TEST_TO = "to@to.com";
     private static final String TEST_TEXT = "message";
 
+/*
     private OutgoingSmsDeserializer deserializer = new OutgoingSmsDeserializer();
 
-/*
     @Test
     public void shouldDeserializeJsonToSmsObject() throws Exception {
         assertThat(

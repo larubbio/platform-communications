@@ -47,13 +47,5 @@
             );
         };
 
-        $scope.purgeTimeControlsDisabled = function () {
-            if ($scope.settings.logPurgeEnable.localeCompare("true") === 0) {
-                return false;
-            } else {
-                return true;
-            }
-        };
-
     });
 }());

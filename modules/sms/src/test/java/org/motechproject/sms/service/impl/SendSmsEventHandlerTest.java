@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.sms.service.SendSmsEventHandler;
 import org.motechproject.sms.service.SmsSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -17,10 +18,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.motechproject.sms.constants.SendSmsConstants.SEND_SMS;
 
-public class SendSmsEventHandlerImplTest {
+public class SendSmsEventHandlerTest {
 
     @InjectMocks
-    SendSmsEventHandlerImpl smsEventHandler = new SendSmsEventHandlerImpl();
+    SendSmsEventHandler smsEventHandler = new SendSmsEventHandler();
 
     @Mock
     SmsSenderService smsSenderService;
