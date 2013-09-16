@@ -1,13 +1,20 @@
 {
     "defaultConfig":"clickatell",
-    "configs":{
-        "clickatell" : {
+    "configs" : [
+        {
+        "name" : "clickatell",
         "template" : "baz",
         "bar" : "gooh"
         },
-        "voxeo" : {
+        {
+        "name" : "nuntium",
+        "template" : "baz",
+        "bar" : "gooh"
+        },
+        {
+        "name" : "voxeo",
         "template" : "argh",
         "foo" : "bar"
         }
-    }
+    ]
 }

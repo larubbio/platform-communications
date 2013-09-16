@@ -1,5 +1,6 @@
 package org.motechproject.sms.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,13 +10,13 @@ import java.util.Objects;
  */
 public class Settings {
     private String defaultConfig;
-    private Map<String, Map<String,String>> configs;
+    private List<Map<String, String>> configs;
 
-    public Map<String, Map<String,String>> getConfigs() {
+    public List<Map<String, String>> getConfigs() {
         return configs;
     }
 
-    public void setConfigs(Map<String, Map<String,String>> configs) {
+    public void setConfigs(List<Map<String, String>> configs) {
         this.configs = configs;
     }
 
@@ -24,14 +25,15 @@ public class Settings {
     }
 
     public void setDefaultConfig(String defaultConfig) {
-        if (configs.containsKey(defaultConfig))
+        for (Map<String, String> config : configs)
         {
-            this.defaultConfig = defaultConfig;
+            if (config.containsKey("name") && config.get("name") == defaultConfig)
+            {
+                this.defaultConfig = defaultConfig;
+                return;
+            }
         }
-        else
-        {
-            throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
-        }
+        throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
     }
 
     @Override

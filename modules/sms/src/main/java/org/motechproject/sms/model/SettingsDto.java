@@ -25,9 +25,6 @@ public class SettingsDto {
 
     @Autowired
     public SettingsDto(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
-        MotechJsonReader motechJsonReader = new MotechJsonReader();
-        Type type = new TypeToken<Object>() { }.getType();
-
         InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);
 
         try {
