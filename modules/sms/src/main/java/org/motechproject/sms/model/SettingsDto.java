@@ -1,9 +1,7 @@
 package org.motechproject.sms.model;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
-import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -16,16 +14,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 
 public class SettingsDto {
     public static final String SMS_SETTINGS_FILE_NAME = "sms-config.json";
     public static final String SMS_SETTINGS = "settings";
     private static final Logger logger = LoggerFactory.getLogger(SettingsDto.class);
 
-    private SmsSettings settings;
+    private Settings settings;
 
     @Autowired
     public SettingsDto(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
@@ -37,14 +33,14 @@ public class SettingsDto {
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
-            this.settings = gson.fromJson(jsonText, SmsSettings.class);
+            this.settings = gson.fromJson(jsonText, Settings.class);
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
         logger.debug("this.settings=" + this.settings.toString());
     }
 
-    public SmsSettings getSettings() {
+    public Settings getSettings() {
         return settings;
     }
 

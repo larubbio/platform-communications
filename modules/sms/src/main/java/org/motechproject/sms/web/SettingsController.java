@@ -2,23 +2,18 @@ package org.motechproject.sms.web;
 
 import org.motechproject.sms.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.model.SmsSettings;
+import org.motechproject.sms.model.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.IOException;
-import java.util.List;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNumeric;
 
 @Controller
 public class SettingsController {
@@ -35,9 +30,9 @@ public class SettingsController {
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     @ResponseBody
-    public SmsSettings getSettings() {
-        SettingsDto settings = new SettingsDto(settingsFacade);
-        return settings.getSettings();
+    public Settings getSettings() {
+        SettingsDto dto = new SettingsDto(settingsFacade);
+        return dto.getSettings();
     }
 
 /*

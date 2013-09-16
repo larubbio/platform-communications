@@ -31,11 +31,11 @@
                 </div>
 -->
 
-                <div class="alert alert-error">
+                <div class="alert alert-error" ng-hide="settings.configs">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
 
-                <div>settings: {{settings}}</div>
+                <div ng-repeat="config in settings.configs">{{config.template}}</div>
                 <div class="control-group">
                     <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
                 </div>

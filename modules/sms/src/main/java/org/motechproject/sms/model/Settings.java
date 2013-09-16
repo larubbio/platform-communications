@@ -24,7 +24,14 @@ public class Settings {
     }
 
     public void setDefaultConfig(String defaultConfig) {
-        this.defaultConfig = defaultConfig;
+        if (configs.containsKey(defaultConfig))
+        {
+            this.defaultConfig = defaultConfig;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
+        }
     }
 
     @Override
