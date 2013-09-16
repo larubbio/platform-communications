@@ -7,7 +7,7 @@ import java.util.Objects;
  * TODO
  *
  */
-public class SmsSettings {
+public class Settings {
     private String defaultConfig;
     private Map<String, Map<String,String>> configs;
 
@@ -42,17 +42,17 @@ public class SmsSettings {
             return false;
         }
 
-        final SmsSettings other = (SmsSettings) obj;
+        final Settings other = (Settings) obj;
 
         return compareFields(other);
     }
 
     @Override
     public String toString() {
-        return String.format("SmsSettings{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
+        return String.format("Settings{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
     }
 
-    private Boolean compareFields(SmsSettings other) {
+    private Boolean compareFields(Settings other) {
         if (!Objects.equals(this.defaultConfig, other.defaultConfig)) {
             return false;
         }
