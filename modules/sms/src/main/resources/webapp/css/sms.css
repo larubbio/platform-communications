@@ -8,3 +8,15 @@
     top: -3px;
 }
 
+.sms-nondefault-config {
+    color: #DEEFFF;
+    cursor: pointer;
+}
+
+.sms-default-config {
+    color: black;
+}
+
+.sms-nondefault-config, .sms-default-config {
+    font-size: 18px;
+}

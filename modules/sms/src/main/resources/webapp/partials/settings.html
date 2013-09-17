@@ -30,18 +30,25 @@
                                     <input ng-disabled="smsSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('sms.settings.save')}}" class="btn btn-primary"/>
                                 </div>
                 -->
+                <div class="alert alert-block">settings:{{settings}}</div>
+                <div class="alert alert-block">settings.configs.length:{{settings.configs.length}}</div>
+                <div class="alert alert-block">deboog:{{deboog}}</div>
 
                 <div class="alert alert-error" ng-hide="settings.configs">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
 
-                <div class="alert">settings:{{settings}}</div>
+                <div class="control-group">
+                    <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
+                </div>
+
                 <div class="row-fluid" ng-show="settings.configs">
-                    <div ng-show="false">foo</div>
                     <div class="accordion" ng-repeat="config in settings.configs">
                         <div class="accordion-heading">
                             <div class="inbox-header sms-config">
-                                {{config.template}}
+                                <i ng-show="config.default && settings.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
+                                <i ng-hide="config.default || settings.configs.length <= 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
+                                {{config.name}}
                                 <div class="pull-right sms-config-action">
                                     <button class="btn btn-small btn-primary" href="#"> <i class="icon-edit"></i> Edit</button>
                                     <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
@@ -49,9 +56,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="control-group">
-                    <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
                 </div>
 
             </form>

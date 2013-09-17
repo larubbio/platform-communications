@@ -32,6 +32,10 @@
             'years': $scope.msg('sms.settings.log.units.years')
         };
 
+        $scope.setDefault = function (n) {
+            $scope.deboog = "the new default config is " + n;
+        };
+
         $scope.submit = function () {
 
             SettingsService.save(
