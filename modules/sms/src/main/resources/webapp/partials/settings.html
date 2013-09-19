@@ -30,9 +30,6 @@
                                     <input ng-disabled="smsSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('sms.settings.save')}}" class="btn btn-primary"/>
                                 </div>
                 -->
-                <div class="alert alert-block">settings:{{settings}}</div>
-                <div class="alert alert-block">settings.configs.length:{{settings.configs.length}}</div>
-                <div class="alert alert-block">deboog:{{deboog}}</div>
 
                 <div class="alert alert-error" ng-hide="settings.configs">
                     You have not created any configurations, you will not be able to send of receive messages without one.
@@ -42,18 +39,28 @@
                     <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
                 </div>
 
+                <!--
+                *
+                * See http://getbootstrap.com/2.3.2/javascript.html#collapse for help with accordion controls
+                *
+                -->
                 <div class="row-fluid" ng-show="settings.configs">
                     <div class="accordion" ng-repeat="config in settings.configs">
                         <div class="accordion-heading">
                             <div class="inbox-header sms-config">
-                                <i ng-show="config.default && settings.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
-                                <i ng-hide="config.default || settings.configs.length <= 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
-                                {{config.name}}
-                                <div class="pull-right sms-config-action">
-                                    <button class="btn btn-small btn-primary" href="#"> <i class="icon-edit"></i> Edit</button>
-                                    <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
+                                <div class="accordion-toggle">
+                                    <i ng-show="config.default && settings.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
+                                    <i ng-hide="config.default || settings.configs.length <= 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
+                                    {{config.name}}
+                                    <div class="pull-right sms-config-action">
+                                        <button class="btn btn-small btn-primary" href="#"> <i class="icon-edit"></i> Edit</button>
+                                        <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="accordion-body stripes-bg collapse overflowChange">
+                            foobar
                         </div>
                     </div>
                 </div>
@@ -63,3 +70,8 @@
     </div>
 </div>
 
+
+<!--
+<div class="alert alert-block">settings:{{settings}}</div>
+<div class="alert alert-block">deboog:{{deboog}}</div>
+-->

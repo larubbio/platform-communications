@@ -4,7 +4,8 @@
         {
         "name" : "clickatell",
         "template" : "baz",
-        "bar" : "gooh"
+        "bar" : "gooh",
+        "default" : "true"
         },
         {
         "name" : "nuntium",
