@@ -1,6 +1,24 @@
+.sms.nav.nav-tabs {
+    border-bottom: none;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.sms.tab-content {
+    padding-left: 0;
+}
+
+.sms.nav.nav-tabs {
+    border-bottom: none;
+    margin-left: 0;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
 .sms-config {
-    padding: 10px;
     cursor: default;
+    margin-bottom: 10px;
 }
 
 .sms-config-action {
