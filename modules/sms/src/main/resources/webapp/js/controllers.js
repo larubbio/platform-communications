@@ -4,10 +4,13 @@
     /* Controllers */
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('SendSmsController', function ($scope, SendSmsService) {
+    smsModule.controller('SendSmsController', function ($scope, SendSmsService, SettingsService) {
         $scope.sms = {};
 
+        $scope.settings = SettingsService.get();
+
         $scope.sendSms = function () {
+
             SendSmsService.save(
                 {},
                 $scope.sms,
@@ -24,16 +27,8 @@
     smsModule.controller('SettingsController', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
 
-        $scope.timeMultipliers = {
-            'hours': $scope.msg('sms.settings.log.units.hours'),
-            'days': $scope.msg('sms.settings.log.units.days'),
-            'weeks': $scope.msg('sms.settings.log.units.weeks'),
-            'months': $scope.msg('sms.settings.log.units.months'),
-            'years': $scope.msg('sms.settings.log.units.years')
-        };
-
         $scope.setDefault = function (n) {
-            $scope.deboog = "the new default config is " + n;
+            $scope.settings.defaultConfig = n;
         };
 
         $scope.submit = function () {
