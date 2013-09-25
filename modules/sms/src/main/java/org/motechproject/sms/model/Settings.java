@@ -1,16 +1,19 @@
 package org.motechproject.sms.model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * TODO
  *
  */
 public class Settings {
-    private String defCfg;
+    private String defaultConfig;
     private List<Map<String, String>> configs;
+    private List<String> errors;
+
+    public Settings() {
+        errors = new ArrayList<String>();
+    }
 
     public List<Map<String, String>> getConfigs() {
         return configs;
@@ -21,7 +24,7 @@ public class Settings {
     }
 
     public String getDefaultConfig() {
-        return defCfg;
+        return defaultConfig;
     }
 
     public void setDefaultConfig(String defaultConfig) {
@@ -29,16 +32,63 @@ public class Settings {
         {
             if (config.containsKey("name") && config.get("name") == defaultConfig)
             {
-                this.defCfg = defaultConfig;
+                this.defaultConfig = defaultConfig;
                 return;
             }
         }
         throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
     }
 
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    private void addError(String error) {
+        errors.add(error);
+    }
+
+    public void validate() {
+        String firstConfigName = null;
+        Iterator<Map<String, String>> i = configs.iterator();
+        while(i.hasNext())
+        {
+            Map<String, String> config = i.next();
+            if (!config.containsKey("name") || config.get("name").length() < 1)
+            {
+                addError("The following config was ignored because it has no name: " + config.toString());
+                i.remove();
+                continue;
+            }
+            if (firstConfigName == null) {
+                firstConfigName = config.get("name");
+            }
+        }
+
+        if (defaultConfig != null && defaultConfig.length() > 0) {
+            boolean validDefault = false;
+            for (Map<String, String> config : configs)
+            {
+                if (config.get("name") == defaultConfig)
+                {
+                    validDefault = true;
+                    break;
+                }
+            }
+            if (!validDefault) {
+                addError("The specified defaultConfig '" + defaultConfig + "' was ignored because there is no config with this name, so '" + firstConfigName + "' was chosen as the default config");
+                setDefaultConfig(firstConfigName);
+            }
+        }
+        else {
+            addError("defaultConfig was not specified, so '" + firstConfigName + "' was chosen as the default config");
+            setDefaultConfig(firstConfigName);
+        }
+
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(defCfg, configs);
+        return Objects.hash(defaultConfig, configs);
     }
 
     @Override
@@ -58,11 +108,11 @@ public class Settings {
 
     @Override
     public String toString() {
-        return String.format("Settings{defCfg='%s', configs='%s'}", defCfg, configs);
+        return String.format("Settings{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
     }
 
     private Boolean compareFields(Settings other) {
-        if (!Objects.equals(this.defCfg, other.defCfg)) {
+        if (!Objects.equals(this.defaultConfig, other.defaultConfig)) {
             return false;
         }
         else if (!Objects.equals(this.configs, other.configs)) {

@@ -2,9 +2,7 @@ package org.motechproject.sms.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 public class SettingsDto {
@@ -34,6 +31,9 @@ public class SettingsDto {
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
+
+        this.settings.validate();
+
         logger.debug("this.settings=" + this.settings.toString());
     }
 

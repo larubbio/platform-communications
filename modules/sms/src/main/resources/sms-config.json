@@ -1,5 +1,5 @@
 {
-    "defaultConfig":"clickatell",
+    "defaultConfig":"xxxclickatell",
     "configs" : [
         {
         "name" : "clickatell",
@@ -8,7 +8,7 @@
         "default" : "true"
         },
         {
-        "name" : "nuntium",
+        "xxxname" : "nuntium",
         "template" : "baz",
         "bar" : "gooh"
         },

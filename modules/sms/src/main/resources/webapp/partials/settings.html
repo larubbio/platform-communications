@@ -8,6 +8,11 @@
                 <div class="alert alert-error" ng-hide="settings.configs">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
+                <div ng-show="settings.errors">
+                    <div class="alert alert-error" ng-repeat="error in settings.errors">
+                        {{error}}
+                    </div>
+                </div>
 
                 <div class="control-group">
                     <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
@@ -60,7 +65,5 @@
     </div>
 </div>
 
-<!--
 <div class="alert alert-block">settings:{{settings}}</div>
 <div class="alert alert-block">deboog:{{deboog}}</div>
--->
