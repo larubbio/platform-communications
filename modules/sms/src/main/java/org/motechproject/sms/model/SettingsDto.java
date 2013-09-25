@@ -11,39 +11,52 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
+import java.util.*;
 
 public class SettingsDto {
-    public static final String SMS_SETTINGS_FILE_NAME = "sms-config.json";
-    public static final String SMS_SETTINGS = "settings";
+    public static final String SMS_CONFIGS_FILE_NAME = "sms-configs.json";
     private static final Logger logger = LoggerFactory.getLogger(SettingsDto.class);
 
-    private Settings settings;
+    private Configs configs;
+    private Map<String, Properties> templates = new HashMap<String, Properties>();
 
     @Autowired
     public SettingsDto(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
-        InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);
+
+        try {
+            templates = settingsFacade.getAllProperties(settingsFacade.getSymbolicName());
+        } catch (IOException e) {
+            //todo: what do i really want to do here?
+            throw new JsonIOException(e);
+        }
+
+        InputStream is = settingsFacade.getRawConfig(SMS_CONFIGS_FILE_NAME);
 
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
-            this.settings = gson.fromJson(jsonText, Settings.class);
+            this.configs = gson.fromJson(jsonText, Configs.class);
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
 
-        this.settings.validate();
+        this.configs.validate(templates);
 
-        logger.debug("this.settings=" + this.settings.toString());
+        logger.debug("Loaded the following templates:" + this.templates.toString());
+        logger.debug("Loaded the following configs:" + this.configs.toString());
     }
 
-    public Settings getSettings() {
-        return settings;
+    public Configs getConfigs() {
+        return configs;
+    }
+
+    public Map<String, Properties> getTemplates() {
+        return templates;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(settings);
+        return Objects.hash(configs);
     }
 
     @Override
@@ -63,11 +76,11 @@ public class SettingsDto {
 
     @Override
     public String toString() {
-        return String.format("SettingsDto{settings='%s'}", settings);
+        return String.format("SettingsDto{configs='%s'}", configs);
     }
 
     private Boolean compareFields(SettingsDto other) {
-        if (!Objects.equals(this.settings, other.settings)) {
+        if (!Objects.equals(this.configs, other.configs)) {
             return false;
         }
 

@@ -18,13 +18,15 @@
         <property name="moduleName" value="motech-sms"/>
         <property name="rawConfigFiles">
             <list>
-                <value>classpath:sms-config.json</value>
+                <value>classpath:sms-configs.json</value>
             </list>
         </property>
     </bean>
 
     <bean id="motechSmsProperties" factory-bean="smsSettings" factory-method="getProperties">
-        <constructor-arg name="filename" value="sms-config.properties"/>
+        <constructor-arg name="filename" value="clickatell.properties"/>
+        <constructor-arg name="filename" value="voxeo.properties"/>
+        <constructor-arg name="filename" value="nuntium.properties"/>
     </bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">

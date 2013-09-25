@@ -4,10 +4,10 @@
     /* Controllers */
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('SendSmsController', function ($scope, SendSmsService, SettingsService) {
+    smsModule.controller('SendSmsController', function ($scope, SendSmsService, ConfigService) {
         $scope.sms = {};
 
-        $scope.settings = SettingsService.get();
+        $scope.configs = ConfigService.get();
 
         $scope.sendSms = function () {
 
@@ -24,15 +24,16 @@
         };
     });
 
-    smsModule.controller('SettingsController', function ($scope, SettingsService) {
-        $scope.settings = SettingsService.get();
+    smsModule.controller('SettingsController', function ($scope, ConfigService, TemplateService) {
+        $scope.configs = ConfigService.get();
+        $scope.templates = TemplateService.get();
 
         $scope.setDefault = function (n) {
             $scope.settings.defaultConfig = n;
         };
 
         $scope.submit = function () {
-
+/*
             SettingsService.save(
                 {},
                 $scope.settings,
@@ -44,6 +45,7 @@
                     handleWithStackTrace('sms.header.error', 'server.error', response);
                 }
             );
+*/
         };
 
     });

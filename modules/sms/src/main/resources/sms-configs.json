@@ -3,14 +3,14 @@
     "configs" : [
         {
         "name" : "clickatell",
-        "template" : "clickatell_http",
+        "template" : "clickatell.properties",
         "username" : "clickuser",
         "api_key" : "5551212",
         "password" : "s3cr3t"
         },
         {
         "name" : "nuntium",
-        "template" : "nuntium_standard",
+        "template" : "nuntium.properties",
         "username" : "nunuser",
         "password" : "s3cr3t"
         },

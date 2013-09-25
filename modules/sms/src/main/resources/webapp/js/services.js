@@ -7,8 +7,12 @@
         return $resource('../sms/send');
     });
 
-    angular.module('settingsService', ['ngResource']).factory('SettingsService', function($resource) {
-        return $resource('../sms/settings');
+    angular.module('templateService', ['ngResource']).factory('TemplateService', function($resource) {
+        return $resource('../sms/templates');
+    });
+
+    angular.module('configService', ['ngResource']).factory('ConfigService', function($resource) {
+        return $resource('../sms/configs');
     });
 
 }());

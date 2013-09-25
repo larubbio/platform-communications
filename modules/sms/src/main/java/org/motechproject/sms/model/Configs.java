@@ -6,12 +6,12 @@ import java.util.*;
  * TODO
  *
  */
-public class Settings {
+public class Configs {
     private String defaultConfig;
     private List<Map<String, String>> configs;
     private List<String> errors;
 
-    public Settings() {
+    public Configs() {
         errors = new ArrayList<String>();
     }
 
@@ -47,7 +47,7 @@ public class Settings {
         errors.add(error);
     }
 
-    public void validate() {
+    public void validate(Map<String, Properties> templates) {
         String firstConfigName = null;
         Iterator<Map<String, String>> i = configs.iterator();
         while(i.hasNext())
@@ -59,29 +59,42 @@ public class Settings {
                 i.remove();
                 continue;
             }
+            if (!config.containsKey("template") || config.get("template").length() < 1)
+            {
+                addError("The following config was ignored because it has no template: " + config.toString());
+                i.remove();
+                continue;
+            }
+            if (!templates.containsKey(config.get("template"))) {
+                addError("The following config was ignored because its template (" + config.get("template") + ") doesn't exist on this system.");
+                i.remove();
+                continue;
+            }
             if (firstConfigName == null) {
                 firstConfigName = config.get("name");
             }
         }
 
-        if (defaultConfig != null && defaultConfig.length() > 0) {
-            boolean validDefault = false;
-            for (Map<String, String> config : configs)
-            {
-                if (defaultConfig.equals(config.get("name")))
+        if (configs.size() > 0) {
+            if (defaultConfig != null && defaultConfig.length() > 0) {
+                boolean validDefault = false;
+                for (Map<String, String> config : configs)
                 {
-                    validDefault = true;
-                    break;
+                    if (defaultConfig.equals(config.get("name")))
+                    {
+                        validDefault = true;
+                        break;
+                    }
+                }
+                if (!validDefault) {
+                    addError("The specified defaultConfig '" + defaultConfig + "' was ignored because there is no config with this name, so '" + firstConfigName + "' was chosen as the default config");
+                    setDefaultConfig(firstConfigName);
                 }
             }
-            if (!validDefault) {
-                addError("The specified defaultConfig '" + defaultConfig + "' was ignored because there is no config with this name, so '" + firstConfigName + "' was chosen as the default config");
+            else {
+                addError("defaultConfig was not specified, so '" + firstConfigName + "' was chosen as the default config");
                 setDefaultConfig(firstConfigName);
             }
-        }
-        else {
-            addError("defaultConfig was not specified, so '" + firstConfigName + "' was chosen as the default config");
-            setDefaultConfig(firstConfigName);
         }
 
     }
@@ -101,17 +114,17 @@ public class Settings {
             return false;
         }
 
-        final Settings other = (Settings) obj;
+        final Configs other = (Configs) obj;
 
         return compareFields(other);
     }
 
     @Override
     public String toString() {
-        return String.format("Settings{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
+        return String.format("Configs{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
     }
 
-    private Boolean compareFields(Settings other) {
+    private Boolean compareFields(Configs other) {
         if (!Objects.equals(this.defaultConfig, other.defaultConfig)) {
             return false;
         }

@@ -2,25 +2,25 @@
     <div class="clearfix">
         <h4 class="frame-title">{{ msg('sms.send.title')}}</h4>
         <div class="inside">
-            <div class="alert alert-error" ng-hide="settings.configs">
+            <div class="alert alert-error" ng-hide="configs.configs">
                 You have not created any configurations, you will not be able to send of receive messages without one.<br/>
                 Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
             </div>
 
-            <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-show="settings.configs">
+            <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-show="configs.configs">
 
                 <div class="control-group">
-                    <label ng-disabled="settings.configs" class="control-label">{{msg('sms.config')}}</label>
+                    <label ng-disabled="configs.configs" class="control-label">{{msg('sms.config')}}</label>
                     <div class="controls">
-                        <label class="radio inline" ng-repeat="config in settings.configs">
-                            <input type="radio" name="configs" id="{{config.name}}" value="{{config.name}}" ng-checked="config.name == settings.defaultConfig || settings.configs.length == 1">
+                        <label class="radio inline" ng-repeat="config in configs.configs">
+                            <input type="radio" name="configs" id="{{config.name}}" value="{{config.name}}" ng-checked="config.name == configs.defaultConfig || configs.configs.length == 1">
                             {{config.name}}
                         </label>
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label ng-disabled="settings.configs" class="control-label" for="recipients">{{msg('sms.recipients')}}</label>
+                    <label ng-disabled="configs.configs" class="control-label" for="recipients">{{msg('sms.recipients')}}</label>
                     <div class="controls">
                         <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients" required focus="true" autofocus >
                         <span ng-hide="sms.recipients" class="form-hint">{{msg('sms.field.required', msg('sms.recipients'))}}</span>
@@ -45,6 +45,6 @@
 
 
 <!--
-<div class="alert alert-block">settings:{{settings}}</div>
-<div class="alert alert-block">deboog: settings.configs.length = {{settings.configs.length}}</div>
+<div class="alert alert-block">configs:{{configs}}</div>
+<div class="alert alert-block">deboog: configs.configs.length = {{configs.configs.length}}</div>
 -->

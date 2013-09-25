@@ -1,8 +1,8 @@
 package org.motechproject.sms.web;
 
+import org.motechproject.sms.model.Configs;
 import org.motechproject.sms.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.model.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -14,25 +14,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 
 @Controller
 public class SettingsController {
-    private static final String NEW_LINE = System.lineSeparator();
-    private static final String REQUIRED_FORMAT = "%s is required";
-    private static final String NUMERIC_FORMAT = "%s must be numeric";
-
     private SettingsFacade settingsFacade;
+    private SettingsDto settingsDto;
 
     @Autowired
     public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
+        this.settingsDto = new SettingsDto(settingsFacade);
     }
 
-    @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    @RequestMapping(value = "/configs", method = RequestMethod.GET)
     @ResponseBody
-    public Settings getSettings() {
-        SettingsDto dto = new SettingsDto(settingsFacade);
-        return dto.getSettings();
+    public Configs getConfigs() {
+        return settingsDto.getConfigs();
+    }
+
+    @RequestMapping(value = "/templates", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Properties> getTemplates() {
+        return settingsDto.getTemplates();
     }
 
 /*
