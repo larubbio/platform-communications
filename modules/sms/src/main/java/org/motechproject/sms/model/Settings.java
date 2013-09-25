@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  */
 public class Settings {
-    private String defaultConfig;
+    private String defCfg;
     private List<Map<String, String>> configs;
 
     public List<Map<String, String>> getConfigs() {
@@ -21,7 +21,7 @@ public class Settings {
     }
 
     public String getDefaultConfig() {
-        return defaultConfig;
+        return defCfg;
     }
 
     public void setDefaultConfig(String defaultConfig) {
@@ -29,7 +29,7 @@ public class Settings {
         {
             if (config.containsKey("name") && config.get("name") == defaultConfig)
             {
-                this.defaultConfig = defaultConfig;
+                this.defCfg = defaultConfig;
                 return;
             }
         }
@@ -38,7 +38,7 @@ public class Settings {
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultConfig, configs);
+        return Objects.hash(defCfg, configs);
     }
 
     @Override
@@ -58,11 +58,11 @@ public class Settings {
 
     @Override
     public String toString() {
-        return String.format("Settings{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
+        return String.format("Settings{defCfg='%s', configs='%s'}", defCfg, configs);
     }
 
     private Boolean compareFields(Settings other) {
-        if (!Objects.equals(this.defaultConfig, other.defaultConfig)) {
+        if (!Objects.equals(this.defCfg, other.defCfg)) {
             return false;
         }
         else if (!Objects.equals(this.configs, other.configs)) {

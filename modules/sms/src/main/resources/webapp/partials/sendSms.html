@@ -22,7 +22,7 @@
                 <div class="control-group">
                     <label ng-disabled="settings.configs" class="control-label" for="recipients">{{msg('sms.recipients')}}</label>
                     <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients" required>
+                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients" required focus="true" autofocus >
                         <span ng-hide="sms.recipients" class="form-hint">{{msg('sms.field.required', msg('sms.recipients'))}}</span>
                     </div>
                 </div>
@@ -44,6 +44,7 @@
 </div>
 
 
-
+<!--
 <div class="alert alert-block">settings:{{settings}}</div>
 <div class="alert alert-block">deboog: settings.configs.length = {{settings.configs.length}}</div>
+-->
