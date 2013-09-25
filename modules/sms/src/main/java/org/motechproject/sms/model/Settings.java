@@ -68,7 +68,7 @@ public class Settings {
             boolean validDefault = false;
             for (Map<String, String> config : configs)
             {
-                if (config.get("name") == defaultConfig)
+                if (defaultConfig.equals(config.get("name")))
                 {
                     validDefault = true;
                     break;

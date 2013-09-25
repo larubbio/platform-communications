@@ -1,21 +1,24 @@
 {
-    "defaultConfig":"xxxclickatell",
+    "defaultConfig":"clickatell",
     "configs" : [
         {
         "name" : "clickatell",
-        "template" : "baz",
-        "bar" : "gooh",
-        "default" : "true"
+        "template" : "clickatell_http",
+        "username" : "clickuser",
+        "api_key" : "5551212",
+        "password" : "s3cr3t"
         },
         {
-        "xxxname" : "nuntium",
-        "template" : "baz",
-        "bar" : "gooh"
+        "name" : "nuntium",
+        "template" : "nuntium_standard",
+        "username" : "nunuser",
+        "password" : "s3cr3t"
         },
         {
         "name" : "voxeo",
-        "template" : "argh",
-        "foo" : "bar"
+        "template" : "voxeo_http",
+        "username" : "voxuser",
+        "password" : "s3cr3t"
         }
     ]
 }
