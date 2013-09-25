@@ -33,19 +33,20 @@
                                         <i ng-show="config.name != settings.defaultConfig && settings.configs.length > 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
                                         {{config.name}}
                                         <div class="pull-right sms-config-action">
-                                            <button class="btn btn-small btn-primary" href="#" data-toggle="collapse" data-parent="#accordions" data-target="#{{config.name}}"> <i class="icon-edit"></i> Edit</button>
+                                            <button class="btn btn-small btn-primary" href="#" data-toggle="collapse" data-parent="#accordions" data-target="#config{{$index}}"> <i class="icon-edit"></i> Edit</button>
                                             <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div id="{{config.name}}" class="accordion-body stripes-bg collapse overflowChange">
+                            <div id="config{{$index}}" class="accordion-body stripes-bg collapse overflowChange">
                                 <div>&nbsp;</div>
+                                <div class="alert alert-block">config:{{config}}</div>
                                 <div ng-repeat="(key, val) in config">
                                     <div class="control-group">
-                                        <label ng-disabled="settings.configs" class="control-label">{{key}}</label>
+                                        <label class="control-label">{{key}}</label>
                                         <div class="controls">
-                                            <input class="input-xlarge-fluid" type="text" id="{{config.name}}.{{key}}" value="{{val}}">
+                                            <input class="input-xlarge-fluid" type="text" ng-model="val">
                                         </div>
                                     </div>
                                 </div>
