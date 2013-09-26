@@ -1,5 +1,11 @@
 <!------------------------  Configs  ------------------------------------->
 <div class="row-fluid tab-frame">
+
+    <!--
+    <div class="alert alert-block">templates:{{templates}}</div>
+    <div class="alert alert-block">configs:{{configs}}</div>
+    -->
+
     <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
         <div class="clearfix margin-before">
@@ -24,16 +30,18 @@
                 *
                 -->
                 <div class="row-fluid" ng-show="configs.configs">
-                    <div class="accordion" id="accordions">
-                        <div class="accordion-group sms-config" ng-repeat="config in configs.configs">
+                    <accordion class="accordion" id="accordions" expand-accordion>
+                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs">
                             <div class="accordion-heading">
                                 <div class="inbox-header">
                                     <div class="accordion-toggle">
                                         <i ng-show="config.name == configs.defaultConfig && configs.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
                                         <i ng-show="config.name != configs.defaultConfig && configs.configs.length > 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
-                                        {{config.name}}
+                                        <span data-toggle="collapse" data-target="#config{{$index}}">
+                                            {{config.name}}
+                                            <i class="icon-chevron-right icon-fixed-width icon-large pointer" data-toggle="collapse" href="#config{{$index}}"></i>
+                                        </span>
                                         <div class="pull-right sms-config-action">
-                                            <button class="btn btn-small btn-primary" href="#" data-toggle="collapse" data-parent="#accordions" data-target="#config{{$index}}"> <i class="icon-edit"></i> Edit</button>
                                             <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
                                         </div>
                                     </div>
@@ -41,31 +49,44 @@
                             </div>
                             <div id="config{{$index}}" class="accordion-body stripes-bg collapse overflowChange">
                                 <div>&nbsp;</div>
+
+                                <!--
                                 <div class="alert alert-block">config:{{config}}</div>
-                                <div ng-repeat="(key, val) in config">
-                                    <div class="control-group">
-                                        <label class="control-label">{{key}}</label>
-                                        <div class="controls">
-                                            <input class="input-xlarge-fluid" type="text" ng-model="val">
-                                        </div>
+                                -->
+
+                                <div class="control-group">
+                                    <label class="control-label">Name</label>
+                                    <div class="controls">
+                                        <input class="input-xlarge-fluid" type="text" ng-model="config['name']">
                                     </div>
                                 </div>
                                 <div class="control-group">
+                                    <label class="control-label">Template</label>
                                     <div class="controls">
-                                        <button class="btn" href="#" data-toggle="collapse" data-target="#{{config.name}}">Update</button>
-                                        <button class="btn" href="#" data-toggle="collapse" data-target="#{{config.name}}">Cancel</button>
+                                        <select ng-model="config['template']" ng-options="key as val.name for (key, val) in templates">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div ng-repeat="(key, val) in config">
+                                    <div ng-switch on="key" class="control-group" ng-hide="key=='name' || key=='template'">
+                                        <div ng-switch-when="name" ng-hide="true">
+                                        </div>
+                                        <div ng-switch-when="template">
+                                        </div>
+                                        <div ng-switch-default>
+                                            <label class="control-label">{{key}}</label>
+                                            <div class="controls">
+                                                <input class="input-xlarge-fluid" type="text" ng-model="val">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </accordion-group>
+                    </accordion>
                 </div>
 
             </form>
         </div>
     </div>
 </div>
-
-<div class="alert alert-block">configs:{{configs}}</div>
-<div class="alert alert-block">templates:{{templates}}</div>
-<div class="alert alert-block">deboog:{{deboog}}</div>

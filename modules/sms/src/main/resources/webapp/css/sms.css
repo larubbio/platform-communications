@@ -42,3 +42,11 @@
 .sms-config-settings {
     margin-top: 20px;
 }
+
+.accordion-toggle {
+    cursor: auto;
+}
+
+.accordion-toggle span {
+    cursor: pointer;
+}

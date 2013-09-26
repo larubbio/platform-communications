@@ -1,22 +1,22 @@
 {
-    "defaultConfig":"clickatell",
+    "defaultConfig":"Clickatell",
     "configs" : [
         {
-        "name" : "clickatell",
+        "name" : "Clickatell",
         "template" : "clickatell.properties",
         "username" : "clickuser",
         "api_key" : "5551212",
         "password" : "s3cr3t"
         },
         {
-        "name" : "nuntium",
+        "name" : "Nuntium HTTP",
         "template" : "nuntium.properties",
         "username" : "nunuser",
         "password" : "s3cr3t"
         },
         {
-        "name" : "voxeo",
-        "template" : "voxeo_http",
+        "name" : "Voxeo",
+        "template" : "voxeo.properties",
         "username" : "voxuser",
         "password" : "s3cr3t"
         }

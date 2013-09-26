@@ -27,9 +27,10 @@
     smsModule.controller('SettingsController', function ($scope, ConfigService, TemplateService) {
         $scope.configs = ConfigService.get();
         $scope.templates = TemplateService.get();
+        $scope.accordionOpen = {};
 
         $scope.setDefault = function (n) {
-            $scope.settings.defaultConfig = n;
+            $scope.configs.defaultConfig = n;
         };
 
         $scope.submit = function () {
