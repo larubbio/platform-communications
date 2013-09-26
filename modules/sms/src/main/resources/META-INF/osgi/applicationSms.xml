@@ -4,15 +4,4 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-    <bean id="smsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="configFiles">
-            <list>
-                <value>classpath:clickatell.properties</value>
-                <value>classpath:nuntium.properties</value>
-                <value>classpath:voxeo.properties</value>
-            </list>
-        </property>
-        <property name="moduleName" value="motech-sms-bundle"/>
-    </bean>
-
 </beans>
