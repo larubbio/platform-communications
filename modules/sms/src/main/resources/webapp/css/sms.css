@@ -18,12 +18,12 @@
 
 .sms-config {
     cursor: default;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .sms-config-action {
     position: relative;
-    top: -3px;
+    top: -2px;
 }
 
 .sms-nondefault-config {

@@ -1,7 +1,6 @@
 (function () {
     'use strict';
 
-    /* Controllers */
     var smsModule = angular.module('motech-sms');
 
     smsModule.controller('SendSmsController', function ($scope, SendSmsService, ConfigService) {
@@ -28,7 +27,11 @@
 
         $http.get('../sms/configs')
             .success(function(res){
+                var key;
                 $scope.configs = res;
+                for (key in $scope.configs.configs) {
+                    $scope.configs.configs[key].openAccordion = false;
+                }
                 $scope.originalConfigs = angular.copy($scope.configs);
             });
 
@@ -40,11 +43,11 @@
 
         $scope.reset = function () {
             $scope.configs = angular.copy($scope.originalConfigs);
-        }
+        };
 
         $scope.isDirty = function () {
             return !angular.equals($scope.originalConfigs, $scope.configs);
-        }
+        };
 
     });
 }());

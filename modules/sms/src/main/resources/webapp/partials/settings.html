@@ -3,8 +3,12 @@
 
     <!--
     <div class="alert alert-block">templates:{{templates}}</div>
+    -->
+
+    <!--
     <div class="alert alert-block">configs:{{configs}}</div>
     -->
+
 
     <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
@@ -21,8 +25,12 @@
                 </div>
 
                 <div class="control-group">
-                    <button type="button" class="btn btn-success" ng-click="foo()"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
+                    <button type="button" class="btn btn-success" ng-click="configs.configs.push({'name':'', 'template':''}); "><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
                 </div>
+
+                <!--
+                <button class="btn" ng-click="configs.configs[0].openAccordion = !groups[0].openAccordion">Toggle first open</button>
+                -->
 
                 <!--
                 *
@@ -30,8 +38,8 @@
                 *
                 -->
                 <div class="row-fluid" ng-show="configs.configs">
-                    <accordion class="accordion" id="accordions" expand-accordion>
-                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs">
+                    <accordion class="accordion" expand-accordion>
+                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs" is-open="config.openAccordion">
                             <div class="accordion-heading">
                                 <div class="inbox-header">
                                     <div class="accordion-toggle">
@@ -41,18 +49,13 @@
                                             {{config.name}}
                                             <i class="icon-chevron-right icon-fixed-width icon-large pointer" data-toggle="collapse" href="#config{{$index}}"></i>
                                         </span>
-                                        <div class="pull-right sms-config-action">
-                                            <button class="btn btn-small btn-danger" href="#"> <i class="icon-trash"></i> Delete</button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div id="config{{$index}}" class="accordion-body stripes-bg collapse overflowChange">
                                 <div>&nbsp;</div>
 
-                                <!--
                                 <div class="alert alert-block">config:{{config}}</div>
-                                -->
 
                                 <div class="control-group">
                                     <label class="control-label">Name</label>
@@ -79,6 +82,11 @@
                                                 <input class="input-xlarge-fluid" type="text" ng-model="val">
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button class="btn btn-small btn-danger" ng-click="configs.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete</button>
                                     </div>
                                 </div>
                             </div>

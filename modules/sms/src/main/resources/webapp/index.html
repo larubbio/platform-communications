@@ -1,10 +1,10 @@
-<div> <!-- Only required for left/right tabs -->
+<div>
     <ul id="content-tabs" class="nav nav-tabs sms">
         <li ng-class="active('#/send')"><a data-target="main-content" href="#/send" data-toggle="tab">{{msg('sms.send')}}</a></li>
         <li ng-class="active('#/settings')"><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('sms.settings')}}</a></li>
     </ul>
     <div class="tab-content sms"  id="tab-content">
-        <div id="main-content" class="tab-pane active">
+        <div id="main-content" class="active">
             <div ng-view></div>
         </div>
     </div>
