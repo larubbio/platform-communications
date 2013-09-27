@@ -24,30 +24,27 @@
         };
     });
 
-    smsModule.controller('SettingsController', function ($scope, ConfigService, TemplateService) {
-        $scope.configs = ConfigService.get();
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
+
+        $http.get('../sms/configs')
+            .success(function(res){
+                $scope.configs = res;
+                $scope.originalConfigs = angular.copy($scope.configs);
+            });
+
         $scope.templates = TemplateService.get();
-        $scope.accordionOpen = {};
 
         $scope.setDefault = function (n) {
             $scope.configs.defaultConfig = n;
         };
 
-        $scope.submit = function () {
-/*
-            SettingsService.save(
-                {},
-                $scope.settings,
-                function () {
-                    motechAlert('sms.header.success', 'sms.settings.saved');
-                    $scope.settings = SettingsService.get();
-                },
-                function (response) {
-                    handleWithStackTrace('sms.header.error', 'server.error', response);
-                }
-            );
-*/
-        };
+        $scope.reset = function () {
+            $scope.configs = angular.copy($scope.originalConfigs);
+        }
+
+        $scope.isDirty = function () {
+            return !angular.equals($scope.originalConfigs, $scope.configs);
+        }
 
     });
 }());

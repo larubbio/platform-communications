@@ -9,7 +9,7 @@
     <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
         <div class="clearfix margin-before">
-            <form id="smsSettingsForm" name="smsSettingsForm" class="form-horizontal" novalidate>
+            <form name="form" class="form-horizontal" novalidate>
 
                 <div class="alert alert-error" ng-hide="configs.configs">
                     You have not created any configurations, you will not be able to send of receive messages without one.
@@ -85,7 +85,10 @@
                         </accordion-group>
                     </accordion>
                 </div>
-
+                <div class="control-group" ng-show="isDirty()">
+                    <button class="btn btn-primary" ng-click="reset()">Cancel</button>
+                    <button class="btn btn-primary" ng-click="save()">Save</button>
+                </div>
             </form>
         </div>
     </div>
