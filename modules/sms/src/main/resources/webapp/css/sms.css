@@ -1,3 +1,5 @@
+/* todo look for & remove unused classes */
+
 .sms.nav.nav-tabs {
     border-bottom: none;
     margin-bottom: 0;
@@ -43,10 +45,21 @@
     margin-top: 20px;
 }
 
-.accordion-toggle {
-    cursor: auto;
+.accordion-heading, .accordion-toggle {
+    padding: 0 !important;
 }
 
-.accordion-toggle span {
-    cursor: pointer;
+.accordion-heading:hover, .accordion-toggle:hover {
+    text-decoration: none;
+}
+
+.accordion-inner {
+    padding: 0px;
+}
+
+.accordion-body {
+}
+
+.stripes-bg {
+    padding: 15px;
 }

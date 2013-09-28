@@ -1,13 +1,16 @@
-<!------------------------  Configs  ------------------------------------->
+<!--
+
+TODO Remember to update angular & ass angular-bootstrap to motech platform before checking in the new sms module
+
+-->
+
 <div class="row-fluid tab-frame">
 
     <!--
     <div class="alert alert-block">templates:{{templates}}</div>
     -->
 
-    <!--
     <div class="alert alert-block">configs:{{configs}}</div>
-    -->
 
 
     <h4 class="frame-title">SMS Provider Configurations</h4>
@@ -25,12 +28,8 @@
                 </div>
 
                 <div class="control-group">
-                    <button type="button" class="btn btn-success" ng-click="configs.configs.push({'name':'', 'template':''}); "><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
+                    <button type="button" class="btn btn-success" ng-click="configs.configs.push({'name':'Untitled', 'template':'', 'openAccordion':'true'});"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
                 </div>
-
-                <!--
-                <button class="btn" ng-click="configs.configs[0].openAccordion = !groups[0].openAccordion">Toggle first open</button>
-                -->
 
                 <!--
                 *
@@ -38,25 +37,17 @@
                 *
                 -->
                 <div class="row-fluid" ng-show="configs.configs">
-                    <accordion class="accordion" expand-accordion>
+                    <accordion class="accordion">
                         <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs" is-open="config.openAccordion">
-                            <div class="accordion-heading">
+                            <accordion-heading>
                                 <div class="inbox-header">
-                                    <div class="accordion-toggle">
-                                        <i ng-show="config.name == configs.defaultConfig && configs.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
-                                        <i ng-show="config.name != configs.defaultConfig && configs.configs.length > 1" title="Click to make this the default configuration" class="icon-star sms-nondefault-config" ng-click="setDefault(config.name)"></i>
-                                        <span data-toggle="collapse" data-target="#config{{$index}}">
-                                            {{config.name}}
-                                            <i class="icon-chevron-right icon-fixed-width icon-large pointer" data-toggle="collapse" href="#config{{$index}}"></i>
-                                        </span>
-                                    </div>
+                                    <i ng-show="config.name == configs.defaultConfig && configs.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
+                                    <i ng-show="config.name != configs.defaultConfig && configs.configs.length > 1" title="This is not the default configuration" class="icon-star sms-nondefault-config"></i>
+                                    {{config.name}}
+                                    <i ng-class="{'icon-chevron-down': config.openAccordion, 'icon-chevron-right': !config.openAccordion}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
-                            </div>
-                            <div id="config{{$index}}" class="accordion-body stripes-bg collapse overflowChange">
-                                <div>&nbsp;</div>
-
-                                <div class="alert alert-block">config:{{config}}</div>
-
+                            </accordion-heading>
+                            <div class="stripes-bg">
                                 <div class="control-group">
                                     <label class="control-label">Name</label>
                                     <div class="controls">
@@ -66,28 +57,20 @@
                                 <div class="control-group">
                                     <label class="control-label">Template</label>
                                     <div class="controls">
-                                        <select ng-model="config['template']" ng-options="key as val.name for (key, val) in templates">
+                                        <select ng-model="config['template']" ng-options="key as val.name for (key, val) in templates" ng-change="changeTemplateProperties(config)">
                                         </select>
                                     </div>
                                 </div>
-                                <div ng-repeat="(key, val) in config">
-                                    <div ng-switch on="key" class="control-group" ng-hide="key=='name' || key=='template'">
-                                        <div ng-switch-when="name" ng-hide="true">
-                                        </div>
-                                        <div ng-switch-when="template">
-                                        </div>
-                                        <div ng-switch-default>
-                                            <label class="control-label">{{key}}</label>
-                                            <div class="controls">
-                                                <input class="input-xlarge-fluid" type="text" ng-model="val">
-                                            </div>
-                                        </div>
+                                <div ng-repeat="(key, val) in config | excludeSpecials" class="control-group">
+                                    <label class="control-label">{{key}}</label>
+                                    <div class="controls">
+                                        <input class="input-xlarge-fluid" type="text" ng-model="val">
                                     </div>
                                 </div>
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <button class="btn btn-small btn-danger" ng-click="configs.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete</button>
-                                    </div>
+                                <div class="controls">
+                                    <button class="btn btn-small btn-primary" ng-click="setDefault(config.name)"> <i class="icon-star"></i> Set Default </button>
+                                    &nbsp;
+                                    <button class="btn btn-small btn-danger" ng-click="configs.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete </button>
                                 </div>
                             </div>
                         </accordion-group>

@@ -3,7 +3,7 @@
 
     /* App Module */
 
-    angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'bootstrap', 'sendSmsService', 'templateService', 'configService']).config(['$routeProvider',
+    angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'bootstrap', 'ui.bootstrap', 'sendSmsService', 'templateService', 'configService']).config(['$routeProvider',
         function ($routeProvider) {
 
             $routeProvider.
