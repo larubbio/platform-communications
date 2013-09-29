@@ -65,8 +65,16 @@
 
         };
 
+        $scope.collapseAccordions = function () {
+            var i;
+            for (i=0 ; i<$scope.accordions.length ; i++) {
+                $scope.accordions[i] = false;
+            }
+        };
+
         $scope.reset = function () {
             $scope.configs = angular.copy($scope.originalConfigs);
+            $scope.collapseAccordions();
         };
 
         $scope.isDirty = function () {
@@ -90,10 +98,7 @@
                 {},
                 $scope.configs,
                 function () {
-                    var i;
-                    for (i=0 ; i<$scope.accordions.length ; i++) {
-                        $scope.accordions[i] = false;
-                    }
+                    $scope.collapseAccordions();
                     $scope.originalConfigs = ConfigService.get();
                 },
                 function (response) {
