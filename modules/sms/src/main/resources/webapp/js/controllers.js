@@ -89,7 +89,7 @@
         $scope.setDefault = function (index) {
             var i;
             for (i = 0 ; i < $scope.settings.configs.length ; i = i + 1) {
-                if (i == index) {
+                if (i === index) {
                     $scope.settings.configs[i]['default'] = 'true';
                 }
                 else {
