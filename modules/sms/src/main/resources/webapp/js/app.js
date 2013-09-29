@@ -4,7 +4,7 @@
     /* App Module */
 
     angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'ui.bootstrap', 'sendSmsService',
-    'templateService', 'configService', 'ngRoute']).config(['$routeProvider',
+    'templateService', 'settingService', 'ngRoute']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
                 when('/send', {templateUrl: '../sms/resources/partials/sendSms.html', controller: 'SendSmsController'}).

@@ -10,9 +10,9 @@ TODO  - valid (or at least non-null) properties
 
 <div class="row-fluid tab-frame">
 
-    <!--
-    <div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
-    <div class="alert alert-block">configs:{{configs}}</div>
+    <!-- DEBUG
+    <div class="alert alert-block">originalSettings:{{originalSettings}}</div>
+    <div class="alert alert-block">settings:{{settings}}</div>
     -->
 
     <h4 class="frame-title">SMS Provider Configurations</h4>
@@ -20,11 +20,11 @@ TODO  - valid (or at least non-null) properties
         <div class="clearfix margin-before">
             <form name="form" class="form-horizontal" novalidate>
 
-                <div class="alert alert-error" ng-hide="configs.configs.length > 0">
+                <div class="alert alert-error" ng-hide="settings.configs.length > 0">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
-                <div ng-show="configs.errors">
-                    <div class="alert alert-error" ng-repeat="error in configs.errors">
+                <div ng-show="settings.errors">
+                    <div class="alert alert-error" ng-repeat="error in settings.errors">
                         {{error}}
                     </div>
                 </div>
@@ -40,13 +40,13 @@ TODO  - valid (or at least non-null) properties
                 * See http://getbootstrap.com/2.3.2/javascript.html#collapse for help with accordion controls
                 *
                 -->
-                <div class="row-fluid" ng-show="configs.configs.length > 0">
+                <div class="row-fluid" ng-show="settings.configs.length > 0">
                     <accordion class="accordion">
-                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs" is-open="accordions[$index]">
+                        <accordion-group class="accordion-group sms-config" ng-repeat="config in settings.configs" is-open="accordions[$index]">
                             <accordion-heading>
                                 <div class="inbox-header">
                                     {{config.name}}
-                                    <i ng-show="config.default == 'true' && configs.configs.length > 1" tooltip="This is the default configuration" class="icon-star"></i>
+                                    <i ng-show="config.default == 'true' && settings.configs.length > 1" tooltip="This is the default configuration" class="icon-star"></i>
                                     <i ng-class="{'icon-chevron-down': accordions[$index], 'icon-chevron-right': !accordions[$index]}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
                             </accordion-heading>
@@ -71,8 +71,8 @@ TODO  - valid (or at least non-null) properties
                                     </div>
                                 </div>
                                 <div class="controls">
-                                    <button ng-show="configs.configs.length > 1" ng-disabled="config.default == 'true'" class="btn btn-small btn-primary" ng-click="setDefault(config.name)"> <i class="icon-star"></i> Set Default </button>
-                                    <button class="btn btn-small btn-danger" ng-click="configs.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete </button>
+                                    <button ng-show="settings.configs.length > 1" ng-disabled="config.default == 'true'" class="btn btn-small btn-primary" ng-click="setDefault(config.name)"> <i class="icon-star"></i> Set Default </button>
+                                    <button class="btn btn-small btn-danger" ng-click="settings.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete </button>
                                 </div>
                             </div>
                         </accordion-group>

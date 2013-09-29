@@ -12,99 +12,79 @@ import org.springframework.core.io.ByteArrayResource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 public class Settings {
-    public static final String SMS_CONFIGS_FILE_NAME = "sms-configs.json";
+    public static final String SMS_SETTINGS_FILE_NAME = "sms-settings.json";
     private static final Logger logger = LoggerFactory.getLogger(Settings.class);
-
-    private Configs configs;
-    private Map<String, Properties> templates = new HashMap<String, Properties>();
+    private SettingsDto settingsDto;
 
     @Autowired
     public Settings(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
+        Templates templates;
 
-        //
-        // templates
-        //
-
-        try {
-            templates = settingsFacade.getAllProperties(settingsFacade.getSymbolicName());
-        } catch (IOException e) {
-            //todo: what do i really want to do here?
-            throw new JsonIOException(e);
-        }
-        logger.debug("Loaded the following templates:" + this.templates.toString());
-
-        //
-        // configs
-        //
-
-        InputStream is = settingsFacade.getRawConfig(SMS_CONFIGS_FILE_NAME);
+        InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
-            this.configs = gson.fromJson(jsonText, Configs.class);
+            this.settingsDto = gson.fromJson(jsonText, SettingsDto.class);
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
-        this.configs.validate(templates);
-        logger.debug("Loaded the following configs:" + this.configs.toString());
+
+        templates = new Templates(settingsFacade);
+        validateConfigs(templates.getTemplates());
+
+        logger.debug("Loaded the following settingsDto:" + this.settingsDto.toString());
     }
 
-    public Configs getConfigs() {
-        return configs;
+    //todo: duplicate names & multiple defaults
+    private void validateConfigs(Map<String, Properties> templates) {
+        List<Map<String, String>> configs = settingsDto.getConfigs();
+        String firstConfigName = null;
+        Iterator<Map<String, String>> i = configs.iterator();
+        while(i.hasNext())
+        {
+            Map<String, String> config = i.next();
+            if (!config.containsKey("name") || config.get("name").length() < 1)
+            {
+                settingsDto.addError("The following config was ignored because it has no name: " + config.toString());
+                i.remove();
+                continue;
+            }
+            if (!config.containsKey("template") || config.get("template").length() < 1)
+            {
+                settingsDto.addError("The following config was ignored because it has no template: " + config.toString());
+                i.remove();
+                continue;
+            }
+            if (!templates.containsKey(config.get("template"))) {
+                settingsDto.addError("The following config was ignored because its template (" + config.get("template") + ") doesn't exist on this system.");
+                i.remove();
+                continue;
+            }
+            if (firstConfigName == null) {
+                firstConfigName = config.get("name");
+            }
+        }
     }
 
-    public void setConfigs(SettingsFacade settingsFacade, Configs configs) {
+    public SettingsDto getSettingsDto() {
+        return settingsDto;
+    }
 
-        //todo: validate configs here ?
+    public void setConfigs(SettingsFacade settingsFacade, SettingsDto settingsDto) {
 
-        this.configs = configs;
+        //todo: validate settingsDto here ?
+
+        this.settingsDto = settingsDto;
 
         Gson gson = new Gson();
-        String jsonText = gson.toJson(configs, Configs.class);
+        String jsonText = gson.toJson(settingsDto, SettingsDto.class);
         ByteArrayResource resource = new ByteArrayResource(jsonText.getBytes());
-        settingsFacade.saveRawConfig(SMS_CONFIGS_FILE_NAME, resource);
-    }
-
-    public Map<String, Properties> getTemplates() {
-        return templates;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(configs);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        final Settings other = (Settings) obj;
-
-        return compareFields(other);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Settings{configs='%s'}", configs);
-    }
-
-    private Boolean compareFields(Settings other) {
-        if (!Objects.equals(this.configs, other.configs)) {
-            return false;
-        }
-
-        return true;
+        settingsFacade.saveRawConfig(SMS_SETTINGS_FILE_NAME, resource);
     }
 }

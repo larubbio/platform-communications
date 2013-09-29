@@ -1,8 +1,9 @@
 package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.SettingsDto;
 import org.motechproject.sms.model.Settings;
+import org.motechproject.sms.model.Templates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,35 +20,37 @@ import java.util.Properties;
 public class SettingsController {
     private SettingsFacade settingsFacade;
     private Settings settings;
+    private Templates templates;
     private static final Logger logger = LoggerFactory.getLogger(Settings.class);
 
     @Autowired
     public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
         this.settings = new Settings(settingsFacade);
+        this.templates = new Templates(settingsFacade);
     }
 
-    @RequestMapping(value = "/configs", method = RequestMethod.GET)
+    @RequestMapping(value = "/settings", method = RequestMethod.GET)
     @ResponseBody
-    public Configs getConfigs() {
-        return settings.getConfigs();
+    public SettingsDto getConfigs() {
+        return settings.getSettingsDto();
     }
 
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Properties> getTemplates() {
-        return settings.getTemplates();
+        return templates.getTemplates();
     }
 
-    @RequestMapping(value = "/configs", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void setConfigs(@RequestBody Configs configs) {
+    public void setConfigs(@RequestBody SettingsDto settingsDto) {
 
-        configs.clearErrors();
+        settingsDto.clearErrors();
 
-        //todo: validate configs & throw IllegalStateException if invalid ?
+        //todo: validate settingsDto & throw IllegalStateException if invalid ?
 
-        settings.setConfigs(settingsFacade, configs);
+        settings.setConfigs(settingsFacade, settingsDto);
     }
 
     @ExceptionHandler(Exception.class)
