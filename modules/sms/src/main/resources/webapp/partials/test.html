@@ -6,7 +6,7 @@
     -->
 
     <div class="clearfix">
-        <h4 class="frame-title">{{ msg('sms.send.title')}}</h4>
+        <h4 class="frame-title">{{ msg('sms.web.test.title')}}</h4>
         <div class="inside">
             <div class="alert alert-error" ng-hide="settings.configs">
                 You have not created any configurations, you will not be able to send of receive messages without one.<br/>
@@ -16,7 +16,7 @@
             <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-show="settings.configs">
 
                 <div class="control-group">
-                    <label ng-disabled="settings.configs" class="control-label">{{msg('sms.config')}}</label>
+                    <label ng-disabled="settings.configs" class="control-label">{{msg('sms.web.test.config')}}</label>
                     <div class="controls">
                         <label class="radio inline" ng-repeat="config in settings.configs">
                             <input type="radio" value="{{config.name}}" ng-model="sms.config" ng-checked="config.default == 'true' || settings.configs.length == 1">
@@ -27,7 +27,7 @@
 
                 <div class="control-group">
                     <label ng-disabled="settings.configs" class="control-label" for="recipients" tooltip="Multiple recipients must be comma separated.">
-                        {{msg('sms.recipients')}}
+                        {{msg('sms.web.test.recipients')}}
                         <i class="icon-question-sign"></i>
                     </label>
                     <div class="controls">
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label" for="message">{{msg('sms.message')}}</label>
+                    <label class="control-label" for="message">{{msg('sms.web.test.message')}}</label>
                     <div class="controls">
                         <textarea class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" id="message" ng-model="sms.message" required></textarea>
                         <span ng-hide="form.$pristine || sms.message" class="form-hint">{{msg('sms.field.required', msg('sms.message'))}}</span>
@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="controls">
-                    <input class="btn btn-primary" type="submit" value="{{msg('sms.send')}}" ng-disabled="form.$invalid"/>
+                    <input class="btn btn-primary" type="submit" value="{{msg('sms.web.test.send')}}" ng-disabled="form.$invalid"/>
                 </div>
             </form>
         </div>

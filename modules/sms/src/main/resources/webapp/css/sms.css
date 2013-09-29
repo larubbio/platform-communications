@@ -61,3 +61,7 @@
   filter: alpha(opacity=90);
   font-weight: normal;
 }
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none !important;
+}

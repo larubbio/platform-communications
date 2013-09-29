@@ -20,11 +20,11 @@ TODO  - valid (or at least non-null) properties
         <div class="clearfix margin-before">
             <form name="form" class="form-horizontal" novalidate>
 
-                <div class="alert alert-error" ng-hide="settings.configs.length > 0">
+                <div class="alert alert-error" ng-show="settings.configs.length == 0">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
                 <div ng-show="settings.errors">
-                    <div class="alert alert-error" ng-repeat="error in settings.errors">
+                    <div class="alert alert-error" ng-repeat="error in settings.errors" ng-cloak>
                         {{error}}
                     </div>
                 </div>

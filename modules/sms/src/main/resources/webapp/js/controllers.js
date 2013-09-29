@@ -3,9 +3,40 @@
 
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('SendSmsController', function ($scope, $http, SendSmsService) {
+    smsModule.controller('TestController', function ($scope, $http, TestService) {
         $scope.sms = {};
 
+        $http.get('../sms/settings')
+            .success(function(res){
+                var key;
+                $scope.settings = res;
+                for (key in $scope.settings.configs) {
+                    if ($scope.settings.configs[key]['default'] === 'true') {
+                        $scope.sms.config = $scope.settings.configs[key].name;
+                         break;
+                    }
+                }
+            });
+
+        $scope.sendSms = function () {
+
+            TestService.save(
+                {},
+                $scope.sms,
+                function () {
+                    motechAlert('sms.test.alert.success', 'sms.test.alert.title');
+                },
+                function (response) {
+                    handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
+                }
+            );
+        };
+    });
+
+
+    smsModule.controller('LogController', function ($scope, $http) {
+        $scope.log = {};
+/*
         $http.get('../sms/settings')
             .success(function(res){
                 var key;
@@ -24,13 +55,14 @@
                 {},
                 $scope.sms,
                 function () {
-                    motechAlert('sms.send.alert.success', 'sms.send.alert.title');
+                    motechAlert('sms.test.alert.success', 'sms.test.alert.title');
                 },
                 function (response) {
-                    handleWithStackTrace('sms.send.alert.title', 'sms.send.alert.failure', response);
+                    handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
                 }
             );
         };
+*/
     });
 
 
@@ -60,15 +92,16 @@
         */
         $scope.changeTemplateProperties = function (config) {
             var key;
+            //remove the previous template's properties
             for (key in config) {
-
                 if ($scope.reservedProperties.indexOf(key) === -1) {
                     delete config[key];
                 }
             }
+            //insert the new template's properties
             for (key in $scope.templates[config.template]) {
-                if ($scope.reservedProperties.indexOf(key) === -1) {
-                    config[key] = '';
+                if ($scope.reservedProperties.indexOf(key) === -1 && key.substring(0,5) !== "user.") {
+                    config[key] = $scope.templates[config.template][key];
                 }
             }
 
@@ -109,13 +142,9 @@
         };
 
         $scope.addConfig = function () {
-            var d = "false";
-            if (!$scope.settings.configs) {
-                $scope.settings.configs = [];
-                d = "true";
-            }
-            $scope.settings.configs.push({'name':'Untitled', 'template':'', 'default':d});
+            $scope.settings.configs.push({'name':'Untitled', 'template':'', 'default':'false'});
             $scope.accordions.push(true);
+            $scope.setNewDefault();
         };
 
         $scope.isDirty = function () {

@@ -25,9 +25,10 @@ public class SettingsController {
 
     @Autowired
     public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
+        logger.info("Initializing SettingsController");
         this.settingsFacade = settingsFacade;
-        this.settings = new Settings(settingsFacade);
         this.templates = new Templates(settingsFacade);
+        this.settings = new Settings(settingsFacade);
     }
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)

@@ -2,6 +2,8 @@ package org.motechproject.sms.service;
 
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.model.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,11 +17,12 @@ import java.util.Map;
  */
 @Service("smsConfigService")
 public class SmsConfigServiceImpl implements SmsConfigService {
-
     private Settings settings;
+    private static final Logger logger = LoggerFactory.getLogger(SmsConfigServiceImpl.class);
 
     @Autowired
-    public SmsConfigServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
+    public SmsConfigServiceImpl(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
+        logger.info("Initializing SmsConfigServiceImpl");
         settings = new Settings(settingsFacade);
     }
 

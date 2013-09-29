@@ -3,8 +3,12 @@
 
     /* Services */
 
-    angular.module('sendSmsService', ['ngResource']).factory('SendSmsService', function($resource) {
+    angular.module('testService', ['ngResource']).factory('TestService', function($resource) {
         return $resource('../sms/send');
+    });
+
+    angular.module('logService', ['ngResource']).factory('LogService', function($resource) {
+        return $resource('../sms/log');
     });
 
     angular.module('templateService', ['ngResource']).factory('TemplateService', function($resource) {
