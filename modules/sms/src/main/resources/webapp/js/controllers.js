@@ -41,11 +41,11 @@
 
         $http.get('../sms/settings')
             .success(function(res){
-                var key;
+                var i;
                 $scope.settings = res;
                 $scope.originalSettings = angular.copy($scope.settings);
                 $scope.accordions = [];
-                for (key in $scope.settings.configs) {
+                for (i=0 ; i< $scope.settings.configs.length ; i = i + 1) {
                     $scope.accordions.push(false);
                 }
             });
@@ -75,9 +75,9 @@
         };
 
         $scope.collapseAccordions = function () {
-            var i;
-            for (i=0 ; i<$scope.accordions.length ; i = i+1) {
-                $scope.accordions[i] = false;
+            var key;
+            for (key in $scope.accordions) {
+                $scope.accordions[key] = false;
             }
         };
 
