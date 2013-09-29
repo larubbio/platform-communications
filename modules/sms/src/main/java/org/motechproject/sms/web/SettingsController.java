@@ -3,6 +3,8 @@ package org.motechproject.sms.web;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.model.Configs;
 import org.motechproject.sms.model.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.Properties;
 public class SettingsController {
     private SettingsFacade settingsFacade;
     private Settings settings;
+    private static final Logger logger = LoggerFactory.getLogger(Settings.class);
 
     @Autowired
     public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
@@ -38,19 +41,11 @@ public class SettingsController {
 
     @RequestMapping(value = "/configs", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void setSettings(Configs configs) {
-        StringBuilder exceptionMessage = new StringBuilder();
+    public void setConfigs(@RequestBody Configs configs) {
 
-        if (1 == 0) {
-            exceptionMessage
-                    .append(String.format("format", "data"))
-                    .append("\n");
-        }
+        configs.clearErrors();
 
-        if (exceptionMessage.length() > 0) {
-            throw new IllegalStateException(exceptionMessage.toString());
-        }
+        //todo: validate configs & throw IllegalStateException if invalid ?
 
         settings.setConfigs(settingsFacade, configs);
     }
@@ -59,6 +54,8 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public String handleException(Exception e) throws IOException {
+
+        logger.debug("SettingsController Exception:" + e);
         return e.getMessage();
     }
 }

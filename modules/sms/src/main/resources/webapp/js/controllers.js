@@ -96,6 +96,7 @@
                     handleWithStackTrace('sms.header.error', 'server.error', response);
                 }
             );
+
         };
     });
 }());

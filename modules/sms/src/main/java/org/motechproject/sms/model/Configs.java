@@ -1,16 +1,11 @@
 package org.motechproject.sms.model;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
 import java.util.*;
 
 /**
  * TODO
  *
  */
-@JsonDeserialize(using = ConfigsDeserializer.class)
-//todo: understand why does the following doesn't work
-//@JsonDeserialize(as=Configs.class)
 public class Configs {
     private String defaultConfig;
     private List<Map<String, String>> configs;
@@ -18,6 +13,12 @@ public class Configs {
 
     public Configs() {
         errors = new ArrayList<String>();
+    }
+
+    public Configs(String defaultConfig, List<Map<String, String>> configs, List<String> errors) {
+        this.defaultConfig = defaultConfig;
+        this.configs = configs;
+        this.errors = errors;
     }
 
     public List<Map<String, String>> getConfigs() {
@@ -33,6 +34,8 @@ public class Configs {
     }
 
     public void setDefaultConfig(String defaultConfig) {
+        this.defaultConfig = defaultConfig;
+        /*
         for (Map<String, String> config : configs)
         {
             if (config.containsKey("name") && config.get("name") == defaultConfig)
@@ -42,10 +45,19 @@ public class Configs {
             }
         }
         throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
+        */
     }
 
     public List<String> getErrors() {
         return errors;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
+    }
+
+    public void clearErrors() {
+        this.errors = new ArrayList<String>();
     }
 
     private void addError(String error) {
