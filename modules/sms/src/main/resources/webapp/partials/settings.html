@@ -2,6 +2,10 @@
 
 TODO Remember to update angular & ass angular-bootstrap to motech platform before checking in the new sms module
 
+TODO Enforce:
+TODO  - unique config names
+TODO  - valid (or at least non-null) properties
+
 -->
 
 <div class="row-fluid tab-frame">
@@ -9,6 +13,10 @@ TODO Remember to update angular & ass angular-bootstrap to motech platform befor
     <!--
     <div class="alert alert-block">templates:{{templates}}</div>
     -->
+    <div class="alert alert-block">
+        <a href="#/send">Send SMS</a>
+        <a href="#/settings">Settings</a>
+    </div>
 
     <div class="alert alert-block">configs:{{configs}}</div>
 
@@ -64,11 +72,11 @@ TODO Remember to update angular & ass angular-bootstrap to motech platform befor
                                 <div ng-repeat="(key, val) in config | excludeSpecials" class="control-group">
                                     <label class="control-label">{{key}}</label>
                                     <div class="controls">
-                                        <input class="input-xlarge-fluid" type="text" ng-model="val">
+                                        <input class="input-xlarge-fluid" type="text" ng-model="config[key]">
                                     </div>
                                 </div>
                                 <div class="controls">
-                                    <button class="btn btn-small btn-primary" ng-click="setDefault(config.name)"> <i class="icon-star"></i> Set Default </button>
+                                    <button ng-disabled="configs.defaultConfig == config.name" class="btn btn-small btn-primary" ng-click="configs.defaultConfig = config.name"> <i class="icon-star"></i> Set Default </button>
                                     &nbsp;
                                     <button class="btn btn-small btn-danger" ng-click="configs.configs.splice($index, 1)"> <i class="icon-trash"></i> Delete </button>
                                 </div>
@@ -78,7 +86,7 @@ TODO Remember to update angular & ass angular-bootstrap to motech platform befor
                 </div>
                 <div class="control-group" ng-show="isDirty()">
                     <button class="btn btn-primary" ng-click="reset()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="save()">Save</button>
+                    <button class="btn btn-primary" ng-click="submit()">Save</button>
                 </div>
             </form>
         </div>

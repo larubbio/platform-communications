@@ -16,18 +16,18 @@
         };
     });
 
+    //todo see why i couldn't use a simple filter function ie:  | filter:function
     smsModule.filter('excludeSpecials', function() {
         return function(input) {
-            var key;
-            var ret = {};
+            var key, ret = {};
             for (key in input) {
             //TODO: figure out a way to use $scope.reservedProperties from controller.js instead of hard-coding below
-                if (['name', 'template', 'openAccordion'].indexOf(key) == -1) {
+                if (['name', 'template', 'openAccordion'].indexOf(key) === -1) {
                     ret[key] = input[key];
                 }
             }
             return ret;
-        }
+        };
     });
 
 }());

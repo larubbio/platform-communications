@@ -1,31 +1,11 @@
 package org.motechproject.sms.web;
 
-import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.sms.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
-
-import java.util.Properties;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.testing.utils.rest.RestTestUtil.jsonMatcher;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
 public class SettingsControllerTest {
     private static final String NEW_LINE = System.lineSeparator();
@@ -95,7 +75,7 @@ public class SettingsControllerTest {
                 status().is(HttpStatus.SC_OK)
         );
 
-        Properties properties = new SettingsDto(
+        Properties properties = new Settings(
                 remotehost, port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
         ).toProperties();
 

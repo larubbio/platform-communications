@@ -40,15 +40,6 @@
                 $scope.originalConfigs = angular.copy($scope.configs);
             });
 
-/*
-        $scope.excludeSpecials = function (input) {
-            if (['name', 'template', 'openAccordion'].indexOf(input) == -1) {
-                return true;
-            }
-            return false;
-        };
-*/
-
         $scope.templates = TemplateService.get();
 
         /* TODO
@@ -61,20 +52,16 @@
             var key;
             for (key in config) {
 
-                if ($scope.reservedProperties.indexOf(key) == -1) {
+                if ($scope.reservedProperties.indexOf(key) === -1) {
                     delete config[key];
                 }
             }
-            for (key in $scope.templates[config['template']]) {
-                if ($scope.reservedProperties.indexOf(key) == -1) {
+            for (key in $scope.templates[config.template]) {
+                if ($scope.reservedProperties.indexOf(key) === -1) {
                     config[key] = '';
                 }
             }
 
-        };
-
-        $scope.setDefault = function (n) {
-            $scope.configs.defaultConfig = n;
         };
 
         $scope.reset = function () {
@@ -85,5 +72,30 @@
             return !angular.equals($scope.originalConfigs, $scope.configs);
         };
 
+        $scope.submit = function () {
+
+/*
+            $http({method: 'POST', url: '../sms/configs', data: $scope.configs}).
+                success(function(data, status) {
+                    $scope.status = status;
+                    $scope.data = data;
+                }).
+                error(function(data, status) {
+                    $scope.data = data || "Request failed";
+                    $scope.status = status;
+                });
+*/
+            ConfigService.save(
+                {},
+                $scope.configs,
+                function () {
+                    motechAlert('sms.header.success', 'sms.settings.saved');
+                    //todo? $scope.settings = ConfigService.get();
+                },
+                function (response) {
+                    handleWithStackTrace('sms.header.error', 'server.error', response);
+                }
+            );
+        };
     });
 }());

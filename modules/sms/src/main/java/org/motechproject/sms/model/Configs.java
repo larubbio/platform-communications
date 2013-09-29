@@ -1,11 +1,16 @@
 package org.motechproject.sms.model;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 import java.util.*;
 
 /**
  * TODO
  *
  */
+@JsonDeserialize(using = ConfigsDeserializer.class)
+//todo: understand why does the following doesn't work
+//@JsonDeserialize(as=Configs.class)
 public class Configs {
     private String defaultConfig;
     private List<Map<String, String>> configs;
