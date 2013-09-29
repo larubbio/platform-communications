@@ -86,16 +86,26 @@
             $scope.collapseAccordions();
         };
 
-        $scope.setDefault = function (name) {
-            var key;
-            for (key in $scope.settings.configs) {
-                if ($scope.settings.configs[key].name === name) {
-                    $scope.settings.configs[key]['default'] = 'true';
+        $scope.setDefault = function (index) {
+            var i;
+            for (i = 0 ; i < $scope.settings.configs.length ; i = i + 1) {
+                if (i == index) {
+                    $scope.settings.configs[i]['default'] = 'true';
                 }
                 else {
-                    $scope.settings.configs[key]['default'] = 'false';
+                    $scope.settings.configs[i]['default'] = 'false';
                 }
             }
+        };
+
+        $scope.setNewDefault = function () {
+            var i;
+            for (i = 0 ; i < $scope.settings.configs.length ; i = i + 1) {
+                if ($scope.settings.configs[i]['default'] === 'true') {
+                    return;
+                }
+            }
+            $scope.settings.configs[0]['default'] = 'true';
         };
 
         $scope.addConfig = function () {
