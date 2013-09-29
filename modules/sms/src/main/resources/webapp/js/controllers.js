@@ -32,12 +32,13 @@
 
         $http.get('../sms/configs')
             .success(function(res){
-                var key;
+                var i;
                 $scope.configs = res;
-                for (key in $scope.configs.configs) {
-                    $scope.configs.configs[key].openAccordion = false;
-                }
                 $scope.originalConfigs = angular.copy($scope.configs);
+                $scope.accordions = [];
+                for (i=0 ; i<$scope.configs.configs.length ; i++) {
+                    $scope.accordions.push(false);
+                }
             });
 
         $scope.templates = TemplateService.get();
@@ -89,14 +90,16 @@
                 {},
                 $scope.configs,
                 function () {
-                    motechAlert('sms.header.success', 'sms.settings.saved');
-                    //todo? $scope.settings = ConfigService.get();
+                    var i;
+                    for (i=0 ; i<$scope.accordions.length ; i++) {
+                        $scope.accordions[i] = false;
+                    }
+                    $scope.originalConfigs = ConfigService.get();
                 },
                 function (response) {
                     handleWithStackTrace('sms.header.error', 'server.error', response);
                 }
             );
-
         };
     });
 }());

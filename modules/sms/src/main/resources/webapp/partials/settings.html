@@ -11,10 +11,9 @@ TODO  - valid (or at least non-null) properties
 <div class="row-fluid tab-frame">
 
     <!--
-    <div class="alert alert-block">templates:{{templates}}</div>
-    -->
-
+    <div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
     <div class="alert alert-block">configs:{{configs}}</div>
+    -->
 
 
     <h4 class="frame-title">SMS Provider Configurations</h4>
@@ -32,7 +31,9 @@ TODO  - valid (or at least non-null) properties
                 </div>
 
                 <div class="control-group">
-                    <button type="button" class="btn btn-success" ng-click="configs.configs.push({'name':'Untitled', 'template':'', 'openAccordion':'true'});"><i class="icon-plus icon-white"></i>&nbsp;Add Configuration</button>
+                    <button type="button" class="btn btn-success" ng-click="configs.configs.push({'name':'Untitled', 'template':''}); accordions.push(true);"><i class="icon-plus icon-white"></i>
+                        Add Configuration
+                    </button>
                 </div>
 
                 <!--
@@ -42,13 +43,12 @@ TODO  - valid (or at least non-null) properties
                 -->
                 <div class="row-fluid" ng-show="configs.configs">
                     <accordion class="accordion">
-                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs" is-open="config.openAccordion">
+                        <accordion-group class="accordion-group sms-config" ng-repeat="config in configs.configs" is-open="accordions[$index]">
                             <accordion-heading>
                                 <div class="inbox-header">
-                                    <i ng-show="config.name == configs.defaultConfig && configs.configs.length > 1" title="This is the default configuration" class="icon-star sms-default-config"></i>
-                                    <i ng-show="config.name != configs.defaultConfig && configs.configs.length > 1" title="This is not the default configuration" class="icon-star sms-nondefault-config"></i>
                                     {{config.name}}
-                                    <i ng-class="{'icon-chevron-down': config.openAccordion, 'icon-chevron-right': !config.openAccordion}" class="icon-fixed-width icon-large pointer"></i>
+                                    <i ng-show="config.name == configs.defaultConfig && configs.configs.length > 1" title="This is the default configuration" class="icon-star"></i>
+                                    <i ng-class="{'icon-chevron-down': accordions[$index], 'icon-chevron-right': !accordions[$index]}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
                             </accordion-heading>
                             <div class="stripes-bg">

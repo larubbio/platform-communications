@@ -33,14 +33,6 @@
     cursor: pointer;
 }
 
-.sms-default-config {
-    color: black;
-}
-
-.sms-nondefault-config, .sms-default-config {
-    font-size: 18px;
-}
-
 .sms-config-settings {
     margin-top: 20px;
 }
