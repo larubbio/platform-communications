@@ -3,10 +3,20 @@
 
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('SendSmsController', function ($scope, SendSmsService, ConfigService) {
+    smsModule.controller('SendSmsController', function ($scope, $http, SendSmsService) {
         $scope.sms = {};
 
-        $scope.configs = ConfigService.get();
+        $http.get('../sms/configs')
+            .success(function(res){
+                var key;
+                $scope.configs = res;
+                for (key in $scope.configs.configs) {
+                    if ($scope.configs.configs[key]['default'] === 'true') {
+                        $scope.sms['config'] = $scope.configs.configs[key]['name'];
+                         break;
+                    }
+                }
+            });
 
         $scope.sendSms = function () {
 
@@ -31,11 +41,11 @@
 
         $http.get('../sms/configs')
             .success(function(res){
-                var config;
+                var key;
                 $scope.configs = res;
                 $scope.originalConfigs = angular.copy($scope.configs);
                 $scope.accordions = [];
-                for (config in $scope.configs.configs) {
+                for (key in $scope.configs.configs) {
                     $scope.accordions.push(false);
                 }
             });
@@ -77,13 +87,13 @@
         };
 
         $scope.setDefault = function (name) {
-            var i;
-            for (i in $scope.configs.configs) {
-                if ($scope.configs.configs[i].name === name) {
-                    $scope.configs.configs[i]['default'] = 'true';
+            var key;
+            for (key in $scope.configs.configs) {
+                if ($scope.configs.configs[key].name === name) {
+                    $scope.configs.configs[key]['default'] = 'true';
                 }
                 else {
-                    $scope.configs.configs[i]['default'] = 'false';
+                    $scope.configs.configs[key]['default'] = 'false';
                 }
             }
         };

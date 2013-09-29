@@ -11,10 +11,9 @@ TODO  - valid (or at least non-null) properties
 <div class="row-fluid tab-frame">
 
     <!--
-    -->
     <div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
     <div class="alert alert-block">configs:{{configs}}</div>
-
+    -->
 
     <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
@@ -47,7 +46,7 @@ TODO  - valid (or at least non-null) properties
                             <accordion-heading>
                                 <div class="inbox-header">
                                     {{config.name}}
-                                    <i ng-show="config.default == 'true' && configs.configs.length > 1" title="This is the default configuration" class="icon-star"></i>
+                                    <i ng-show="config.default == 'true' && configs.configs.length > 1" tooltip="This is the default configuration" class="icon-star"></i>
                                     <i ng-class="{'icon-chevron-down': accordions[$index], 'icon-chevron-right': !accordions[$index]}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
                             </accordion-heading>

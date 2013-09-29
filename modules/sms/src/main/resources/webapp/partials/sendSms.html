@@ -1,4 +1,9 @@
 <div class="row-fluid tab-frame">
+
+    <!--
+    -->
+    <div class="alert alert-block">sms:{{sms}}</div>
+
     <div class="clearfix">
         <h4 class="frame-title">{{ msg('sms.send.title')}}</h4>
         <div class="inside">
@@ -13,14 +18,17 @@
                     <label ng-disabled="configs.configs" class="control-label">{{msg('sms.config')}}</label>
                     <div class="controls">
                         <label class="radio inline" ng-repeat="config in configs.configs">
-                            <input type="radio" name="configs" id="{{config.name}}" value="{{config.name}}" ng-checked="config.default == 'true' || configs.configs.length == 1">
+                            <input type="radio" value="{{config.name}}" ng-model="sms.config" ng-checked="config.default == 'true' || configs.configs.length == 1">
                             {{config.name}}
                         </label>
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label ng-disabled="configs.configs" class="control-label" for="recipients">{{msg('sms.recipients')}}</label>
+                    <label ng-disabled="configs.configs" class="control-label" for="recipients" tooltip="Multiple recipients must be comma separated.">
+                        {{msg('sms.recipients')}}
+                        <i class="icon-question-sign"></i>
+                    </label>
                     <div class="controls">
                         <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients" required focus="true" autofocus >
                         <span ng-hide="form.$pristine || sms.recipients" class="form-hint">{{msg('sms.field.required', msg('sms.recipients'))}}</span>

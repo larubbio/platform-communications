@@ -55,3 +55,9 @@
 .stripes-bg {
     padding: 15px;
 }
+
+.tooltip.in {
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+  font-weight: normal;
+}
