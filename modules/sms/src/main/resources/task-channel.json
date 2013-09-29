@@ -39,6 +39,10 @@
                                 "subject" : "outbound_sms_failure",
                                 "eventParameters" : [
                                   {
+                                    "eventKey" : "config",
+                                    "displayName" : "sms.task.trigger.outbound-failure.config"
+                                  },
+                                  {
                                     "eventKey" : "recipients",
                                     "displayName" : "sms.task.trigger.outbound-failure.recipients"
                                   },
@@ -70,28 +74,32 @@
                                 ]
                               },
                               {
-                                "displayName" : "sms.inbound",
+                                "displayName" : "sms.task.trigger.inbound.name",
                                 "subject" : "inbound_sms",
                                 "eventParameters" : [
                                   {
+                                    "eventKey" : "config",
+                                    "displayName" : "sms.task.trigger.inbound.config"
+                                  },
+                                  {
                                     "eventKey" : "sender",
-                                    "displayName" : "sms.sender"
+                                    "displayName" : "sms.task.trigger.inbound.sender"
                                   },
                                   {
                                     "eventKey" : "message",
-                                    "displayName" : "sms.message"
+                                    "displayName" : "sms.task.trigger.inbound.message"
                                   },
                                   {
                                     "eventKey" : "message_id",
-                                    "displayName" : "sms.message.id"
+                                    "displayName" : "sms.task.trigger.inbound.message-id"
                                   },
                                   {
                                     "eventKey" : "reference_id",
-                                    "displayName" : "sms.reference.id"
+                                    "displayName" : "sms.task.trigger.inbound.reference-id"
                                   },
                                   {
                                     "eventKey" : "timestamp",
-                                    "displayName" : "sms.timestamp"
+                                    "displayName" : "sms.task.trigger.inbound.timestamp"
                                   }
                                 ]
                               }
