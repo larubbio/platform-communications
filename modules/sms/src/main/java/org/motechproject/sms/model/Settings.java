@@ -6,8 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 
 import java.io.IOException;
@@ -22,8 +20,7 @@ public class Settings {
     private static final Logger logger = LoggerFactory.getLogger(Settings.class);
     private SettingsDto settingsDto;
 
-    @Autowired
-    public Settings(@Qualifier("smsSettings") SettingsFacade settingsFacade) {
+    public Settings(SettingsFacade settingsFacade) {
         Templates templates;
 
         InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);

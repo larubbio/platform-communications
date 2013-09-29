@@ -7,4 +7,5 @@ import java.util.List;
 public interface SmsConfigService {
 
     List<String> getConfigs();
+    String getDefaultConfig();
 }
