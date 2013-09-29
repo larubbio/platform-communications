@@ -13,7 +13,7 @@
                     <label ng-disabled="configs.configs" class="control-label">{{msg('sms.config')}}</label>
                     <div class="controls">
                         <label class="radio inline" ng-repeat="config in configs.configs">
-                            <input type="radio" name="configs" id="{{config.name}}" value="{{config.name}}" ng-checked="config.name == configs.defaultConfig || configs.configs.length == 1">
+                            <input type="radio" name="configs" id="{{config.name}}" value="{{config.name}}" ng-checked="config.default == 'true' || configs.configs.length == 1">
                             {{config.name}}
                         </label>
                     </div>

@@ -24,19 +24,18 @@
     });
 
 
-    //todo: remove $log when not testing anymore
-    smsModule.controller('SettingsController', function ($scope, $log, $http, ConfigService, TemplateService) {
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
 
         //TODO: figure out a way for directives.js to use a this array
-        $scope.reservedProperties = ['name', 'template', 'openAccordion'];
+        $scope.reservedProperties = ['name', 'template', 'default', 'openAccordion'];
 
         $http.get('../sms/configs')
             .success(function(res){
-                var i;
+                var config;
                 $scope.configs = res;
                 $scope.originalConfigs = angular.copy($scope.configs);
                 $scope.accordions = [];
-                for (i=0 ; i<$scope.configs.configs.length ; i++) {
+                for (config in $scope.configs.configs) {
                     $scope.accordions.push(false);
                 }
             });
@@ -67,7 +66,7 @@
 
         $scope.collapseAccordions = function () {
             var i;
-            for (i=0 ; i<$scope.accordions.length ; i++) {
+            for (i=0 ; i<$scope.accordions.length ; i = i+1) {
                 $scope.accordions[i] = false;
             }
         };
@@ -77,23 +76,34 @@
             $scope.collapseAccordions();
         };
 
+        $scope.setDefault = function (name) {
+            var i;
+            for (i in $scope.configs.configs) {
+                if ($scope.configs.configs[i].name === name) {
+                    $scope.configs.configs[i]['default'] = 'true';
+                }
+                else {
+                    $scope.configs.configs[i]['default'] = 'false';
+                }
+            }
+        };
+
+        $scope.addConfig = function () {
+            var d = "false";
+            if (!$scope.configs.configs) {
+                $scope.configs.configs = [];
+                d = "true";
+            }
+            $scope.configs.configs.push({'name':'Untitled', 'template':'', 'default':d});
+            $scope.accordions.push(true);
+        };
+
         $scope.isDirty = function () {
             return !angular.equals($scope.originalConfigs, $scope.configs);
         };
 
         $scope.submit = function () {
 
-/*
-            $http({method: 'POST', url: '../sms/configs', data: $scope.configs}).
-                success(function(data, status) {
-                    $scope.status = status;
-                    $scope.data = data;
-                }).
-                error(function(data, status) {
-                    $scope.data = data || "Request failed";
-                    $scope.status = status;
-                });
-*/
             ConfigService.save(
                 {},
                 $scope.configs,

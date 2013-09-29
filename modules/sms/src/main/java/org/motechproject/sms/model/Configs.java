@@ -1,5 +1,7 @@
 package org.motechproject.sms.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.*;
 
 /**
@@ -7,18 +9,11 @@ import java.util.*;
  *
  */
 public class Configs {
-    private String defaultConfig;
     private List<Map<String, String>> configs;
     private List<String> errors;
 
     public Configs() {
         errors = new ArrayList<String>();
-    }
-
-    public Configs(String defaultConfig, List<Map<String, String>> configs, List<String> errors) {
-        this.defaultConfig = defaultConfig;
-        this.configs = configs;
-        this.errors = errors;
     }
 
     public List<Map<String, String>> getConfigs() {
@@ -29,23 +24,19 @@ public class Configs {
         this.configs = configs;
     }
 
+    @JsonIgnore
     public String getDefaultConfig() {
-        return defaultConfig;
-    }
-
-    public void setDefaultConfig(String defaultConfig) {
-        this.defaultConfig = defaultConfig;
-        /*
+        String firstConfig = null;
         for (Map<String, String> config : configs)
         {
-            if (config.containsKey("name") && config.get("name") == defaultConfig)
-            {
-                this.defaultConfig = defaultConfig;
-                return;
+            if (config.get("default").equals("true")) {
+                return config.get("name");
+            }
+            if (firstConfig == null) {
+                firstConfig = config.get("name");
             }
         }
-        throw new IllegalArgumentException("Provided default key doesn't correspond to an existing configuration.");
-        */
+        return firstConfig;
     }
 
     public List<String> getErrors() {
@@ -64,6 +55,7 @@ public class Configs {
         errors.add(error);
     }
 
+    //todo: duplicate names & multiple defaults
     public void validate(Map<String, Properties> templates) {
         String firstConfigName = null;
         Iterator<Map<String, String>> i = configs.iterator();
@@ -91,34 +83,11 @@ public class Configs {
                 firstConfigName = config.get("name");
             }
         }
-
-        if (configs.size() > 0) {
-            if (defaultConfig != null && defaultConfig.length() > 0) {
-                boolean validDefault = false;
-                for (Map<String, String> config : configs)
-                {
-                    if (defaultConfig.equals(config.get("name")))
-                    {
-                        validDefault = true;
-                        break;
-                    }
-                }
-                if (!validDefault) {
-                    addError("The specified defaultConfig '" + defaultConfig + "' was ignored because there is no config with this name, so '" + firstConfigName + "' was chosen as the default config");
-                    setDefaultConfig(firstConfigName);
-                }
-            }
-            else {
-                addError("defaultConfig was not specified, so '" + firstConfigName + "' was chosen as the default config");
-                setDefaultConfig(firstConfigName);
-            }
-        }
-
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultConfig, configs);
+        return Objects.hash(configs);
     }
 
     @Override
@@ -138,14 +107,11 @@ public class Configs {
 
     @Override
     public String toString() {
-        return String.format("Configs{defaultConfig='%s', configs='%s'}", defaultConfig, configs);
+        return String.format("Configs{configs='%s'}", configs);
     }
 
     private Boolean compareFields(Configs other) {
-        if (!Objects.equals(this.defaultConfig, other.defaultConfig)) {
-            return false;
-        }
-        else if (!Objects.equals(this.configs, other.configs)) {
+        if (!Objects.equals(this.configs, other.configs)) {
             return false;
         }
         return true;
