@@ -68,9 +68,6 @@
 
     smsModule.controller('SettingsController', function ($scope, $http, SettingService, TemplateService) {
 
-        //TODO: figure out a way for directives.js to use a this array
-        $scope.reservedProperties = ['name', 'template', 'default', 'openAccordion'];
-
         $http.get('../sms/settings')
             .success(function(res){
                 var i;
@@ -94,13 +91,13 @@
             var key;
             //remove the previous template's properties
             for (key in config) {
-                if ($scope.reservedProperties.indexOf(key) === -1) {
+                if (key.substring(0,5) === "user.") {
                     delete config[key];
                 }
             }
             //insert the new template's properties
             for (key in $scope.templates[config.template]) {
-                if ($scope.reservedProperties.indexOf(key) === -1 && key.substring(0,5) !== "user.") {
+                if (key.substring(0,5) === "user.") {
                     config[key] = $scope.templates[config.template][key];
                 }
             }
@@ -149,6 +146,14 @@
 
         $scope.isDirty = function () {
             return !angular.equals($scope.originalSettings, $scope.settings);
+        };
+
+        $scope.betterMsg = function (key) {
+            var s = $scope.msg('sms.web.settings.' + key);
+            if (s === '[sms.web.settings.' + key + ']') {
+                s = key.substr(5);
+            }
+            return s;
         };
 
         $scope.submit = function () {

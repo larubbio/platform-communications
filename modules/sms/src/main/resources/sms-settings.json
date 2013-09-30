@@ -4,23 +4,23 @@
         "name" : "Clickatell",
         "template" : "clickatell.properties",
         "default"  : "true",
-        "username" : "clickuser",
-        "api_key" : "5551212",
-        "password" : "s3cr3t"
+        "user.username" : "clickuser",
+        "user.api_key" : "5551212",
+        "user.password" : "s3cr3t"
         },
         {
         "name" : "Nuntium HTTP",
         "template" : "nuntium.properties",
         "default"  : "false",
-        "username" : "nunuser",
-        "password" : "s3cr3t"
+        "user.username" : "nunuser",
+        "user.password" : "s3cr3t"
         },
         {
         "name" : "Voxeo",
         "template" : "voxeo.properties",
         "default"  : "false",
-        "username" : "voxuser",
-        "password" : "s3cr3t"
+        "user.username" : "voxuser",
+        "user.password" : "s3cr3t"
         }
     ]
 }

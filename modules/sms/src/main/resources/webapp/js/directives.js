@@ -21,8 +21,7 @@
         return function(input) {
             var key, ret = {};
             for (key in input) {
-            //TODO: figure out a way to use $scope.reservedProperties from controller.js instead of hard-coding below
-                if (['name', 'template', 'default', 'openAccordion'].indexOf(key) === -1) {
+                if (key.substring(0, 5) === "user.") {
                     ret[key] = input[key];
                 }
             }

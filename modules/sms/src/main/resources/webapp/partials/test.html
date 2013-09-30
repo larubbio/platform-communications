@@ -6,14 +6,14 @@
     -->
 
     <div class="clearfix">
-        <h4 class="frame-title">{{ msg('sms.web.test.title')}}</h4>
+        <h4 class="frame-title">{{msg('sms.web.test.title')}}</h4>
         <div class="inside">
-            <div class="alert alert-error" ng-hide="settings.configs">
+            <div class="alert alert-error" ng-show="settings.configs.length == 0">
                 You have not created any configurations, you will not be able to send of receive messages without one.<br/>
                 Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
             </div>
 
-            <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-show="settings.configs">
+            <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-hide="settings.configs.length == 0">
 
                 <div class="control-group">
                     <label ng-disabled="settings.configs" class="control-label">{{msg('sms.web.test.config')}}</label>

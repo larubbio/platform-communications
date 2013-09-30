@@ -46,7 +46,7 @@ TODO  - valid (or at least non-null) properties
                             <accordion-heading>
                                 <div class="inbox-header">
                                     {{config.name}}
-                                    <i ng-show="config.default == 'true' && settings.configs.length > 1" tooltip="This is the default configuration" class="icon-star"></i>
+                                    <i ng-show="config.default == 'true'" tooltip="This is the default configuration" class="icon-star"></i>
                                     <i ng-class="{'icon-chevron-down': accordions[$index], 'icon-chevron-right': !accordions[$index]}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
                             </accordion-heading>
@@ -65,7 +65,7 @@ TODO  - valid (or at least non-null) properties
                                     </div>
                                 </div>
                                 <div ng-repeat="(key, val) in config | excludeSpecials" class="control-group">
-                                    <label class="control-label">{{key}}</label>
+                                    <label class="control-label">{{betterMsg(key)}}</label>
                                     <div class="controls">
                                         <input class="input-xlarge-fluid" type="text" ng-model="config[key]">
                                     </div>
