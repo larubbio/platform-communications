@@ -50,7 +50,7 @@
     </bean>
 
 
-    <osgi:service ref="smsSenderService"
+    <osgi:service ref="smsService"
                   interface="org.motechproject.sms.service.SmsService"
                   auto-export="interfaces"/>
 

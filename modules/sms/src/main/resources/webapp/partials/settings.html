@@ -52,22 +52,28 @@ TODO  - valid (or at least non-null) properties
                             </accordion-heading>
                             <div class="stripes-bg">
                                 <div class="control-group">
-                                    <label class="control-label">Name</label>
+                                    <label class="control-label">{{msg('sms.settings.name')}}</label>
                                     <div class="controls">
-                                        <input class="input-xlarge-fluid" type="text" ng-model="config['name']">
+                                        <input class="input-medium-fluid" type="text" ng-model="config['name']" tooltip="{{msg('sms.settings.name.tooltip')}}" tooltip-placement="right">
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label class="control-label">Template</label>
+                                    <label class="control-label">{{msg('sms.settings.retry')}}</label>
                                     <div class="controls">
-                                        <select ng-model="config['template']" ng-options="key as val.name for (key, val) in templates" ng-change="changeTemplateProperties(config)">
+                                        <input class="input-mini-fluid" type="text" ng-model="config['retry']" tooltip="{{msg('sms.settings.retry.tooltip')}}" tooltip-placement="right">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">{{msg('sms.settings.template')}}</label>
+                                    <div class="controls">
+                                        <select ng-model="config['template']" ng-options="key as val.name for (key, val) in templates" ng-change="changeTemplateProperties(config)" tooltip="{{msg('sms.settings.template.tooltip')}}" tooltip-placement="right">
                                         </select>
                                     </div>
                                 </div>
                                 <div ng-repeat="(key, val) in config | excludeSpecials" class="control-group">
                                     <label class="control-label">{{betterMsg(key)}}</label>
                                     <div class="controls">
-                                        <input class="input-xlarge-fluid" type="text" ng-model="config[key]">
+                                        <input class="input-medium-fluid" type="text" ng-model="config[key]" tooltip="{{tooltipOrBlank(key)}}" tooltip-placement="right">
                                     </div>
                                 </div>
                                 <div class="controls">

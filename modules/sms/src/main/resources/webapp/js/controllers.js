@@ -155,11 +155,20 @@
         };
 
         $scope.betterMsg = function (key) {
-            var s = $scope.msg('sms.web.settings.' + key);
-            if (s === '[sms.web.settings.' + key + ']') {
+            var s = $scope.msg('sms.settings.' + key);
+            if (s === '[sms.settings.' + key + ']') {
                 s = key.substr(5);
             }
             return s;
+        };
+
+        $scope.tooltipOrBlank = function (key) {
+            var fullKey = "sms.settings." + key + ".tooltip",
+                ret = $scope.msg(fullKey);
+            if (ret === "[" + fullKey + "]") {
+                ret = "";
+            }
+            return ret;
         };
 
         $scope.submit = function () {
