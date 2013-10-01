@@ -18,6 +18,10 @@
     margin-bottom: 0;
 }
 
+.intro {
+    padding-left: 15px;
+}
+
 .accordion-heading, .accordion-toggle {
     padding: 0 !important;
 }
@@ -63,3 +67,7 @@
 
 .animate-repeat.ng-move { }
 .animate-repeat.ng-move.ng-move-active { }
+
+.messages {
+    height: 50px;
+}

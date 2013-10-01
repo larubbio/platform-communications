@@ -28,7 +28,7 @@
                     $timeout(function() {
                         $scope.messages.pop();
                     },
-                    5000); //hide the alert after 5 seconds
+                    3000); //hide the alert (and enable the Send button) after 3 seconds
                 },
                 function (response) {
                     handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
