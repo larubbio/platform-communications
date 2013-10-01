@@ -1,11 +1,10 @@
 package org.motechproject.sms.model;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.joda.time.DateTime;
-//import org.motechproject.sms.json.OutgoingSmsDeserializer;
 
 import java.util.List;
 import java.util.Objects;
+
 
 public class OutgoingSms {
     private List<String> recipients;
@@ -41,6 +40,14 @@ public class OutgoingSms {
         this.message = message;
     }
 
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
+    }
+
     public List<String> getRecipients() {
         return recipients;
     }
@@ -55,14 +62,6 @@ public class OutgoingSms {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public void setConfig(String config) {
-        this.config = config;
     }
 
     public DateTime getDeliveryTime() {
@@ -90,15 +89,15 @@ public class OutgoingSms {
 
         final OutgoingSms other = (OutgoingSms) obj;
 
-        return Objects.equals(this.recipients, other.recipients)
+        return Objects.equals(this.config, other.config)
+                && Objects.equals(this.recipients, other.recipients)
                 && Objects.equals(this.message, other.message)
-                && Objects.equals(this.config, other.config)
                 && Objects.equals(this.deliveryTime, other.deliveryTime);
     }
 
     @Override
     public String toString() {
-        return String.format("Sms{recipients='%s', message='%s', config='%s', deliveryTime='%s'}", recipients, message,
-                config, deliveryTime);
+        return String.format("Sms{config='%s', recipients='%s', message='%s', deliveryTime='%s'}",
+                config, recipients, message, deliveryTime);
     }
 }

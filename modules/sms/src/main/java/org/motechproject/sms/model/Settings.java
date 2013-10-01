@@ -21,8 +21,7 @@ public class Settings {
     private SettingsDto settingsDto;
 
     public Settings(SettingsFacade settingsFacade) {
-        Templates templates;
-
+        Templates templates = new Templates(settingsFacade);
         InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);
         try {
             String jsonText = IOUtils.toString(is);
@@ -31,10 +30,7 @@ public class Settings {
         } catch (IOException e) {
             throw new JsonIOException(e);
         }
-
-        templates = new Templates(settingsFacade);
         validateConfigs(templates.getTemplates());
-
         logger.debug("Loaded the following settingsDto:" + this.settingsDto.toString());
     }
 

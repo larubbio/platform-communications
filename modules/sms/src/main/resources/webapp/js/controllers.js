@@ -24,12 +24,11 @@
                 {},
                 $scope.sms,
                 function () {
-                    //todo: make the messages slowly disappear
                     $scope.messages.push("SMS successfully sent to provider.");
                     $timeout(function() {
-                        delete $scope.messages.pop();
+                        $scope.messages.pop();
                     },
-                    2000);
+                    5000); //hide the alert after 5 seconds
                 },
                 function (response) {
                     handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);

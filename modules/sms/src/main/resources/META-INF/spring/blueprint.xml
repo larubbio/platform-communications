@@ -21,10 +21,6 @@
                 <value>classpath:sms-settings.json</value>
             </list>
         </property>
-    </bean>
-
-    <bean id="smsTemplates" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="motech-sms"/>
         <property name="configFiles">
             <list>
                 <value>classpath:clickatell.properties</value>
