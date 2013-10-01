@@ -5,7 +5,7 @@ package org.motechproject.sms;
  *
  */
 
-public class SmsDeliveryFailureException extends Exception {
+public class SmsDeliveryFailureException extends RuntimeException {
 
     public SmsDeliveryFailureException(Exception cause) {
         super(cause);

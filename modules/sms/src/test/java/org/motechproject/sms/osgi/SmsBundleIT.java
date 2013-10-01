@@ -3,7 +3,7 @@ package org.motechproject.sms.osgi;
 import org.junit.After;
 import org.junit.Before;
 import org.motechproject.sms.model.OutgoingSms;
-import org.motechproject.sms.service.SmsSenderService;
+import org.motechproject.sms.service.SmsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class SmsBundleIT extends BaseOsgiIT {
 
     public void testSmsService() throws IOException, Exception {
 
-        SmsSenderService smsService = (SmsSenderService) applicationContext.getBean("smsSenderService");
+        SmsService smsService = (SmsService) applicationContext.getBean("smsSenderService");
 
         smsService.send(new OutgoingSms(Arrays.asList(new String[]{"+12065551212"}), "test message"));
 

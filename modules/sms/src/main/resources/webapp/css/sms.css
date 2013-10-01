@@ -68,6 +68,6 @@
 .animate-repeat.ng-move { }
 .animate-repeat.ng-move.ng-move-active { }
 
-.messages {
-    height: 50px;
+.communication {
+    min-height: 60px;
 }

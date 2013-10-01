@@ -6,7 +6,7 @@
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd"
         >
 
-    <osgi:reference id="smsSenderService"  interface="org.motechproject.sms.service.SmsSenderService"/>
+    <osgi:reference id="smsSenderService"  interface="org.motechproject.sms.service.SmsService"/>
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
 </beans>

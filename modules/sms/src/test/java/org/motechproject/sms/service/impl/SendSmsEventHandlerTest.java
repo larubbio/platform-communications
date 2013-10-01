@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.sms.service.SendSmsEventHandler;
-import org.motechproject.sms.service.SmsSenderService;
+import org.motechproject.sms.service.SmsService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 
@@ -24,7 +24,7 @@ public class SendSmsEventHandlerTest {
     SendSmsEventHandler smsEventHandler = new SendSmsEventHandler();
 
     @Mock
-    SmsSenderService smsSenderService;
+    SmsService smsService;
 
     @Before
     public void setUp() {
@@ -55,7 +55,7 @@ public class SendSmsEventHandlerTest {
 
         smsEventHandler.handle(new MotechEvent(SEND_SMS, values));
         ArgumentCaptor<Sms> captor = ArgumentCaptor.forClass(Sms.class);
-        verify(smsSenderService).send(captor.capture());
+        verify(smsService).send(captor.capture());
 
         assertEquals(captor.getValue().getFromAddress(), from);
         assertEquals(captor.getValue().getToAddress(), to);

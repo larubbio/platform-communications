@@ -3,12 +3,13 @@
 
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('TestController', function ($scope, $timeout, $http, TestService) {
+    smsModule.controller('TestController', function ($log, $scope, $timeout, $http, TestService) {
         $scope.sms = {};
         $scope.messages = [];
+        $scope.errors = [];
 
         $http.get('../sms/settings')
-            .success(function(res){
+            .success(function(res) {
                 var key;
                 $scope.settings = res;
                 for (key in $scope.settings.configs) {
@@ -19,21 +20,22 @@
                 }
             });
 
+        function hideMsgLater(index) {
+            return $timeout(function() {
+                $scope.messages.splice(index, 1);
+            }, 3000);
+        }
+
         $scope.sendSms = function () {
-            TestService.save(
-                {},
-                $scope.sms,
-                function () {
-                    $scope.messages.push("SMS successfully sent to provider.");
-                    $timeout(function() {
-                        $scope.messages.pop();
-                    },
-                    3000); //hide the alert (and enable the Send button) after 3 seconds
-                },
-                function (response) {
-                    handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
-                }
-            );
+
+            $http.post('../sms/send', $scope.sms)
+                .success(function(response) {
+                    var index = $scope.messages.push(response);
+                    hideMsgLater(index-1);
+                })
+                .failure(function(response) {
+                    $scope.errors.push(response);
+                });
         };
     });
 

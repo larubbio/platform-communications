@@ -1,31 +1,11 @@
 package org.motechproject.sms.web;
 
-import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.motechproject.sms.model.OutgoingSms;
-import org.motechproject.sms.service.SmsSenderService;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
-
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.constants.SendSmsConstants.RECIPIENTS;
-import static org.motechproject.sms.constants.SendSmsConstants.MESSAGE;
-import static org.motechproject.sms.constants.SendSmsConstants.DELIVERY_TIME;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
 public class SendSmsControllerTest {
 /*
     @Mock
-    private SmsSenderService senderService;
+    private SmsService senderService;
 
     private SendSmsController sendSmsController;
 

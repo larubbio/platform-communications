@@ -3,7 +3,6 @@ package org.motechproject.sms.service;
 import org.joda.time.DateTime;
 import org.motechproject.sms.constants.SendSmsConstants;
 import org.motechproject.sms.model.OutgoingSms;
-import org.motechproject.sms.service.SmsSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import java.util.List;
 public class SendSmsEventHandler {
 
     @Autowired
-    private SmsSenderService smsSenderService;
+    private SmsService smsService;
 
     @MotechListener (subjects = { SendSmsConstants.SEND_SMS })
     public void handle(MotechEvent event) {
@@ -24,7 +23,7 @@ public class SendSmsEventHandler {
         //TODO: null is ok, make sure we can do that
         DateTime deliveryTime = (DateTime) event.getParameters().get(SendSmsConstants.DELIVERY_TIME);
 
-        smsSenderService.send(new OutgoingSms(recipients, message, deliveryTime));
+        smsService.send(new OutgoingSms(recipients, message, deliveryTime));
     }
 }
 

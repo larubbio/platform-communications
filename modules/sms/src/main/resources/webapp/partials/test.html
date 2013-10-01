@@ -7,17 +7,20 @@
 
     <div class="clearfix">
         <h4 class="frame-title">{{msg('sms.web.test.title')}}</h4>
-        <div class="intro">{{msg('sms.web.test.intro')}}</div>
         <div class="inside">
 
-            <div class="alert alert-error" ng-show="settings.configs.length == 0">
-                You have not created any configurations, you will not be able to send of receive messages without one.<br/>
-                Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
-            </div>
-            <div class="messages">
+            <div class="communication">
+                <div class="alert alert-error" ng-show="settings.configs.length == 0">
+                    You have not created any configurations, you will not be able to send of receive messages without one.<br/>
+                    Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
+                </div>
                 <div ng-repeat="message in messages" class="alert alert-success alert-block animate-repeat">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     {{message}}
+                </div>
+                <div ng-repeat="error in errors" class="alert alert-error alert-block">
+                    <button type="button" class="close" ng-click="errors.splice($index, 1)">&times;</button>
+                    {{error.data}}
                 </div>
             </div>
 
@@ -39,7 +42,7 @@
                         <i class="icon-question-sign"></i>
                     </label>
                     <div class="controls">
-                        <input name="recipients" class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-pattern="/^[0-9, ]*$/" ng-list id="recipients" required focus="true" autofocus >
+                        <input name="recipients" class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-pattern="/^([+]?[0-9 ]+)(,[+]?[0-9 ]+)*$/" ng-list id="recipients" required focus="true" autofocus >
                         <span ng-show="form.recipients.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.test.required-field', msg('sms.web.test.recipients-field'))}}</span>
                         <span ng-show="form.recipients.$error.pattern && !form.$pristine" class="form-hint">{{msg('sms.web.test.bad-number-format', msg('sms.web.test.recipients-field'))}}</span>
                     </div>
@@ -48,7 +51,7 @@
                 <div class="control-group">
                     <label class="control-label" for="message">{{msg('sms.web.test.message')}}</label>
                     <div class="controls">
-                        <textarea name="message" class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" ng-model="sms.message"></textarea>
+                        <textarea id="message" class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" ng-model="sms.message"></textarea>
                     </div>
                 </div>
 
