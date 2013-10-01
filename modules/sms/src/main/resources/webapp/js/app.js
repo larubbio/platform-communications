@@ -4,7 +4,7 @@
     /* App Module */
 
     angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'ui.bootstrap', 'testService', 'templateService',
-    'logService', 'settingService', 'ngRoute']).config(['$routeProvider',
+    'logService', 'settingService', 'ngRoute', 'ngAnimate']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
                 when('/test', {templateUrl: '../sms/resources/partials/test.html', controller: 'TestController'}).

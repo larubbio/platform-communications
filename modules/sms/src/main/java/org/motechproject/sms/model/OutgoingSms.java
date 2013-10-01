@@ -7,11 +7,27 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Objects;
 
-//@JsonDeserialize(using = OutgoingSmsDeserializer.class)
 public class OutgoingSms {
     private List<String> recipients;
     private String message;
+    private String config;
     private DateTime deliveryTime;
+
+    public OutgoingSms() {
+    }
+
+    public OutgoingSms(String config, List<String> recipients, String message, DateTime deliveryTime) {
+        this.recipients = recipients;
+        this.message = message;
+        this.config = config;
+        this.deliveryTime = deliveryTime;
+    }
+
+    public OutgoingSms(String config, List<String> recipients, String message) {
+        this.recipients = recipients;
+        this.message = message;
+        this.config = config;
+    }
 
     public OutgoingSms(List<String> recipients, String message, DateTime deliveryTime) {
         this.recipients = recipients;
@@ -20,21 +36,41 @@ public class OutgoingSms {
     }
 
     public OutgoingSms(List<String> recipients, String message) {
+
         this.recipients = recipients;
         this.message = message;
-        this.deliveryTime = null;
     }
 
     public List<String> getRecipients() {
         return recipients;
     }
 
+    public void setRecipients(List<String> recipients) {
+        this.recipients = recipients;
+    }
+
     public String getMessage() {
         return message;
     }
 
-    public DateTime getAt() {
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
+    }
+
+    public DateTime getDeliveryTime() {
         return deliveryTime;
+    }
+
+    public void setDeliveryTime(DateTime deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
     @Override
@@ -56,11 +92,13 @@ public class OutgoingSms {
 
         return Objects.equals(this.recipients, other.recipients)
                 && Objects.equals(this.message, other.message)
+                && Objects.equals(this.config, other.config)
                 && Objects.equals(this.deliveryTime, other.deliveryTime);
     }
 
     @Override
     public String toString() {
-        return String.format("Sms{recipients='%s', message='%s', deliveryTime='%s'}", recipients, message, deliveryTime);
+        return String.format("Sms{recipients='%s', message='%s', config='%s', deliveryTime='%s'}", recipients, message,
+                config, deliveryTime);
     }
 }

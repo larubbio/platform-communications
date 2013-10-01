@@ -109,6 +109,11 @@
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
             <version>1.9.7-${external.dependency.release.tag}</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>0.22-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>

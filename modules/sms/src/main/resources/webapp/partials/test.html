@@ -2,15 +2,23 @@
 
     <!-- DEBUG
     <div class="alert alert-block">settings:{{settings}}</div>
-    <div class="alert alert-block">sms:{{sms}}</div>
     -->
+    <div class="alert alert-block">sms:{{sms}}</div>
 
     <div class="clearfix">
         <h4 class="frame-title">{{msg('sms.web.test.title')}}</h4>
+        <div class="intro">{{msg('sms.web.test.intro')}}</div>
         <div class="inside">
+
             <div class="alert alert-error" ng-show="settings.configs.length == 0">
                 You have not created any configurations, you will not be able to send of receive messages without one.<br/>
                 Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
+            </div>
+            <div ng-repeat="message in messages">
+                <div class="alert alert-success alert-block animate-show">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{message}}
+                </div>
             </div>
 
             <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-hide="settings.configs.length == 0">
@@ -31,7 +39,7 @@
                         <i class="icon-question-sign"></i>
                     </label>
                     <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" id="recipients" required focus="true" autofocus >
+                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-list id="recipients" required focus="true" autofocus >
                         <span ng-hide="form.$pristine || sms.recipients" class="form-hint">{{msg('sms.field.required', msg('sms.recipients'))}}</span>
                     </div>
                 </div>

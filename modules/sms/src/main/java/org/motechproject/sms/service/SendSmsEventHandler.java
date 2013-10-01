@@ -24,12 +24,7 @@ public class SendSmsEventHandler {
         //TODO: null is ok, make sure we can do that
         DateTime deliveryTime = (DateTime) event.getParameters().get(SendSmsConstants.DELIVERY_TIME);
 
-        try {
         smsSenderService.send(new OutgoingSms(recipients, message, deliveryTime));
-        }
-        catch (Exception e) {
-            //TODO: nuke this try/catch
-        }
     }
 }
 

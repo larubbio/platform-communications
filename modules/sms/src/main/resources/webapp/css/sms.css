@@ -18,25 +18,6 @@
     margin-bottom: 0;
 }
 
-.sms-config {
-    cursor: default;
-    margin-bottom: 15px;
-}
-
-.sms-config-action {
-    position: relative;
-    top: -2px;
-}
-
-.sms-nondefault-config {
-    color: #DEEFFF;
-    cursor: pointer;
-}
-
-.sms-config-settings {
-    margin-top: 20px;
-}
-
 .accordion-heading, .accordion-toggle {
     padding: 0 !important;
 }
@@ -49,19 +30,33 @@
     padding: 0px;
 }
 
-.accordion-body {
-}
-
 .stripes-bg {
     padding: 15px;
 }
 
 .tooltip.in {
-  opacity: 0.9;
-  filter: alpha(opacity=90);
-  font-weight: normal;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    font-weight: normal;
 }
 
-[ng\:cloak], [ng-cloak], .ng-cloak {
-    display: none !important;
+/* TODO see  http://docs.angularjs.org/api/ng.directive:ngRepeat#animations */
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove {
+    -webkit-transition:all linear 1s;
+    -moz-transition:all linear 1s;
+    -o-transition:all linear 1s;
+    transition:all linear 1s;
+    display:block!important;
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove {
+    opacity:0;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+    opacity:1;
 }

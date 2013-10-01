@@ -3,8 +3,9 @@
 
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('TestController', function ($scope, $http, TestService) {
+    smsModule.controller('TestController', function ($scope, $timeout, $http, TestService) {
         $scope.sms = {};
+        $scope.messages = [];
 
         $http.get('../sms/settings')
             .success(function(res){
@@ -19,12 +20,16 @@
             });
 
         $scope.sendSms = function () {
-
             TestService.save(
                 {},
                 $scope.sms,
                 function () {
-                    motechAlert('sms.test.alert.success', 'sms.test.alert.title');
+                    //todo: make the messages slowly disappear
+                    $scope.messages.push("SMS successfully sent to provider.");
+                    $timeout(function() {
+                        delete $scope.messages.pop();
+                    },
+                    2000);
                 },
                 function (response) {
                     handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
