@@ -1,11 +1,10 @@
 package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.sms.constants.SendSmsConstants;
-import org.motechproject.sms.model.OutgoingSms;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.sms.constants.SendSmsConstants;
+import org.motechproject.sms.model.OutgoingSms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.List;
 @Service
 public class SendSmsEventHandler {
 
-    @Autowired
     private SmsService smsService;
 
     @MotechListener (subjects = { SendSmsConstants.SEND_SMS })

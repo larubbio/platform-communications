@@ -8,13 +8,13 @@
         $scope.messages = [];
         $scope.errors = [];
 
-        $http.get('../sms/settings')
+        $http.get('../sms/configs')
             .success(function(res) {
                 var key;
-                $scope.settings = res;
-                for (key in $scope.settings.configs) {
-                    if ($scope.settings.configs[key]['default'] === 'true') {
-                        $scope.sms.config = $scope.settings.configs[key].name;
+                $scope.configs = res;
+                for (key in $scope.configs) {
+                    if ($scope.configs[key]['default'] === 'true') {
+                        $scope.sms.config = $scope.configs[key].name;
                          break;
                     }
                 }
@@ -41,48 +41,26 @@
 
 
     smsModule.controller('LogController', function ($scope, $http) {
-        $scope.log = {};
-/*
-        $http.get('../sms/settings')
-            .success(function(res){
-                var key;
-                $scope.settings = res;
-                for (key in $scope.settings.configs) {
-                    if ($scope.settings.configs[key]['default'] === 'true') {
-                        $scope.sms.config = $scope.settings.configs[key].name;
-                         break;
-                    }
-                }
-            });
-
-        $scope.sendSms = function () {
-
-            SendSmsService.save(
-                {},
-                $scope.sms,
-                function () {
-                    motechAlert('sms.test.alert.success', 'sms.test.alert.title');
-                },
-                function (response) {
-                    handleWithStackTrace('sms.test.alert.title', 'sms.test.alert.failure', response);
-                }
-            );
-        };
-*/
+        $scope.log = [];
     });
 
 
-    smsModule.controller('SettingsController', function ($scope, $http, SettingService, TemplateService) {
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
 
-        $http.get('../sms/settings')
-            .success(function(res){
+        function getConfigs(response) {
                 var i;
-                $scope.settings = res;
-                $scope.originalSettings = angular.copy($scope.settings);
+                $scope.configs = response;
+                $scope.configsSettings = angular.copy($scope.configs);
                 $scope.accordions = [];
-                for (i=0 ; i< $scope.settings.configs.length ; i = i + 1) {
+                for (i=0 ; i< $scope.configs.length ; i = i + 1) {
                     $scope.accordions.push(false);
                 }
+                $scope.errors = $scope.validateConfigs();
+        }
+
+        $http.get('../sms/configs')
+            .success(function(response){
+                getConfigs(response);
             });
 
         $scope.templates = TemplateService.get();
@@ -118,40 +96,40 @@
         };
 
         $scope.reset = function () {
-            $scope.settings = angular.copy($scope.originalSettings);
+            $scope.configs = angular.copy($scope.originalConfigs);
             $scope.collapseAccordions();
         };
 
         $scope.setDefault = function (index) {
             var i;
-            for (i = 0 ; i < $scope.settings.configs.length ; i = i + 1) {
+            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
                 if (i === index) {
-                    $scope.settings.configs[i]['default'] = 'true';
+                    $scope.configs[i]['default'] = 'true';
                 }
                 else {
-                    $scope.settings.configs[i]['default'] = 'false';
+                    $scope.configs[i]['default'] = 'false';
                 }
             }
         };
 
         $scope.setNewDefault = function () {
             var i;
-            for (i = 0 ; i < $scope.settings.configs.length ; i = i + 1) {
-                if ($scope.settings.configs[i]['default'] === 'true') {
+            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
+                if ($scope.configs[i]['default'] === 'true') {
                     return;
                 }
             }
-            $scope.settings.configs[0]['default'] = 'true';
+            $scope.configs[0]['default'] = 'true';
         };
 
         $scope.addConfig = function () {
-            $scope.settings.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'retry':$scope.msg('sms.settings.retry.default'), 'default':'false'});
+            $scope.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'retry':$scope.msg('sms.settings.retry.default'), 'default':'false'});
             $scope.accordions.push(true);
             $scope.setNewDefault();
         };
 
         $scope.isDirty = function () {
-            return !angular.equals($scope.originalSettings, $scope.settings);
+            return !angular.equals($scope.originalConfigs, $scope.configs);
         };
 
         $scope.betterMsg = function (key) {
@@ -171,14 +149,28 @@
             return ret;
         };
 
+        // todo - validate
+        // no or invalid retry count
+        // no or invalid template
+        // no duplicate config names
+
+        $scope.validateConfigs = function() {
+            var i, errors = [];
+            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
+                if (!$scope.configs[i].hasOwnProperty('name') || $scope.configs[i].name.length < 1) {
+                    errors.push($scope.msg('sms.settings.validate.no_name', $scope.configs[i]));
+                }
+            }
+            return errors;
+        };
+
         $scope.submit = function () {
 
-            SettingService.save(
+            ConfigService.save(
                 {},
-                $scope.settings,
-                function () {
-                    $scope.collapseAccordions();
-                    $scope.originalSettings = SettingService.get();
+                $scope.configs,
+                function (response) {
+                    getConfigs(response);
                 },
                 function (response) {
                     handleWithStackTrace('sms.header.error', 'server.error', response);

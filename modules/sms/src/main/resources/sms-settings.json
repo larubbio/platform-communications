@@ -1,28 +1,26 @@
-{
-    "configs" : [
-        {
-            "name" : "Clickatell",
-            "template" : "clickatell.properties",
-            "default"  : "true",
-            "user.username" : "clickuser",
-            "user.clickatell_api_key" : "5551212",
-            "user.password" : "s3cr3t"
-        },
-        {
-            "name" : "Nuntium HTTP",
-            "template" : "nuntium.properties",
-            "retry": "kj3",
-            "default"  : "false",
-            "user.username" : "nunuser",
-            "user.password" : "s3cr3t"
-        },
-        {
-            "name" : "Voxeo",
-            "template" : "voxeo.properties",
-            "retry": "6",
-            "default"  : "false",
-            "user.username" : "voxuser",
-            "user.password" : "s3cr3t"
-        }
-    ]
-}
+[
+    {
+        "name" : "Clickatell",
+        "template" : "clickatell.properties",
+        "default"  : "true",
+        "user.username" : "clickuser",
+        "user.clickatell_api_key" : "5551212",
+        "user.password" : "s3cr3t"
+    },
+    {
+        "name" : "Nuntium HTTP",
+        "template" : "nuntium.properties",
+        "retry": "3",
+        "default"  : "false",
+        "user.username" : "nunuser",
+        "user.password" : "s3cr3t"
+    },
+    {
+        "name" : "Voxeo",
+        "template" : "voxeo.properties",
+        "retry": "djwe",
+        "default"  : "false",
+        "user.username" : "voxuser",
+        "user.password" : "s3cr3t"
+    }
+]

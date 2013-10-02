@@ -16,8 +16,8 @@
         return $resource('../sms/templates');
     });
 
-    angular.module('settingService', ['ngResource']).factory('SettingService', function($resource) {
-        return $resource('../sms/settings');
+    angular.module('configService', ['ngResource']).factory('ConfigService', function($resource) {
+        return $resource('../sms/configs');
     });
 
 }());
