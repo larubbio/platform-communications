@@ -145,7 +145,7 @@
         };
 
         $scope.addConfig = function () {
-            $scope.settings.configs.push({'name':'Untitled', 'template':'', 'default':'false'});
+            $scope.settings.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'retry':$scope.msg('sms.settings.retry.default'), 'default':'false'});
             $scope.accordions.push(true);
             $scope.setNewDefault();
         };

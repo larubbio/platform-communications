@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
+
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
 
@@ -30,13 +32,19 @@ public class SmsServiceImpl implements SmsService {
      */
     public void send(final OutgoingSms outgoingSms){
         String config = outgoingSms.getConfig();
-
+        String template;
+        Properties templateProperties;
+/*
         if (config == null) {
             logger.info("No config specified, using default config.");
             config = settings.getDefaultConfig();
         }
+        else if (!settings.getConfigs().) {
+            throw new IllegalArgumentException(String.format("The configuration '%s' is invalid or does not exist.", config));
+        }
+        template = config.get
         logger.info("Using config: " + config);
-
+*/
         //throw new SmsDeliveryFailureException("Hello, world!");
 
         //TODO: send sms here!

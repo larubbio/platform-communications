@@ -24,7 +24,7 @@ public class SendSmsController {
     @ResponseBody
     public String sendSms(@RequestBody OutgoingSms outgoingSms) {
         senderService.send(outgoingSms);
-        return String.format("SMS to %s delivered to (%s) SMS provider", outgoingSms.getRecipients().toString(), outgoingSms.getConfig());
+        return String.format("The SMS to %s via the %s SMS provider was added to the message queue.", outgoingSms.getRecipients().toString(), outgoingSms.getConfig());
     }
 
     @ExceptionHandler(Exception.class)

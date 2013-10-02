@@ -3,7 +3,6 @@
         {
             "name" : "Clickatell",
             "template" : "clickatell.properties",
-            "retry": "3",
             "default"  : "true",
             "user.username" : "clickuser",
             "user.clickatell_api_key" : "5551212",
@@ -12,7 +11,7 @@
         {
             "name" : "Nuntium HTTP",
             "template" : "nuntium.properties",
-            "retry": "3",
+            "retry": "kj3",
             "default"  : "false",
             "user.username" : "nunuser",
             "user.password" : "s3cr3t"
@@ -20,7 +19,7 @@
         {
             "name" : "Voxeo",
             "template" : "voxeo.properties",
-            "retry": "3",
+            "retry": "6",
             "default"  : "false",
             "user.username" : "voxuser",
             "user.password" : "s3cr3t"

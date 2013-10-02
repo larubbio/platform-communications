@@ -17,6 +17,8 @@ import java.util.Properties;
 
 public class Settings {
     public static final String SMS_SETTINGS_FILE_NAME = "sms-settings.json";
+    // keep SMS_DEFAULT_RETRY in sync with sms.settings.retry.default in messages.properties
+    public static final Integer SMS_DEFAULT_RETRY = 3; // Default maximum retries
     private static final Logger logger = LoggerFactory.getLogger(Settings.class);
     private SettingsDto settingsDto;
 
@@ -34,7 +36,17 @@ public class Settings {
         logger.debug("Loaded the following settingsDto:" + this.settingsDto.toString());
     }
 
-    //todo: duplicate names & multiple defaults
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch(NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    //todo: check for duplicate names & multiple defaults
+    //todo: only check 'newly dropped
     private void validateConfigs(Map<String, Properties> templates) {
         List<Map<String, String>> configs = settingsDto.getConfigs();
         String firstConfigName = null;
@@ -47,6 +59,17 @@ public class Settings {
                 settingsDto.addError("The following config was ignored because it has no name: " + config.toString());
                 i.remove();
                 continue;
+            }
+            if (!config.containsKey("retry"))
+            {
+                //todo: resourcize/localize all
+                settingsDto.addError(String.format("No Retry Count for %s config, the default Retry Count value %d will be used. ", config.get("name"), SMS_DEFAULT_RETRY));
+                config.put("retry", SMS_DEFAULT_RETRY.toString());
+            }
+            else if (!isInteger(config.get("retry")))
+            {
+                settingsDto.addError(String.format("Invalid Retry Count for %s config, the default Retry Count value %d will be used.", config.get("name"), SMS_DEFAULT_RETRY));
+                config.put("retry", SMS_DEFAULT_RETRY.toString());
             }
             if (!config.containsKey("template") || config.get("template").length() < 1)
             {
