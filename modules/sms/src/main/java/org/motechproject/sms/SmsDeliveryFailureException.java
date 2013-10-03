@@ -1,11 +1,6 @@
 package org.motechproject.sms;
 
-/**
- * TODO
- *
- */
-
-public class SmsDeliveryFailureException extends RuntimeException {
+public class SmsDeliveryFailureException extends Exception {
 
     public SmsDeliveryFailureException(Exception cause) {
         super(cause);

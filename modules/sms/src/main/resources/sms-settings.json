@@ -3,9 +3,12 @@
         "name" : "Clickatell",
         "template" : "clickatell.properties",
         "default"  : "true",
+        "multi_recipient"  : "true",
         "max_retries" : "3",
-        "max_sms_size" : "16",
-        "split_header" : "Msg $1 of $2",
+        "max_sms_size" : "27",
+        "split_header" : "Msg $m...",
+        "split_footer" : "...of $t",
+        "split_exclude_last_footer" : "false",
 
         "user.username" : "clickuser",
         "user.clickatell_api_key" : "5551212",
@@ -15,9 +18,12 @@
         "name" : "Nuntium HTTP",
         "template" : "nuntium.properties",
         "default"  : "false",
+        "multi_recipient"  : "false",
         "max_retries" : "3",
         "max_sms_size" : "160",
-        "split_header" : "Msg $1 of $2",
+        "split_header" : "Msg $m of $t",
+        "split_footer" : "End of msg $m or $t",
+        "split_exclude_last_footer" : "true",
 
         "user.username" : "nunuser",
         "user.password" : "s3cr3t"
@@ -26,9 +32,12 @@
         "name" : "Voxeo",
         "template" : "voxeo.properties",
         "default"  : "false",
+        "multi_recipient"  : "false",
         "max_retries" : "3",
         "max_sms_size" : "160",
-        "split_header" : "Message $1 of $2",
+        "split_header" : "",
+        "split_footer" : "",
+        "split_exclude_last_footer" : "trueish",
 
         "user.username" : "voxuser",
         "user.password" : "s3cr3t"

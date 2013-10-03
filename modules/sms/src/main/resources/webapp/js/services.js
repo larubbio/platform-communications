@@ -36,7 +36,7 @@
         // no duplicate config names
 
         return function(scope, configs, templates, defaults) {
-            var i, j, errors = [], validConfigs = [], config, valid, defaultConfig = null, key, match;
+            var i, j, errors = [], validConfigs = [], config, valid, defaultConfig = null, key, match, size;
             for (i = 0 ; i < configs.length ; i = i + 1) {
                 valid = true;
                 config = configs[i];
@@ -70,6 +70,14 @@
                 }
 
                 //
+                // multi_recipient
+                //
+                if (!config.hasOwnProperty('multi_recipient') || (config.multi_recipient !== 'true' && config.multi_recipient !== 'false')) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_multi_recipient', config.name, defaults.multi_recipient));
+                    config.multi_recipient = defaults.multi_recipient;
+                }
+
+                //
                 // max_retries
                 //
                 if (!config.hasOwnProperty('max_retries') || config.max_retries.length < 1) {
@@ -86,14 +94,43 @@
                 } else if (isNaN(config.max_sms_size)) {
                     addError(errors, scope.msg('sms.settings.validate.invalid_max_sms_size', config.name, defaults.max_sms_size));
                 }
+                //
+                // header+footer size < max_sms_size
+                //
+                else {
+                    size = 0;
+                    if (config.hasOwnProperty('split_header') && config.split_header.length > 0) {
+                        size = size + config.split_header.length + 1; //+1 for the extra \n after header
+                    }
+                    if (config.hasOwnProperty('split_footer') && config.split_footer.length > 0) {
+                        size = size + config.split_header.length + 1; //+1 for the extra \n before footer
+                    }
+                    if (parseInt(config.max_sms_size, 10) <= size) {
+                        addError(errors, scope.msg('sms.settings.validate.templates_max_sms_size_mismatch', config.name));
+                        valid = false;
+                    }
+                }
 
                 //
                 // split_header
                 //
-                if (!config.hasOwnProperty('split_header') || config.split_header.length < 1) {
+                if (!config.hasOwnProperty('split_header')) {
                     addError(errors, scope.msg('sms.settings.validate.no_split_header', config.name, defaults.split_header));
-                } else if (!/^([\W\w]*\$1[\W\w]*\$2[\W\w]*)|([\W\w]*\$2[\W\w]*\$1[\W\w]*)$/.test(config.split_header)) {
-                    addError(errors, scope.msg('sms.settings.validate.invalid_split_header', config.name, defaults.split_header));
+                }
+
+                //
+                // split_footer
+                //
+                if (!config.hasOwnProperty('split_footer')) {
+                    addError(errors, scope.msg('sms.settings.validate.no_split_footer', config.name, defaults.split_footer));
+                }
+
+                //
+                // split_exclude_last_footer
+                //
+                if (!config.hasOwnProperty('split_exclude_last_footer') || (config.split_exclude_last_footer !== 'true' && config.split_exclude_last_footer !== 'false')) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_split_exclude_last_footer', config.name, defaults.split_exclude_last_footer));
+                    config.split_exclude_last_footer = defaults.split_exclude_last_footer;
                 }
 
                 //

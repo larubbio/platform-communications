@@ -63,15 +63,15 @@ TODO  - valid (or at least non-null) properties
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                <label class="control-label">{{msg('sms.settings.max_sms_size')}}</label>
-                                    <div class="controls">
-                                        <input class="input-mini-fluid" type="text" ng-model="config['max_sms_size']" tooltip="{{msg('sms.settings.max_sms_size.tooltip')}}" tooltip-placement="right">
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <label class="control-label">{{msg('sms.settings.split_header')}}</label>
-                                    <div class="controls">
-                                        <input class="input-medium-fluid" type="text" ng-model="config['split_header']" tooltip="{{msg('sms.settings.split_header.tooltip')}}" tooltip-placement="right">
+                                    <label for="split_header{{$index}}" class="control-label">{{msg('sms.settings.split_header')}}</label>
+                                    <div class="controls form-inline">
+                                        <input id="split_header{{$index}}" class="input-medium-fluid" type="text" ng-model="config['split_header']" tooltip="{{msg('sms.settings.split_header.tooltip')}}" tooltip-placement="right">
+                                        <label for="split_footer{{$index}}">{{msg('sms.settings.split_footer')}}</label>
+                                        <input id="split_footer{{$index}}" class="input-medium-fluid" type="text" ng-model="config['split_footer']" tooltip="{{msg('sms.settings.split_footer.tooltip')}}" tooltip-placement="right">
+                                        <label class="checkbox">
+                                            <input type="checkbox" ng-model="config['split_exclude_last_footer']" ng-true-value="true" ng-false-value="false" tooltip="{{msg('sms.settings.split_exclude_last_footer.tooltip')}}" tooltip-placement="right">
+                                            {{msg('sms.settings.split_exclude_last_footer')}}
+                                        </label>
                                     </div>
                                 </div>
                                 <div ng-repeat="(key, val) in config | excludeSpecials" class="control-group">
@@ -88,7 +88,7 @@ TODO  - valid (or at least non-null) properties
                         </accordion-group>
                     </accordion>
                 </div>
-                <div class="control-group" ng-show="isDirty()">
+                <div class="control-group" ng-show="isDirty() || (!form.$pristine && errors.length > 0)">
                     <button class="btn btn-primary" ng-click="reset()">Cancel</button>
                     <button class="btn btn-primary" ng-click="submit()">Save</button>
                 </div>

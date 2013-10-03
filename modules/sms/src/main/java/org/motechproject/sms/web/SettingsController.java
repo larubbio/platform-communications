@@ -39,6 +39,9 @@ public class SettingsController {
         map.put("max_retries", Defaults.MAX_RETRIES);
         map.put("max_sms_size", Defaults.MAX_SMS_SIZE);
         map.put("split_header", Defaults.SPLIT_HEADER);
+        map.put("split_footer", Defaults.SPLIT_FOOTER);
+        map.put("split_exclude_last_footer", Defaults.SPLIT_EXCLUDE);
+        map.put("multi_recipient", Defaults.MULTI_RECIPIENT);
         return map;
     }
 
