@@ -20,13 +20,14 @@
         return $resource('../sms/configs');
     });
 
-    angular.module("motech-sms").factory("ValidateConfigs", function(){
+    angular.module('motech-sms').factory('ValidateConfigs', function(){
 
-        var appendError = function(err, txt) {
-            if (err.length > 0) {
-                return err + ", and " + txt;
+        var addError = function(arr, err) {
+            // fragment starred below removes duplicates [needed by ng-repeat]
+            //                    ***********************
+            if (err.length > 0 && arr.indexOf(err) === -1) {
+                arr.push(err);
             }
-            return txt;
         };
 
         // todo - validate
@@ -35,41 +36,74 @@
         // no duplicate config names
 
         return function(scope, configs, templates) {
-            var i, errors = [], validConfigs = [], error, config, valid;
+            var i, j, errors = [], validConfigs = [], config, valid, defaultConfig = null, key, match;
             for (i = 0 ; i < configs.length ; i = i + 1) {
                 valid = true;
-                error = "";
                 config = configs[i];
 
                 //
                 // name
                 //
                 if (!config.hasOwnProperty('name') || config.name.length < 1) {
-                    error = appendError(error, scope.msg('sms.settings.validate.no_name', JSON.stringify(config)));
+                    addError(errors, scope.msg('sms.settings.validate.no_name', JSON.stringify(config)));
                     valid = false;
+                }
+
+                //
+                // default
+                //
+                if (!config.hasOwnProperty('default') || (config['default'] !== 'true' && config['default'] !== 'false')) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_default', JSON.stringify(config)));
+                }
+                else if (config['default'] === 'true') {
+                    if (defaultConfig !== null) {
+                        addError(errors, scope.msg('sms.settings.validate.duplicate_default', config.name, configs[defaultConfig].name));
+                        config['default'] = 'false';
+                    }
                 }
 
                 //
                 // retry count
                 //
                 if (!config.hasOwnProperty('retry') || config.retry.length < 1) {
-                    error = appendError(error, scope.msg('sms.settings.validate.no_retry', config.name));
+                    addError(errors, scope.msg('sms.settings.validate.no_retry', config.name));
                 } else if (isNaN(config.retry)) {
-                    error = appendError(error, scope.msg('sms.settings.validate.invalid_retry', config.name));
+                    addError(errors, scope.msg('sms.settings.validate.invalid_retry', config.name));
                 }
 
-                // fragment starred below removes duplicates [needed by ng-repeat]
                 //
-                //                      *****************************
-                if (error.length > 0 && errors.indexOf(error) > -1) {
-                    errors.push(error);
+                // template
+                //
+                if (!config.hasOwnProperty('template') || config.template < 1) {
+                    addError(errors, scope.msg('sms.settings.validate.no_template', config.name));
+                    valid = false;
+                } else {
+                    match = false;
+                    for (key in templates) {
+                        if (key === config.template) {
+                            match = true;
+                            break;
+                        }
+                    }
+                    if (!match) {
+                        addError(errors, scope.msg('sms.settings.validate.no_matching_template', config.template, config.name));
+                        valid = false;
+                    }
                 }
+
                 if (valid) {
+                    if (config['default'] === 'true') {
+                        defaultConfig = i;
+                    }
                     validConfigs.push(config);
                 }
             }
 
-            return {"errors" : errors, "configs": validConfigs};
+            if (defaultConfig === null && validConfigs.length > 0) {
+                validConfigs[0]['default'] = 'true';
+            }
+
+            return {'errors' : errors, 'configs': validConfigs};
         };
     });
 

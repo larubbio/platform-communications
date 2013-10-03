@@ -27,7 +27,7 @@ public class Configs {
             configs = gson.fromJson(jsonText, type);
         } catch (Exception e) {
             //todo: what do we do with these? (might be coming from malformed .json config file)
-            throw new JsonIOException(e);
+            throw new JsonIOException("Might you have a malformed " + SMS_SETTINGS_FILE_NAME + " file? " + e.toString());
         }
     }
 

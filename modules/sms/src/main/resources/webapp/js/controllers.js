@@ -10,23 +10,24 @@
 
         $http.get('../sms/configs')
             .success(function(responseConfigs) {
-                $http.get('../sms/templates').success(function(responseTemplates) {
-                    var key, valid;
-                    valid = ValidateConfigs($scope, responseConfigs, responseTemplates);
-                    if (valid.errors.length > 0) {
-                        $scope.error = $scope.msg('sms.settings.validate.config_error');
-                    }
-                    $scope.configs = valid.configs;
-                    for (key in $scope.configs) {
-                        if ($scope.configs[key]['default'] === 'true') {
-                            $scope.sms.config = $scope.configs[key].name;
-                             break;
+                $http.get('../sms/templates')
+                    .success(function(responseTemplates) {
+                        var key, valid;
+                        valid = new ValidateConfigs($scope, responseConfigs, responseTemplates);
+                        if (valid.errors.length > 0) {
+                            $scope.error = $scope.msg('sms.settings.validate.config_error', '<a href="#/settings">Settings</a>');
                         }
-                    }
-                })
-                .error(function() {
-                    $scope.error = $scope.msg('sms.settings.validate.no_template');
-                })
+                        $scope.configs = valid.configs;
+                        for (key in $scope.configs) {
+                            if ($scope.configs[key]['default'] === 'true') {
+                                $scope.sms.config = $scope.configs[key].name;
+                                 break;
+                            }
+                        }
+                    })
+                    .error(function() {
+                        $scope.error = $scope.msg('sms.settings.validate.no_template');
+                    });
             })
             .error(function() {
                 $scope.error = $scope.msg('sms.settings.validate.no_config');
@@ -63,7 +64,7 @@
 
         function getConfigs(configs, templates) {
                 var i, valid;
-                valid = ValidateConfigs($scope, configs, templates);
+                valid = new ValidateConfigs($scope, configs, templates);
                 $scope.errors = valid.errors;
                 $scope.configs = valid.configs;
                 $scope.originalConfigs = angular.copy($scope.configs);
@@ -73,15 +74,16 @@
                 }
         }
 
-        $http.get('../sms/templates').success(function(respTemplates){
-            $scope.templates = respTemplates;
-            $http.get('../sms/configs')
-                .success(function(respConfigs){
-                    getConfigs(respConfigs, respTemplates);
-                })
-                .error(function() {
-                    $scope.errors.push($scope.msg('sms.settings.validate.no_config'));
-                });
+        $http.get('../sms/templates')
+            .success(function(respTemplates){
+                $scope.templates = respTemplates;
+                $http.get('../sms/configs')
+                    .success(function(respConfigs){
+                        getConfigs(respConfigs, respTemplates);
+                    })
+                    .error(function() {
+                        $scope.errors.push($scope.msg('sms.settings.validate.no_config'));
+                    });
             })
             .error(function() {
                  $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));

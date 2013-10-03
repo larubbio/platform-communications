@@ -6,7 +6,7 @@
         "user.prop" : "noname"
     },
     {
-        "name"     : "";
+        "name"     : "",
         "template" : "clickatell.properties",
         "default"  : "true",
         "retry": "3",
@@ -21,23 +21,40 @@
         "name" : "invalid retry empty",
         "retry": "",
         "template" : "clickatell.properties",
-        "default"  : "true"
+        "default"  : "false"
     },
     {
         "name" : "invalid retry NAN",
         "retry": "dew",
         "template" : "clickatell.properties",
-        "default"  : "true"
+        "default"  : "false"
     },
     {
         "name" : "no retry",
         "template" : "clickatell.properties",
-        "default"  : "true"
+        "default"  : "false"
+    },
+    {
+        "name" : "no template",
+        "retry": "3",
+        "default"  : "false"
+    },
+    {
+        "name" : "invalid blank template",
+        "template" : "",
+        "retry": "3",
+        "default"  : "false"
+    },
+    {
+        "name" : "invalid no match template",
+        "template" : "o9u34r",
+        "retry": "3",
+        "default"  : "false"
     },
     {
         "name" : "Clickatell",
         "template" : "clickatell.properties",
-        "default"  : "true",
+        "default"  : "false",
         "user.username" : "clickuser",
         "user.clickatell_api_key" : "5551212",
         "user.password" : "s3cr3t"

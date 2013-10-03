@@ -14,7 +14,7 @@ public class Templates {
     public Templates(SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
         try {
-            templates = (Map<String, Properties>)settingsFacade.getAllProperties(settingsFacade.getSymbolicName());
+            templates = settingsFacade.getAllProperties(settingsFacade.getSymbolicName());
         } catch (IOException e) {
             //todo: what do i really want to do here?
             throw new JsonIOException(e);
