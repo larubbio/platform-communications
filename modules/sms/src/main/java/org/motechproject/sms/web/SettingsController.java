@@ -37,7 +37,8 @@ public class SettingsController {
     public Map<String, String> getDefaults() {
         Map<String, String> map = new HashMap<String, String>();
         map.put("max_retries", Defaults.MAX_RETRIES);
-        map.put("max_message_size", Defaults.MAX_MESSAGE_SIZE);
+        map.put("max_sms_size", Defaults.MAX_SMS_SIZE);
+        map.put("split_header", Defaults.SPLIT_HEADER);
         return map;
     }
 

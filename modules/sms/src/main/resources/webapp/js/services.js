@@ -47,6 +47,13 @@
                 if (!config.hasOwnProperty('name') || config.name.length < 1) {
                     addError(errors, scope.msg('sms.settings.validate.no_name', JSON.stringify(config)));
                     valid = false;
+                } else {
+                    for (j=0 ; j<validConfigs.length ; j=j+1) {
+                        if (config.name === validConfigs[j].name) {
+                            addError(errors, scope.msg('sms.settings.validate.duplicate_name', config.name, JSON.stringify(config)));
+                            valid = false;
+                        }
+                    }
                 }
 
                 //
@@ -63,7 +70,7 @@
                 }
 
                 //
-                // max_retries count
+                // max_retries
                 //
                 if (!config.hasOwnProperty('max_retries') || config.max_retries.length < 1) {
                     addError(errors, scope.msg('sms.settings.validate.no_max_retries', config.name, defaults.max_retries));
@@ -72,12 +79,21 @@
                 }
 
                 //
-                // max_message_size count
+                // max_sms_size
                 //
-                if (!config.hasOwnProperty('max_message_size') || config.max_message_size.length < 1) {
-                    addError(errors, scope.msg('sms.settings.validate.no_max_message_size', config.name, defaults.max_message_size));
-                } else if (isNaN(config.max_message_size)) {
-                    addError(errors, scope.msg('sms.settings.validate.invalid_max_message_size', config.name, defaults.max_message_size));
+                if (!config.hasOwnProperty('max_sms_size') || config.max_sms_size.length < 1) {
+                    addError(errors, scope.msg('sms.settings.validate.no_max_sms_size', config.name, defaults.max_sms_size));
+                } else if (isNaN(config.max_sms_size)) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_max_sms_size', config.name, defaults.max_sms_size));
+                }
+
+                //
+                // split_header
+                //
+                if (!config.hasOwnProperty('split_header') || config.split_header.length < 1) {
+                    addError(errors, scope.msg('sms.settings.validate.no_split_header', config.name, defaults.split_header));
+                } else if (!/^([\W\w]*\$1[\W\w]*\$2[\W\w]*)|([\W\w]*\$2[\W\w]*\$1[\W\w]*)$/.test(config.split_header)) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_split_header', config.name, defaults.split_header));
                 }
 
                 //
