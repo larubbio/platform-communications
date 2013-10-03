@@ -7,25 +7,16 @@ TODO  - valid (or at least non-null) properties
 -->
 
 <div class="row-fluid tab-frame">
-
-    <!-- DEBUG
-    <div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
-    -->
-    <div class="alert alert-block">templates:{{templates}}</div>
-    <div class="alert alert-block">configs:{{configs}}</div>
-    <div class="alert alert-block">errors:{{errors}}</div>
-
-
     <h4 class="frame-title">SMS Provider Configurations</h4>
     <div class="inside">
         <div class="clearfix margin-before">
             <form name="form" class="form-horizontal" novalidate>
 
-                <div class="alert alert-error" ng-show="configs.length == 0">
+                <div class="alert alert-error alert-block" ng-show="configs.length == 0">
                     You have not created any configurations, you will not be able to send of receive messages without one.
                 </div>
-                <div ng-show="errors">
-                    <div class="alert alert-error" ng-repeat="error in errors" ng-cloak>
+                <div ng-show="errors.length > 0">
+                    <div class="alert alert-error alert-block" ng-repeat="error in errors" ng-cloak>
                         {{error}}
                     </div>
                 </div>
@@ -93,3 +84,10 @@ TODO  - valid (or at least non-null) properties
         </div>
     </div>
 </div>
+
+<!-- DEBUG
+<div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
+<div class="alert alert-block">templates:{{templates}}</div>
+<div class="alert alert-block">configs:{{configs}}</div>
+<div class="alert alert-block">errors:{{errors}}</div>
+-->

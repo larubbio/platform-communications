@@ -1,16 +1,11 @@
 <div class="row-fluid tab-frame">
 
-    <!-- DEBUG
-    -->
-    <div class="alert alert-block">configs:{{configs}}</div>
-    <div class="alert alert-block">sms:{{sms}}</div>
-
     <div class="clearfix">
         <h4 class="frame-title">{{msg('sms.web.test.title')}}</h4>
         <div class="inside">
 
             <div class="communication">
-                <div class="alert alert-error" ng-show="configs.length == 0">
+                <div class="alert alert-error alert-block" ng-show="configs.length == 0">
                     You have not created any configurations, you will not be able to send of receive messages without one.<br/>
                     Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
                 </div>
@@ -18,9 +13,8 @@
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     {{message}}
                 </div>
-                <div ng-repeat="error in errors" class="alert alert-error alert-block">
-                    <button type="button" class="close" ng-click="errors.splice($index, 1)">&times;</button>
-                    {{error.data}}
+                <div ng-show="error.length > 0" class="alert alert-error alert-block">
+                    {{error}}
                 </div>
             </div>
 
@@ -62,3 +56,9 @@
         </div>
     </div>
 </div>
+
+
+<!-- DEBUG
+<div class="alert alert-block">configs:{{configs}}</div>
+<div class="alert alert-block">sms:{{sms}}</div>
+-->

@@ -3,21 +3,33 @@
 
     var smsModule = angular.module('motech-sms');
 
-    smsModule.controller('TestController', function ($log, $scope, $timeout, $http, TestService) {
+    smsModule.controller('TestController', function ($log, $scope, $timeout, $http, TestService, ValidateConfigs) {
         $scope.sms = {};
         $scope.messages = [];
-        $scope.errors = [];
+        $scope.error = "";
 
         $http.get('../sms/configs')
-            .success(function(res) {
-                var key;
-                $scope.configs = res;
-                for (key in $scope.configs) {
-                    if ($scope.configs[key]['default'] === 'true') {
-                        $scope.sms.config = $scope.configs[key].name;
-                         break;
+            .success(function(responseConfigs) {
+                $http.get('../sms/templates').success(function(responseTemplates) {
+                    var key, valid;
+                    valid = ValidateConfigs($scope, responseConfigs, responseTemplates);
+                    if (valid.errors.length > 0) {
+                        $scope.error = $scope.msg('sms.settings.validate.config_error');
                     }
-                }
+                    $scope.configs = valid.configs;
+                    for (key in $scope.configs) {
+                        if ($scope.configs[key]['default'] === 'true') {
+                            $scope.sms.config = $scope.configs[key].name;
+                             break;
+                        }
+                    }
+                })
+                .error(function() {
+                    $scope.error = $scope.msg('sms.settings.validate.no_template');
+                })
+            })
+            .error(function() {
+                $scope.error = $scope.msg('sms.settings.validate.no_config');
             });
 
         function hideMsgLater(index) {
@@ -33,8 +45,8 @@
                     var index = $scope.messages.push(response);
                     hideMsgLater(index-1);
                 })
-                .failure(function(response) {
-                    $scope.errors.push(response);
+                .error(function(response) {
+                    $scope.error = response;
                 });
         };
     });
@@ -45,25 +57,36 @@
     });
 
 
-    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService, ValidateConfigs) {
 
-        function getConfigs(response) {
-                var i;
-                $scope.configs = response;
-                $scope.configsSettings = angular.copy($scope.configs);
+        $scope.errors = [];
+
+        function getConfigs(configs, templates) {
+                var i, valid;
+                valid = ValidateConfigs($scope, configs, templates);
+                $scope.errors = valid.errors;
+                $scope.configs = valid.configs;
+                $scope.originalConfigs = angular.copy($scope.configs);
                 $scope.accordions = [];
                 for (i=0 ; i< $scope.configs.length ; i = i + 1) {
                     $scope.accordions.push(false);
                 }
-                $scope.errors = $scope.validateConfigs();
         }
 
-        $http.get('../sms/configs')
-            .success(function(response){
-                getConfigs(response);
-            });
+        $http.get('../sms/templates').success(function(respTemplates){
+            $scope.templates = respTemplates;
+            $http.get('../sms/configs')
+                .success(function(respConfigs){
+                    getConfigs(respConfigs, respTemplates);
+                })
+                .error(function() {
+                    $scope.errors.push($scope.msg('sms.settings.validate.no_config'));
+                });
+            })
+            .error(function() {
+                 $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));
+             });
 
-        $scope.templates = TemplateService.get();
 
         /* TODO
 
@@ -149,33 +172,15 @@
             return ret;
         };
 
-        // todo - validate
-        // no or invalid retry count
-        // no or invalid template
-        // no duplicate config names
-
-        $scope.validateConfigs = function() {
-            var i, errors = [];
-            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
-                if (!$scope.configs[i].hasOwnProperty('name') || $scope.configs[i].name.length < 1) {
-                    errors.push($scope.msg('sms.settings.validate.no_name', $scope.configs[i]));
-                }
-            }
-            return errors;
-        };
-
         $scope.submit = function () {
-
-            ConfigService.save(
-                {},
-                $scope.configs,
-                function (response) {
-                    getConfigs(response);
-                },
-                function (response) {
+            $http.post('../sms/configs', $scope.configs)
+                .success(function (response) {
+                    getConfigs(response, $scope.templates);
+                })
+                .error (function (response) {
+                    //todo: better than that!
                     handleWithStackTrace('sms.header.error', 'server.error', response);
-                }
-            );
+                });
         };
     });
 }());

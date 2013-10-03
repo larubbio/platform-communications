@@ -1,5 +1,40 @@
 [
     {
+        "template" : "clickatell.properties",
+        "default"  : "true",
+        "retry": "3",
+        "user.prop" : "noname"
+    },
+    {
+        "name"     : "";
+        "template" : "clickatell.properties",
+        "default"  : "true",
+        "retry": "3",
+        "user.prop" : "invalidname1"
+    },
+    {
+        "name" : "no retry",
+        "template" : "clickatell.properties",
+        "default"  : "true"
+    },
+    {
+        "name" : "invalid retry empty",
+        "retry": "",
+        "template" : "clickatell.properties",
+        "default"  : "true"
+    },
+    {
+        "name" : "invalid retry NAN",
+        "retry": "dew",
+        "template" : "clickatell.properties",
+        "default"  : "true"
+    },
+    {
+        "name" : "no retry",
+        "template" : "clickatell.properties",
+        "default"  : "true"
+    },
+    {
         "name" : "Clickatell",
         "template" : "clickatell.properties",
         "default"  : "true",

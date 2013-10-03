@@ -3,7 +3,6 @@ package org.motechproject.sms.service;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.model.Configs;
 import org.motechproject.sms.model.OutgoingSms;
-import org.motechproject.sms.model.Configs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,6 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.core.io.ByteArrayResource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -26,7 +25,8 @@ public class Configs {
             Gson gson = new Gson();
             Type type = new TypeToken<List<Map<String, String>>>() {}.getType();
             configs = gson.fromJson(jsonText, type);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            //todo: what do we do with these? (might be coming from malformed .json config file)
             throw new JsonIOException(e);
         }
     }
