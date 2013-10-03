@@ -4,17 +4,15 @@
         <h4 class="frame-title">{{msg('sms.web.test.title')}}</h4>
         <div class="inside">
 
-            <div class="communication">
-                <div class="alert alert-error alert-block" ng-show="configs.length == 0">
-                    You have not created any configurations, you will not be able to send of receive messages without one.<br/>
-                    Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
-                </div>
-                <div ng-repeat="message in messages" class="alert alert-success alert-block animate-repeat">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{message}}
-                </div>
-                <div ng-show="error.length > 0" class="alert alert-error alert-block" ng-bind-html="error"></div>
+            <div class="alert alert-error alert-block" ng-show="configs.length == 0">
+                You have not created any configurations, you will not be able to send of receive messages without one.<br/>
+                Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
             </div>
+            <div ng-repeat="message in messages" class="alert alert-success alert-block animate-repeat">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{message}}
+            </div>
+            <div ng-show="error.length > 0" class="alert alert-error alert-block" ng-bind-html="error"></div>
 
             <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-hide="configs.length == 0">
 

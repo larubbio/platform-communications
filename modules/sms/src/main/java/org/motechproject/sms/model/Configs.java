@@ -35,6 +35,24 @@ public class Configs {
         return configs;
     }
 
+    public Map<String, String> getConfig(String name) {
+        for (Map<String, String> config : configs) {
+            if (config.get("name").equals(name)) {
+                return config;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Configuration '%s' does not exist.", name));
+    }
+
+    public Map<String, String> getDefaultConfig() {
+        for (Map<String, String> config : configs) {
+            if (config.get("default").equals("true")) {
+                return config;
+            }
+        }
+        throw new IllegalStateException(String.format("No default configuration."));
+    }
+
     public void setConfigs(List<Map<String, String>> configs) {
 
         //todo: validate settingsDto here ?

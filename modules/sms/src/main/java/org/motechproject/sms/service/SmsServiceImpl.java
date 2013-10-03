@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Properties;
+import java.util.Map;
 
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
@@ -27,21 +27,21 @@ public class SmsServiceImpl implements SmsService {
      * TODO
      */
     public void send(final OutgoingSms outgoingSms){
-        String config = outgoingSms.getConfig();
-        String template;
-        Properties templateProperties;
-/*
-        if (config == null) {
+        String configName = outgoingSms.getConfig();
+        Map<String, String> config;
+
+        if (configName == null) {
             logger.info("No config specified, using default config.");
-            config = settings.getDefaultConfig();
+            config = configs.getDefaultConfig();
         }
-        else if (!settings.getConfigs().) {
-            throw new IllegalArgumentException(String.format("The configuration '%s' is invalid or does not exist.", config));
+        else {
+            config = configs.getConfig(configName);
         }
-        template = config.get
-        logger.info("Using config: " + config);
-*/
-        //throw new SmsDeliveryFailureException("Hello, world!");
+
+        logger.info("Using config: " + config.get("name"));
+
+        // Chunk message if it's too large
+
 
         //TODO: send sms here!
     }

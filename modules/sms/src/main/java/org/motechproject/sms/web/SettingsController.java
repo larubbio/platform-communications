@@ -1,6 +1,7 @@
 package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.constants.Defaults;
 import org.motechproject.sms.model.Configs;
 import org.motechproject.sms.model.Templates;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -28,6 +30,15 @@ public class SettingsController {
     public Map<String, Properties> getTemplates() {
         Templates templates = new Templates(settingsFacade);
         return templates.getTemplates();
+    }
+
+    @RequestMapping(value = "/defaults", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> getDefaults() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("max_retries", Defaults.MAX_RETRIES);
+        map.put("max_message_size", Defaults.MAX_MESSAGE_SIZE);
+        return map;
     }
 
     @RequestMapping(value = "/configs", method = RequestMethod.GET)

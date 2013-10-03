@@ -8,35 +8,41 @@
         $scope.messages = [];
         $scope.error = "";
 
-        $http.get('../sms/configs')
-            .success(function(responseConfigs) {
-                $http.get('../sms/templates')
-                    .success(function(responseTemplates) {
-                        var key, valid;
-                        valid = new ValidateConfigs($scope, responseConfigs, responseTemplates);
-                        if (valid.errors.length > 0) {
-                            $scope.error = $scope.msg('sms.settings.validate.config_error', '<a href="#/settings">Settings</a>');
-                        }
-                        $scope.configs = valid.configs;
-                        for (key in $scope.configs) {
-                            if ($scope.configs[key]['default'] === 'true') {
-                                $scope.sms.config = $scope.configs[key].name;
-                                 break;
+        $http.get('../sms/defaults')
+            .success(function(respDefaults){
+            $http.get('../sms/configs')
+                .success(function(respConfigs) {
+                    $http.get('../sms/templates')
+                        .success(function(respTemplates) {
+                            var key, valid;
+                            valid = new ValidateConfigs($scope, respConfigs, respTemplates, respDefaults);
+                            if (valid.errors.length > 0) {
+                                $scope.error = $scope.msg('sms.settings.validate.config_error', '<a href="#/settings">Settings</a>');
                             }
-                        }
-                    })
-                    .error(function() {
-                        $scope.error = $scope.msg('sms.settings.validate.no_template');
-                    });
+                            $scope.configs = valid.configs;
+                            for (key in $scope.configs) {
+                                if ($scope.configs[key]['default'] === 'true') {
+                                    $scope.sms.config = $scope.configs[key].name;
+                                     break;
+                                }
+                            }
+                        })
+                        .error(function() {
+                            $scope.error = $scope.msg('sms.settings.validate.no_template');
+                        });
+                })
+                .error(function() {
+                    $scope.error = $scope.msg('sms.settings.validate.no_config');
+                });
             })
             .error(function() {
-                $scope.error = $scope.msg('sms.settings.validate.no_config');
+                $scope.error = $scope.msg('sms.settings.validate.no_defaults');
             });
 
         function hideMsgLater(index) {
             return $timeout(function() {
                 $scope.messages.splice(index, 1);
-            }, 3000);
+            }, 5000);
         }
 
         $scope.sendSms = function () {
@@ -62,9 +68,9 @@
 
         $scope.errors = [];
 
-        function getConfigs(configs, templates) {
+        function getConfigs(configs, templates, defaults) {
                 var i, valid;
-                valid = new ValidateConfigs($scope, configs, templates);
+                valid = new ValidateConfigs($scope, configs, templates, defaults);
                 $scope.errors = valid.errors;
                 $scope.configs = valid.configs;
                 $scope.originalConfigs = angular.copy($scope.configs);
@@ -74,19 +80,25 @@
                 }
         }
 
-        $http.get('../sms/templates')
-            .success(function(respTemplates){
-                $scope.templates = respTemplates;
-                $http.get('../sms/configs')
-                    .success(function(respConfigs){
-                        getConfigs(respConfigs, respTemplates);
-                    })
-                    .error(function() {
-                        $scope.errors.push($scope.msg('sms.settings.validate.no_config'));
-                    });
-            })
+        $http.get('../sms/defaults')
+            .success(function(respDefaults){
+            $http.get('../sms/templates')
+                .success(function(respTemplates){
+                    $scope.templates = respTemplates;
+                    $http.get('../sms/configs')
+                        .success(function(respConfigs){
+                            getConfigs(respConfigs, respTemplates, respDefaults);
+                        })
+                        .error(function(respConfigError) {
+                            $scope.errors.push($scope.msg('sms.settings.validate.no_config', respConfigError));
+                        });
+                })
+                .error(function() {
+                     $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));
+                 });
+             })
             .error(function() {
-                 $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));
+                 $scope.errors.push($scope.msg('sms.settings.validate.no_defaults'));
              });
 
 
@@ -148,7 +160,7 @@
         };
 
         $scope.addConfig = function () {
-            $scope.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'retry':$scope.msg('sms.settings.retry.default'), 'default':'false'});
+            $scope.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'max_retries':$scope.msg('sms.settings.max_retries.default'), 'default':'false'});
             $scope.accordions.push(true);
             $scope.setNewDefault();
         };

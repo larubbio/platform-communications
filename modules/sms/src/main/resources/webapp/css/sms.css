@@ -71,3 +71,9 @@
 .communication {
     min-height: 60px;
 }
+
+/* remove ugly dashed outline around focussed buttons */
+/* todo: make that MOTECH-wide ? */
+.btn:focus {
+    outline: 0;
+}

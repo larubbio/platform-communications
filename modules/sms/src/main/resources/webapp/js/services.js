@@ -2,7 +2,7 @@
     'use strict';
 
     /* Services */
-    //TODO see if we're using all these, nuke otherwise
+    /* TODO see if we're using all these, nuke otherwise */
 
     angular.module('testService', ['ngResource']).factory('TestService', function($resource) {
         return $resource('../sms/send');
@@ -31,11 +31,11 @@
         };
 
         // todo - validate
-        // no or invalid retry count
+        // no or invalid max_retries count
         // no or invalid template
         // no duplicate config names
 
-        return function(scope, configs, templates) {
+        return function(scope, configs, templates, defaults) {
             var i, j, errors = [], validConfigs = [], config, valid, defaultConfig = null, key, match;
             for (i = 0 ; i < configs.length ; i = i + 1) {
                 valid = true;
@@ -63,12 +63,21 @@
                 }
 
                 //
-                // retry count
+                // max_retries count
                 //
-                if (!config.hasOwnProperty('retry') || config.retry.length < 1) {
-                    addError(errors, scope.msg('sms.settings.validate.no_retry', config.name));
-                } else if (isNaN(config.retry)) {
-                    addError(errors, scope.msg('sms.settings.validate.invalid_retry', config.name));
+                if (!config.hasOwnProperty('max_retries') || config.max_retries.length < 1) {
+                    addError(errors, scope.msg('sms.settings.validate.no_max_retries', config.name, defaults.max_retries));
+                } else if (isNaN(config.max_retries)) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_max_retries', config.name, defaults.max_retries));
+                }
+
+                //
+                // max_message_size count
+                //
+                if (!config.hasOwnProperty('max_message_size') || config.max_message_size.length < 1) {
+                    addError(errors, scope.msg('sms.settings.validate.no_max_message_size', config.name, defaults.max_message_size));
+                } else if (isNaN(config.max_message_size)) {
+                    addError(errors, scope.msg('sms.settings.validate.invalid_max_message_size', config.name, defaults.max_message_size));
                 }
 
                 //

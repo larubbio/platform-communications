@@ -1,68 +1,20 @@
 [
-    {
-        "template" : "clickatell.properties",
-        "default"  : "true",
-        "retry": "3",
-        "user.prop" : "noname"
-    },
-    {
-        "name"     : "",
-        "template" : "clickatell.properties",
-        "default"  : "true",
-        "retry": "3",
-        "user.prop" : "invalidname1"
-    },
-    {
-        "name" : "no retry",
-        "template" : "clickatell.properties",
-        "default"  : "true"
-    },
-    {
-        "name" : "invalid retry empty",
-        "retry": "",
-        "template" : "clickatell.properties",
-        "default"  : "false"
-    },
-    {
-        "name" : "invalid retry NAN",
-        "retry": "dew",
-        "template" : "clickatell.properties",
-        "default"  : "false"
-    },
-    {
-        "name" : "no retry",
-        "template" : "clickatell.properties",
-        "default"  : "false"
-    },
-    {
-        "name" : "no template",
-        "retry": "3",
-        "default"  : "false"
-    },
-    {
-        "name" : "invalid blank template",
-        "template" : "",
-        "retry": "3",
-        "default"  : "false"
-    },
-    {
-        "name" : "invalid no match template",
-        "template" : "o9u34r",
-        "retry": "3",
-        "default"  : "false"
-    },
+    /* Comments here? */
     {
         "name" : "Clickatell",
         "template" : "clickatell.properties",
-        "default"  : "false",
+        "max_retries" : "3",
+        "max_message_size" : "16",
+        "default"  : "true",
         "user.username" : "clickuser",
-        "user.clickatell_api_key" : "5551212",
+        "user.clickatell_api_key" : "5551212", /* And there? */
         "user.password" : "s3cr3t"
     },
     {
         "name" : "Nuntium HTTP",
         "template" : "nuntium.properties",
-        "retry": "3",
+        "max_retries" : "3",
+        "max_message_size" : "160",
         "default"  : "false",
         "user.username" : "nunuser",
         "user.password" : "s3cr3t"
@@ -70,7 +22,8 @@
     {
         "name" : "Voxeo",
         "template" : "voxeo.properties",
-        "retry": "djwe",
+        "max_retries" : "3",
+        "max_message_size" : "160",
         "default"  : "false",
         "user.username" : "voxuser",
         "user.password" : "s3cr3t"

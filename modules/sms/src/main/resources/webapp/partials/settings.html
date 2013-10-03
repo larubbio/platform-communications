@@ -50,9 +50,9 @@ TODO  - valid (or at least non-null) properties
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label class="control-label">{{msg('sms.settings.retry')}}</label>
+                                    <label class="control-label">{{msg('sms.settings.max_retries')}}</label>
                                     <div class="controls">
-                                        <input class="input-mini-fluid" type="text" ng-model="config['retry']" tooltip="{{msg('sms.settings.retry.tooltip')}}" tooltip-placement="right">
+                                        <input class="input-mini-fluid" type="text" ng-model="config['max_retries']" tooltip="{{msg('sms.settings.max_retries.tooltip')}}" tooltip-placement="right">
                                     </div>
                                 </div>
                                 <div class="control-group">
@@ -85,9 +85,9 @@ TODO  - valid (or at least non-null) properties
     </div>
 </div>
 
+<!-- DEBUG
 <div class="alert alert-block">templates:{{templates}}</div>
 <div class="alert alert-block">configs:{{configs}}</div>
 <div class="alert alert-block">errors:{{errors}}</div>
-<!-- DEBUG
 <div class="alert alert-block">originalConfigs:{{originalConfigs}}</div>
 -->
