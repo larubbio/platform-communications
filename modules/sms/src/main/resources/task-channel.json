@@ -104,16 +104,15 @@
                                 ]
                               }
                             ],
-
-/*
- * Changes here should be reflected in SendSmsConstants.java
- */
-
     "actionTaskEvents": [
                             {
                               "displayName" : "sms.task.action.send",
                               "subject" : "send_sms",
                               "actionParameters" : [
+                                {
+                                  "key" : "config",
+                                  "displayName" : "sms.task.action.send.config"
+                                },
                                 {
                                   "key" : "recipients",
                                   "type" : "LIST",

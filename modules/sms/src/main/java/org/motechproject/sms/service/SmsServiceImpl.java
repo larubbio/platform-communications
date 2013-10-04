@@ -22,7 +22,7 @@ import java.util.Map;
 public class SmsServiceImpl implements SmsService {
 
     private SettingsFacade settingsFacade;
-    private Logger logger = LoggerFactory.getLogger(SmsService.class);
+    private Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
     private EventRelay eventRelay;
     private MotechSchedulerService schedulerService;
 
@@ -122,14 +122,14 @@ public class SmsServiceImpl implements SmsService {
 
         if (isMultiRecipientSupported) {
             for (String part : messageParts) {
-                logger.info("Sending message [{}] to multiple recipients {}.", part, outgoingSms.getRecipients());
-                eventRelay.sendEventMessage(new SendSmsEvent(outgoingSms.getRecipients(), part).toMotechEvent());
+                logger.info("Sending message [{}] to multiple recipients {}.", part.toString().replace("\n", "\\n"), outgoingSms.getRecipients());
+                eventRelay.sendEventMessage(new SendSmsEvent(config.get("name"), outgoingSms.getRecipients(), part).toMotechEvent());
             }
         } else {
             for (String recipient : outgoingSms.getRecipients()) {
                 for (String part : messageParts) {
-                    logger.info("Sending message [{}] to one recipient {}.", part, recipient);
-                    eventRelay.sendEventMessage(new SendSmsEvent(Arrays.asList(recipient), part).toMotechEvent());
+                    logger.info("Sending message [{}] to one recipient {}.", part.toString().replace("\n", "\\n"), recipient);
+                    eventRelay.sendEventMessage(new SendSmsEvent(config.get("name"), Arrays.asList(recipient), part).toMotechEvent());
                 }
             }
         }

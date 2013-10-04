@@ -98,6 +98,6 @@ public class OutgoingSms {
     @Override
     public String toString() {
         return String.format("Sms{config='%s', recipients='%s', message='%s', deliveryTime='%s'}",
-                config, recipients, message, deliveryTime);
+                config, recipients, message.replace("\n", "\\n"), deliveryTime);
     }
 }

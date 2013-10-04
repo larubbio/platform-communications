@@ -2,7 +2,7 @@ package org.motechproject.sms.web;
 
 import static org.mockito.Mockito.verify;
 
-public class SendSmsControllerTest {
+public class SendControllerTest {
 /*
     @Mock
     private SmsService senderService;
