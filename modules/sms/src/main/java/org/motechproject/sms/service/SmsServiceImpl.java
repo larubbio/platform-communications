@@ -59,8 +59,8 @@ public class SmsServiceImpl implements SmsService {
         if (messageLength <= maxSize) {
             parts.add(message);
         } else {
-            //NOTE: nifty trick: since the format placeholders $m and $t are two characters wide and we assume no more
-            //than 99 parts, we don't need to do a String.format() to figure out the length of the actual header/footer
+            //NOTE: since the format placeholders $m and $t are two characters wide and we assume no more than
+            //99 parts, we don't need to do a String.format() to figure out the length of the actual header/footer
             headerTemplate = headerTemplate + "\n";
             footerTemplate = "\n" + footerTemplate;
             Integer textSize = maxSize - headerTemplate.length() - footerTemplate.length();
@@ -112,13 +112,19 @@ public class SmsServiceImpl implements SmsService {
         Boolean excludeLastFooter = Boolean.parseBoolean(propOrVal(config, "split_footer", Defaults.SPLIT_EXCLUDE));
         Boolean isMultiRecipientSupported = Boolean.parseBoolean(propOrVal(config, "multi_recipient", Defaults.MULTI_RECIPIENT));
 
-        // -2 to account for the added \n after and before the header & footer
+        // -2 to account for the added \n after the header and before the footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
             throw new IllegalArgumentException("The combined sizes of the header and footer templates are larger than the maximum SMS size!");
         }
 
         List<String> messageParts = splitMessage(outgoingSms.getMessage(), maxSize, header, footer, excludeLastFooter);
         logger.info("messageParts: {}", messageParts.toString().replace("\n", "\\n"));
+
+        /*
+        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(new SendSmsEvent(recipients, message, deliveryTime).toMotechEvent(), deliveryTime.toDate());
+        log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
+        schedulerService.safeScheduleRunOnceJob(schedulableJob);
+         */
 
         if (isMultiRecipientSupported) {
             for (String part : messageParts) {
