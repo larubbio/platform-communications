@@ -1,7 +1,10 @@
 package org.motechproject.sms.service;
 
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
+import org.motechproject.sms.event.SendSmsEvent;
 import org.motechproject.sms.model.Configs;
 import org.motechproject.sms.model.OutgoingSms;
 import org.slf4j.Logger;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -18,14 +22,19 @@ import java.util.Map;
 public class SmsServiceImpl implements SmsService {
 
     private SettingsFacade settingsFacade;
-    private static Logger logger = LoggerFactory.getLogger(SmsService.class);
+    private Logger logger = LoggerFactory.getLogger(SmsService.class);
+    private EventRelay eventRelay;
+    private MotechSchedulerService schedulerService;
+
 
     @Autowired
-    public SmsServiceImpl(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
+    public SmsServiceImpl(@Qualifier("smsSettings") final SettingsFacade settingsFacade, EventRelay eventRelay, MotechSchedulerService schedulerService) {
         //todo: persist settings or reload them for each call?
-        //todo: right not I'm doing the latter...
+        //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
         this.settingsFacade = settingsFacade;
+        this.eventRelay = eventRelay;
+        this.schedulerService = schedulerService;
     }
 
     protected String emptyPropOrVal(Map<String, String> map, String key, String val) {
@@ -95,12 +104,13 @@ public class SmsServiceImpl implements SmsService {
         }
 
         //todo: die if things aren't right, right?
-        //todo: die if footer+header > max_sms_size
+        //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
 
         Integer maxSize = Integer.parseInt(propOrVal(config, "max_sms_size", Defaults.MAX_SMS_SIZE)); //todo: what if it's an unparsable string?
         String header = emptyPropOrVal(config, "split_header", Defaults.SPLIT_HEADER);
         String footer = emptyPropOrVal(config, "split_footer", Defaults.SPLIT_FOOTER);
         Boolean excludeLastFooter = Boolean.parseBoolean(propOrVal(config, "split_footer", Defaults.SPLIT_EXCLUDE));
+        Boolean isMultiRecipientSupported = Boolean.parseBoolean(propOrVal(config, "multi_recipient", Defaults.MULTI_RECIPIENT));
 
         // -2 to account for the added \n after and before the header & footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
@@ -109,12 +119,19 @@ public class SmsServiceImpl implements SmsService {
 
         List<String> messageParts = splitMessage(outgoingSms.getMessage(), maxSize, header, footer, excludeLastFooter);
         logger.info("messageParts: {}", messageParts.toString().replace("\n", "\\n"));
-        /*
+
         if (isMultiRecipientSupported) {
-            generateOneSendSmsEvent(recipients, partMessages, deliveryTime);
+            for (String part : messageParts) {
+                logger.info("Sending message [{}] to multiple recipients {}.", part, outgoingSms.getRecipients());
+                eventRelay.sendEventMessage(new SendSmsEvent(outgoingSms.getRecipients(), part).toMotechEvent());
+            }
         } else {
-            generateSendSmsEventsForEachRecipient(recipients, partMessages, deliveryTime);
+            for (String recipient : outgoingSms.getRecipients()) {
+                for (String part : messageParts) {
+                    logger.info("Sending message [{}] to one recipient {}.", part, recipient);
+                    eventRelay.sendEventMessage(new SendSmsEvent(Arrays.asList(recipient), part).toMotechEvent());
+                }
+            }
         }
-        */
     }
 }

@@ -1,25 +1,7 @@
 package org.motechproject.sms.service.impl;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.motechproject.sms.service.SendSmsEventHandler;
-import org.motechproject.sms.service.SmsService;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.annotations.MotechListener;
-
-import java.lang.reflect.Method;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.verify;
-import static org.motechproject.sms.constants.SendSmsConstants.SEND_SMS;
-
 public class SendSmsEventHandlerTest {
-
+/*
     @InjectMocks
     SendSmsEventHandler smsEventHandler = new SendSmsEventHandler();
 
@@ -38,7 +20,7 @@ public class SendSmsEventHandlerTest {
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
         assertArrayEquals(new String[]{SEND_SMS}, annotation.subjects());
     }
-/*
+
     @Test
     public void testIfSmsSenderServiceIsCalledWithEventValues(){
 

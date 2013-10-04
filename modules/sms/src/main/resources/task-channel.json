@@ -104,6 +104,11 @@
                                 ]
                               }
                             ],
+
+/*
+ * Changes here should be reflected in SendSmsConstants.java
+ */
+
     "actionTaskEvents": [
                             {
                               "displayName" : "sms.task.action.send",

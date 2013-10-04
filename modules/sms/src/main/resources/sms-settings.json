@@ -37,7 +37,7 @@
         "max_sms_size" : "160",
         "split_header" : "",
         "split_footer" : "",
-        "split_exclude_last_footer" : "trueish",
+        "split_exclude_last_footer" : "true",
 
         "user.username" : "voxuser",
         "user.password" : "s3cr3t"
