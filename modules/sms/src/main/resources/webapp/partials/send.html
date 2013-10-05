@@ -12,16 +12,16 @@
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 {{message}}
             </div>
-            <div ng-show="error.length > 0" class="alert alert-error alert-block" ng-bind-html="error"></div>
+            <div ng-show="error.length > 0" class="alert alert-error alert-block" ng-bind="error"></div>
 
             <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-hide="configs.length == 0">
 
                 <div class="control-group">
                     <label ng-disabled="configs" class="control-label">{{msg('sms.web.test.config')}}</label>
                     <div class="controls">
-                        <label class="radio inline" ng-repeat="config in configs">
-                            <input type="radio" value="{{config.name}}" ng-model="sms.config" ng-checked="config.default == 'true' || configs.length == 1">
-                            {{config.name}}
+                        <label class="radio inline" ng-repeat="(name, conf) in config.configs">
+                            <input type="radio" value="{{name}}" ng-model="sms.config">
+                            {{name}}
                         </label>
                     </div>
                 </div>
@@ -55,6 +55,7 @@
 
 
 <!-- DEBUG
-<div class="alert alert-block">configs:{{configs}}</div>
-<div class="alert alert-block">sms:{{sms}}</div>
 -->
+<div class="alert alert-block">config:{{config}}</div>
+<div class="alert alert-block">config.defaultConfig:{{config.defaultConfig}}</div>
+<div class="alert alert-block">sms:{{sms}}</div>

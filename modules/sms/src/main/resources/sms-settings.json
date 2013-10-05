@@ -1,45 +1,47 @@
-[
-    {
-        "name" : "Clickatell",
-        "template" : "clickatell.properties",
-        "default"  : "true",
-        "multi_recipient"  : "true",
-        "max_retries" : "3",
-        "max_sms_size" : "27",
-        "split_header" : "Msg $m...",
-        "split_footer" : "...of $t",
-        "split_exclude_last_footer" : "false",
-
-        "user.username" : "clickuser",
-        "user.clickatell_api_key" : "5551212",
-        "user.password" : "s3cr3t"
-    },
-    {
-        "name" : "Nuntium HTTP",
-        "template" : "nuntium.properties",
-        "default"  : "false",
-        "multi_recipient"  : "false",
-        "max_retries" : "3",
-        "max_sms_size" : "160",
-        "split_header" : "Msg $m of $t",
-        "split_footer" : "End of msg $m or $t",
-        "split_exclude_last_footer" : "true",
-
-        "user.username" : "nunuser",
-        "user.password" : "s3cr3t"
-    },
-    {
-        "name" : "Voxeo",
-        "template" : "voxeo.properties",
-        "default"  : "false",
-        "multi_recipient"  : "false",
-        "max_retries" : "3",
-        "max_sms_size" : "160",
-        "split_header" : "",
-        "split_footer" : "",
-        "split_exclude_last_footer" : "true",
-
-        "user.username" : "voxuser",
-        "user.password" : "s3cr3t"
-    }
-]
+{
+    "defaultConfig" : "Nuntium HTTP",
+    "configs" :
+        [{
+            "name" : "Clickatell",
+            "templateName" : "clickatell.properties",
+            "multiRecipientSupport"  : true,
+            "maxRetries" : 3,
+            "maxSmsSize" : 27,
+            "splitHeader" : "Msg $m...",
+            "splitFooter" : "...of $t",
+            "excludeLastFooter" : false,
+            "props" : [
+                {"username" : "clickuser"},
+                {"clickatell_api_key" : "5551212"},
+                {"password" : "s3cr3t"}
+            ]
+        },
+        {
+            "name" : "Nuntium HTTP",
+            "templateName" : "nuntium.properties",
+            "multiRecipientSupport"  : false,
+            "maxRetries" : 3,
+            "maxSmsSize" : 160,
+            "splitHeader" : "Msg $m of $t",
+            "splitFooter" : "End of msg $m or $t",
+            "excludeLastFooter" : true,
+            "props" : [
+                {"user.username" : "nunuser"},
+                {"user.password" : "s3cr3t"}
+            ]
+        },
+        {
+            "name" : "Voxeo",
+            "templateName" : "voxeo.properties",
+            "multiRecipientSupport"  : false,
+            "maxRetries" : 3,
+            "maxSmsSize" : 160,
+            "splitHeader" : "",
+            "splitFooter" : "",
+            "excludeLastFooter" : true,
+            "props" : [
+                {"user.username" : "voxuser"},
+                {"user.password" : "s3cr3t"}
+            ]
+        }]
+}

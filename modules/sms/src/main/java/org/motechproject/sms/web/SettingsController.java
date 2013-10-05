@@ -3,6 +3,7 @@ package org.motechproject.sms.web;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
 import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.Templates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+//todo: find a way to report useful information to implementers who drop in malformed templates
 
 @Controller
 public class SettingsController {
@@ -34,8 +37,8 @@ public class SettingsController {
 
     @RequestMapping(value = "/defaults", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> getDefaults() {
-        Map<String, String> map = new HashMap<String, String>();
+    public Map<String, Object> getDefaults() {
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("max_retries", Defaults.MAX_RETRIES);
         map.put("max_sms_size", Defaults.MAX_SMS_SIZE);
         map.put("split_header", Defaults.SPLIT_HEADER);
@@ -47,20 +50,20 @@ public class SettingsController {
 
     @RequestMapping(value = "/configs", method = RequestMethod.GET)
     @ResponseBody
-    public List<Map<String, String>> getConfigs() {
+    public ConfigsDto getConfigs() {
         Configs configs = new Configs(settingsFacade);
-        return configs.getConfigs();
+        return configs.getConfigsDto();
     }
 
     @RequestMapping(value = "/configs", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<Map<String, String>> setConfigs(@RequestBody List<Map<String, String>> configs) {
+    public ConfigsDto setConfigs(@RequestBody ConfigsDto configsDto) {
         Configs settings = new Configs(settingsFacade);
-        settings.setConfigs(configs);
+        //todo: settings.setConfigs(configs);
         // reload settings
-        settings = new Configs(settingsFacade);
-        return settings.getConfigs();
+        //todo: settings = new Configs(settingsFacade);
+        return settings.getConfigsDto();
     }
 
     //todo: since configs are validated client-side, do we need that?

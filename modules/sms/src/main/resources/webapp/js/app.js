@@ -3,13 +3,13 @@
 
     /* App Module */
 
-    angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'ui.bootstrap', 'testService', 'templateService',
+    angular.module('motech-sms', ['motech-dashboard', 'ngCookies', 'ui.bootstrap', 'sendService', 'templateService',
     'logService', 'configService', 'ngRoute', 'ngAnimate', 'ngSanitize']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
-                when('/test', {templateUrl: '../sms/resources/partials/test.html', controller: 'TestController'}).
+                when('/send', {templateUrl: '../sms/resources/partials/send.html', controller: 'SendController'}).
                 when('/log', {templateUrl: '../sms/resources/partials/log.html', controller: 'LogController'}).
                 when('/settings', {templateUrl: '../sms/resources/partials/settings.html', controller: 'SettingsController'}).
-                otherwise({redirectTo: '/test'});
+                otherwise({redirectTo: '/send'});
     }]);
 }());

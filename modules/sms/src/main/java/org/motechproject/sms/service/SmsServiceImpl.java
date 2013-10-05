@@ -5,7 +5,9 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
 import org.motechproject.sms.event.SendSmsEvent;
+import org.motechproject.sms.model.Config;
 import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.OutgoingSms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
@@ -28,27 +29,13 @@ public class SmsServiceImpl implements SmsService {
 
 
     @Autowired
-    public SmsServiceImpl(@Qualifier("smsSettings") final SettingsFacade settingsFacade, EventRelay eventRelay, MotechSchedulerService schedulerService) {
+    public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay, MotechSchedulerService schedulerService) {
         //todo: persist settings or reload them for each call?
         //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
         this.settingsFacade = settingsFacade;
         this.eventRelay = eventRelay;
         this.schedulerService = schedulerService;
-    }
-
-    protected String emptyPropOrVal(Map<String, String> map, String key, String val) {
-        if (map.containsKey(key)) {
-            return map.get(key);
-        }
-        return val;
-    }
-
-    static private String propOrVal(Map<String, String> map, String key, String val) {
-        if (map.containsKey(key) && (map.get(key).length() > 0)) {
-            return map.get(key);
-        }
-        return val;
     }
 
      static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate, boolean excludeLastFooter) {
@@ -91,26 +78,24 @@ public class SmsServiceImpl implements SmsService {
      * TODO
      */
     public void send(final OutgoingSms outgoingSms){
-        Configs configs = new Configs(settingsFacade);
+        ConfigsDto configsDto = new Configs(settingsFacade).getConfigsDto();
         String configName = outgoingSms.getConfig();
-        Map<String, String> config;
+        Config config;
 
         if (configName == null) {
             logger.info("No config specified, using default config.");
-            config = configs.getDefaultConfig();
+            configName = configsDto.getDefaultConfig();
         }
-        else {
-            config = configs.getConfig(configName);
-        }
+        config = configsDto.getConfigs().get(configName);
 
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
 
-        Integer maxSize = Integer.parseInt(propOrVal(config, "max_sms_size", Defaults.MAX_SMS_SIZE)); //todo: what if it's an unparsable string?
-        String header = emptyPropOrVal(config, "split_header", Defaults.SPLIT_HEADER);
-        String footer = emptyPropOrVal(config, "split_footer", Defaults.SPLIT_FOOTER);
-        Boolean excludeLastFooter = Boolean.parseBoolean(propOrVal(config, "split_footer", Defaults.SPLIT_EXCLUDE));
-        Boolean isMultiRecipientSupported = Boolean.parseBoolean(propOrVal(config, "multi_recipient", Defaults.MULTI_RECIPIENT));
+        Integer maxSize = config.getMaxSmsSize();
+        String header = config.getSplitHeader();
+        String footer = config.getSplitFooter();
+        Boolean excludeLastFooter = config.getExcludeLastFooter();
+        Boolean isMultiRecipientSupported = config.getMultiRecipientSupport();
 
         // -2 to account for the added \n after the header and before the footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
@@ -128,14 +113,14 @@ public class SmsServiceImpl implements SmsService {
 
         if (isMultiRecipientSupported) {
             for (String part : messageParts) {
-                logger.info("Sending message [{}] to multiple recipients {}.", part.toString().replace("\n", "\\n"), outgoingSms.getRecipients());
-                eventRelay.sendEventMessage(new SendSmsEvent(config.get("name"), outgoingSms.getRecipients(), part).toMotechEvent());
+                logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"), outgoingSms.getRecipients());
+                eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), outgoingSms.getRecipients(), part).toMotechEvent());
             }
         } else {
             for (String recipient : outgoingSms.getRecipients()) {
                 for (String part : messageParts) {
-                    logger.info("Sending message [{}] to one recipient {}.", part.toString().replace("\n", "\\n"), recipient);
-                    eventRelay.sendEventMessage(new SendSmsEvent(config.get("name"), Arrays.asList(recipient), part).toMotechEvent());
+                    logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
+                    eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), Arrays.asList(recipient), part).toMotechEvent());
                 }
             }
         }

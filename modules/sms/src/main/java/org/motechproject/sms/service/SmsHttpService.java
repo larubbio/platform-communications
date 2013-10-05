@@ -1,102 +1,49 @@
-package org.motechproject.sms.sms;
+package org.motechproject.sms.service;
 
-/*
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.event.MotechEvent;
+import org.apache.http.client.HttpClient;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.SmsDeliveryFailureException;
+import org.motechproject.sms.model.Configs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
-import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.api.DeliveryStatus;
-import org.motechproject.sms.api.SmsDeliveryFailureException;
-import org.motechproject.sms.api.domain.SmsRecord;
-import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.http.SMSGatewayResponse;
-import org.motechproject.sms.http.TemplateReader;
-import org.motechproject.sms.http.event.SendSmsDTEvent;
-import org.motechproject.sms.http.template.Authentication;
-import org.motechproject.sms.http.template.SmsHttpTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-
-import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
-import static org.motechproject.sms.api.DeliveryStatus.DELIVERY_CONFIRMED;
-import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
-import static org.motechproject.sms.api.SMSType.OUTBOUND;
-import static org.motechproject.sms.api.constants.EventDataKeys.FAILURE_COUNT;
-import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
-import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENT;
-import static org.motechproject.sms.api.constants.EventSubjects.SMS_FAILURE_NOTIFICATION;
-*/
-
-//todo: should that be SmsHttpHelper instead?
 
 //@Service
 public class SmsHttpService {
-/*
     private static Logger log = LoggerFactory.getLogger(SmsHttpService.class);
-
     private EventRelay eventRelay;
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
-    private SmsAuditService smsAuditService;
-    private TemplateReader templateReader;
-
-    private Random random = new Random();
-    private final Integer maxRetries;
+    private Configs configs;
 
     @Autowired
     public SmsHttpService(EventRelay eventRelay, HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
-                          @Qualifier("smsApiSettings") SettingsFacade settings, SmsAuditService smsAuditService,
-                          TemplateReader templateReader) {
+                          @Qualifier("smsSettings") SettingsFacade settings) {
         this.eventRelay = eventRelay;
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
-        this.smsAuditService = smsAuditService;
-        this.templateReader = templateReader;
-
-        String maxRetriesAsString = settings.getProperty("max_retries");
-        this.maxRetries = maxRetriesAsString != null ? Integer.parseInt(maxRetriesAsString) : 0;
+        this.configs = new Configs(settings);
     }
 
+/*
     public void sendSms(List<String> recipients, String message) throws SmsDeliveryFailureException {
         sendSms(recipients, message, 0);
     }
-
     public void sendSms(List<String> recipients, String message, Integer failureCount) throws SmsDeliveryFailureException {
         if (CollectionUtils.isEmpty(recipients) || StringUtils.isEmpty(message)) {
             throw new IllegalArgumentException("Recipients or Message should not be empty");
@@ -104,7 +51,6 @@ public class SmsHttpService {
 
         String response = null;
         HttpMethod httpMethod = null;
-        SmsHttpTemplate smsHttpTemplate = template();
         DateTime sendTime = DateUtil.now();
 
         try {

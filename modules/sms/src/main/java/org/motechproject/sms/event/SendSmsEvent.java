@@ -2,7 +2,7 @@ package org.motechproject.sms.event;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.sms.constants.SendSmsConstants;
+import org.motechproject.sms.constants.SendSmsEventConstants;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,34 +16,34 @@ public class SendSmsEvent {
 
     public SendSmsEvent(String config, List<String> recipients, String message) {
         Map<String, Object> params = new HashMap<>();
-        params.put(SendSmsConstants.CONFIG, config);
-        params.put(SendSmsConstants.RECIPIENTS, recipients);
-        params.put(SendSmsConstants.MESSAGE, message);
-        event = new MotechEvent(SendSmsConstants.SEND_SMS, params);
+        params.put(SendSmsEventConstants.CONFIG, config);
+        params.put(SendSmsEventConstants.RECIPIENTS, recipients);
+        params.put(SendSmsEventConstants.MESSAGE, message);
+        event = new MotechEvent(SendSmsEventConstants.SEND_SMS, params);
     }
 
     public SendSmsEvent(String config, List<String> recipients, String message, DateTime deliveryTime) {
         Map<String, Object> params = new HashMap<>();
-        params.put(SendSmsConstants.CONFIG, config);
-        params.put(SendSmsConstants.RECIPIENTS, recipients);
-        params.put(SendSmsConstants.MESSAGE, message);
-        params.put(SendSmsConstants.DELIVERY_TIME, deliveryTime);
-        event = new MotechEvent(SendSmsConstants.SEND_SMS, params);
+        params.put(SendSmsEventConstants.CONFIG, config);
+        params.put(SendSmsEventConstants.RECIPIENTS, recipients);
+        params.put(SendSmsEventConstants.MESSAGE, message);
+        params.put(SendSmsEventConstants.DELIVERY_TIME, deliveryTime);
+        event = new MotechEvent(SendSmsEventConstants.SEND_SMS, params);
     }
 
     public SendSmsEvent(List<String> recipients, String message) {
         Map<String, Object> params = new HashMap<>();
-        params.put(SendSmsConstants.RECIPIENTS, recipients);
-        params.put(SendSmsConstants.MESSAGE, message);
-        event = new MotechEvent(SendSmsConstants.SEND_SMS, params);
+        params.put(SendSmsEventConstants.RECIPIENTS, recipients);
+        params.put(SendSmsEventConstants.MESSAGE, message);
+        event = new MotechEvent(SendSmsEventConstants.SEND_SMS, params);
     }
 
     public SendSmsEvent(List<String> recipients, String message, DateTime deliveryTime) {
         Map<String, Object> params = new HashMap<>();
-        params.put(SendSmsConstants.RECIPIENTS, recipients);
-        params.put(SendSmsConstants.MESSAGE, message);
-        params.put(SendSmsConstants.DELIVERY_TIME, deliveryTime);
-        event = new MotechEvent(SendSmsConstants.SEND_SMS, params);
+        params.put(SendSmsEventConstants.RECIPIENTS, recipients);
+        params.put(SendSmsEventConstants.MESSAGE, message);
+        params.put(SendSmsEventConstants.DELIVERY_TIME, deliveryTime);
+        event = new MotechEvent(SendSmsEventConstants.SEND_SMS, params);
     }
 
     public MotechEvent toMotechEvent() {

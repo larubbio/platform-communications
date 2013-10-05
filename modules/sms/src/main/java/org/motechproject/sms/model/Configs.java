@@ -15,7 +15,7 @@ import java.util.Map;
 public class Configs {
     public static final String SMS_SETTINGS_FILE_NAME = "sms-settings.json";
     private SettingsFacade settingsFacade;
-    private List<Map<String, String>> configs;
+    private ConfigsDto configsDto;
 
     public Configs(SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
@@ -23,43 +23,42 @@ public class Configs {
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
-            Type type = new TypeToken<List<Map<String, String>>>() {}.getType();
-            configs = gson.fromJson(jsonText, type);
+            //Type type = new TypeToken<Map<String, Config>>() {}.getType();
+            configsDto = gson.fromJson(jsonText, ConfigsDto.class);
         } catch (Exception e) {
             //todo: what do we do with these? (might be coming from malformed .json config file)
             throw new JsonIOException("Might you have a malformed " + SMS_SETTINGS_FILE_NAME + " file? " + e.toString());
         }
     }
 
-    public List<Map<String, String>> getConfigs() {
-        return configs;
+    public ConfigsDto getConfigsDto() {
+        return configsDto;
     }
-
-    public Map<String, String> getConfig(String name) {
-        for (Map<String, String> config : configs) {
-            if (config.get("name").equals(name)) {
-                return config;
-            }
+/*
+    public Config getConfig(String name) {
+        if (configsDto.getConfigs().containsKey(name)) {
+            return configsDto.getConfigs().get(name);
         }
         throw new IllegalArgumentException(String.format("Configuration '%s' does not exist.", name));
     }
 
-    public Map<String, String> getDefaultConfig() {
-        for (Map<String, String> config : configs) {
-            if (config.get("default").equals("true")) {
-                return config;
-            }
+    public Config getDefaultConfig() {
+        try {
+            return configsDto.getConfigs().get(configsDto.getDefaultConfig());
         }
-        throw new IllegalStateException(String.format("No default configuration."));
+        catch (Exception e) //todo: narrow that down, dude...
+        {
+            throw new IllegalStateException(String.format("No default configuration."));
+        }
     }
-
-    public void setConfigs(List<Map<String, String>> configs) {
+*/
+    public void setConfigs(List<Map<String, Object>> configs) {
 
         //todo: validate settingsDto here ?
 
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Map<String, String>>>() {}.getType();
-        String jsonText = gson.toJson(configs, type);
+        //Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+        String jsonText = gson.toJson(configs, ConfigsDto.class);
         ByteArrayResource resource = new ByteArrayResource(jsonText.getBytes());
         settingsFacade.saveRawConfig(SMS_SETTINGS_FILE_NAME, resource);
     }

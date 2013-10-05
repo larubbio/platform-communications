@@ -4,7 +4,7 @@
     /* Services */
     /* TODO see if we're using all these, nuke otherwise */
 
-    angular.module('testService', ['ngResource']).factory('TestService', function($resource) {
+    angular.module('sendService', ['ngResource']).factory('SendService', function($resource) {
         return $resource('../sms/send');
     });
 
@@ -35,7 +35,8 @@
         // no or invalid template
         // no duplicate config names
 
-        return function(scope, configs, templates, defaults) {
+        return function(scope, configsDto, templates, defaults) {
+/*
             var i, j, errors = [], validConfigs = [], config, valid, defaultConfig = null, key, match, size;
             for (i = 0 ; i < configs.length ; i = i + 1) {
                 valid = true;
@@ -166,6 +167,7 @@
             }
 
             return {'errors' : errors, 'configs': validConfigs};
+*/
         };
     });
 

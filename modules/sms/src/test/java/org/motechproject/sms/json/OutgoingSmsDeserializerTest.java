@@ -1,21 +1,6 @@
 package org.motechproject.sms.json;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-import org.junit.Test;
-import org.motechproject.sms.model.OutgoingSms;
-
-import java.io.IOException;
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.motechproject.sms.constants.SendSmsConstants.RECIPIENTS;
-import static org.motechproject.sms.constants.SendSmsConstants.MESSAGE;
-import static org.motechproject.sms.constants.SendSmsConstants.DELIVERY_TIME;
 
 public class OutgoingSmsDeserializerTest {
     private static final String TEST_FROM = "from@from.com";
