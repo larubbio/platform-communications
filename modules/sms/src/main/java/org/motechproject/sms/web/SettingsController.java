@@ -2,7 +2,7 @@ package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
-import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.Settings;
 import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.Templates;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -51,18 +50,16 @@ public class SettingsController {
     @RequestMapping(value = "/configs", method = RequestMethod.GET)
     @ResponseBody
     public ConfigsDto getConfigs() {
-        Configs configs = new Configs(settingsFacade);
-        return configs.getConfigsDto();
+        Settings settings = new Settings(settingsFacade);
+        return settings.getConfigsDto();
     }
 
     @RequestMapping(value = "/configs", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ConfigsDto setConfigs(@RequestBody ConfigsDto configsDto) {
-        Configs settings = new Configs(settingsFacade);
-        //todo: settings.setConfigs(configs);
-        // reload settings
-        //todo: settings = new Configs(settingsFacade);
+        Settings settings = new Settings(settingsFacade);
+        settings.setConfigsDto(configsDto);
         return settings.getConfigsDto();
     }
 

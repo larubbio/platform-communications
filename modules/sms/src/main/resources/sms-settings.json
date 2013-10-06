@@ -11,9 +11,9 @@
             "splitFooter" : "...of $t",
             "excludeLastFooter" : false,
             "props" : [
-                {"username" : "clickuser"},
-                {"clickatell_api_key" : "5551212"},
-                {"password" : "s3cr3t"}
+                {name: "username", value: "clickuser"},
+                {name: "password", value: "s3cr3t"},
+                {name: "clickatell_api_key", value: "5551212"}
             ]
         },
         {
@@ -26,8 +26,8 @@
             "splitFooter" : "End of msg $m or $t",
             "excludeLastFooter" : true,
             "props" : [
-                {"user.username" : "nunuser"},
-                {"user.password" : "s3cr3t"}
+                {name: "username", value: "nunuser"},
+                {name: "password", value: "s3cr3t"}
             ]
         },
         {
@@ -40,8 +40,8 @@
             "splitFooter" : "",
             "excludeLastFooter" : true,
             "props" : [
-                {"user.username" : "voxuser"},
-                {"user.password" : "s3cr3t"}
+                {name: "username", value: "voxuser"},
+                {name: "password", value: "s3cr3t"}
             ]
         }]
 }

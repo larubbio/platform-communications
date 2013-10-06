@@ -3,10 +3,9 @@ package org.motechproject.sms.service;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.constants.Defaults;
 import org.motechproject.sms.event.SendSmsEvent;
 import org.motechproject.sms.model.Config;
-import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.Settings;
 import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.OutgoingSms;
 import org.slf4j.Logger;
@@ -78,7 +77,7 @@ public class SmsServiceImpl implements SmsService {
      * TODO
      */
     public void send(final OutgoingSms outgoingSms){
-        ConfigsDto configsDto = new Configs(settingsFacade).getConfigsDto();
+        ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
         String configName = outgoingSms.getConfig();
         Config config;
 
@@ -86,7 +85,7 @@ public class SmsServiceImpl implements SmsService {
             logger.info("No config specified, using default config.");
             configName = configsDto.getDefaultConfig();
         }
-        config = configsDto.getConfigs().get(configName);
+        config = configsDto.getConfig(configName);
 
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.

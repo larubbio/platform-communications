@@ -3,6 +3,11 @@
 
     var smsModule = angular.module('motech-sms');
 
+    /*
+     *
+     * Send
+     *
+     */
     smsModule.controller('SendController', function ($log, $scope, $timeout, $http, SendService, ConfigService) {
         $scope.sms = {};
         $scope.messages = [];
@@ -12,7 +17,7 @@
         $http.get('../sms/configs')
         .success(function(response) {
             $scope.config = response;
-            $scope.sms['config'] = response.defaultConfig;
+            $scope.sms.config = $scope.config.defaultConfig;
         })
         .error(function(response) {
             $scope.error = $scope.msg('sms.settings.validate.no_config', response);
@@ -38,23 +43,25 @@
         };
     });
 
+    /*
+     *
+     * Log
+     *
+     */
 
     smsModule.controller('LogController', function ($scope, $http) {
         $scope.log = [];
     });
 
-
-    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService, ValidateConfigs) {
+    /*
+     *
+     * Settings
+     *
+     */
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService,
+        ValidateConfigs) {
 
         $scope.errors = [];
-
-        function setAccordions(configs) {
-                var i;
-                $scope.accordions = [];
-                for (i=0 ; i< configs.length ; i = i + 1) {
-                    $scope.accordions.push(false);
-                }
-        }
 
         $http.get('../sms/templates')
             .success(function(response){
@@ -64,14 +71,30 @@
                  $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));
              });
 
+        function setAccordions(configs) {
+                var i;
+                $scope.accordions = [];
+                for (i=0 ; i< configs.length ; i = i + 1) {
+                    $scope.accordions.push(false);
+                }
+        }
+
         $http.get('../sms/configs')
             .success(function(response){
                 $scope.config = response;
+                $scope.originalConfig = angular.copy($scope.config);
                 setAccordions($scope.config.configs);
             })
             .error(function(response) {
                 $scope.errors.push($scope.msg('sms.settings.validate.no_config', response));
             });
+
+        $scope.collapseAccordions = function () {
+            var key;
+            for (key in $scope.accordions) {
+                $scope.accordions[key] = false;
+            }
+        };
 
         /* TODO
 
@@ -96,62 +119,54 @@
 
         };
 
-        $scope.collapseAccordions = function () {
-            var key;
-            for (key in $scope.accordions) {
-                $scope.accordions[key] = false;
+        $scope.setNewDefaultConfig = function() {
+            var i;
+            for (i in $scope.config.configs) {
+                if ($scope.config.configs[i].name === $scope.config.defaultConfig) {
+                    return;
+                }
             }
+            if ($scope.config.configs.length > 0) {
+                $scope.config.defaultConfig = $scope.config.configs[0].name;
+            }
+        };
+
+        $scope.deleteConfig = function(index) {
+            $scope.config.configs.splice(index, 1);
+            $scope.accordions.splice(index, 1);
+            $scope.setNewDefaultConfig();
         };
 
         $scope.reset = function () {
             $scope.config = angular.copy($scope.originalConfig);
             $scope.collapseAccordions();
-        };
-
-        $scope.setDefault = function (index) {
-            var i;
-            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
-                if (i === index) {
-                    $scope.configs[i]['default'] = 'true';
-                }
-                else {
-                    $scope.configs[i]['default'] = 'false';
-                }
-            }
-        };
-
-        $scope.setNewDefault = function () {
-            var i;
-            for (i = 0 ; i < $scope.configs.length ; i = i + 1) {
-                if ($scope.configs[i]['default'] === 'true') {
-                    return;
-                }
-            }
-            $scope.configs[0]['default'] = 'true';
+            $scope.setNewDefaultConfig();
         };
 
         $scope.addConfig = function () {
-            $scope.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'max_retries':$scope.msg('sms.settings.max_retries.default'), 'default':'false'});
+            $scope.config.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'max_retries':$scope.msg('sms.settings.max_retries.default'), 'default':'false'});
             $scope.accordions.push(true);
-            $scope.setNewDefault();
+            if ($scope.config.configs.length === 1) {
+                $scope.config.defaultConfig = $scope.config.configs[0].name;
+            }
         };
 
         $scope.isDirty = function () {
-            return !angular.equals($scope.originalConfigs, $scope.configs);
+            return !angular.equals($scope.originalConfig, $scope.config);
         };
 
-        $scope.betterMsg = function (key) {
-            var s = $scope.msg('sms.settings.' + key);
-            if (s === '[sms.settings.' + key + ']') {
-                s = key.substr(5);
+        $scope.betterMsg = function (name) {
+            var s = $scope.msg('sms.settings.prop.' + name);
+            if (s === '[sms.settings.prop.' + name + ']') {
+                s = name;
             }
             return s;
         };
 
-        $scope.tooltipOrBlank = function (key) {
-            var fullKey = "sms.settings." + key + ".tooltip",
-                ret = $scope.msg(fullKey);
-            if (ret === "[" + fullKey + "]") {
+        $scope.tooltipOrBlank = function (name) {
+            var key = "sms.settings.prop." + name + ".tooltip",
+                ret = $scope.msg(key);
+            if (ret === "[" + key + "]") {
                 ret = "";
             }
             return ret;
@@ -161,6 +176,7 @@
             $http.post('../sms/configs', $scope.config)
                 .success(function (response) {
                     $scope.config = response;
+                    $scope.originalConfig = angular.copy($scope.config);
                     setAccordions($scope.config.configs);
                 })
                 .error (function (response) {

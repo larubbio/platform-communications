@@ -1,8 +1,6 @@
 package org.motechproject.sms.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-import java.util.Map;
+import java.util.List;
 
 /**
  * todo
@@ -32,7 +30,7 @@ public class Config {
     private String splitFooter;
     private String templateName;
 
-    private Map<String, String> props;
+    private List<ConfigProp> props;
 
     public Config() {
         maxRetries = MAX_RETRIES_DEFAULT;
@@ -107,11 +105,11 @@ public class Config {
         this.templateName = templateName;
     }
 
-    public Map<String, String> getProps() {
+    public List<ConfigProp> getProps() {
         return props;
     }
 
-    public void setProps(Map<String, String> props) {
+    public void setProps(List<ConfigProp> props) {
         this.props = props;
     }
 }

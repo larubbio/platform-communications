@@ -1,19 +1,15 @@
 package org.motechproject.sms.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
-import java.util.Map;
+import java.util.List;
 
 /**
  * todo
  */
 public class ConfigsDto {
     private String defaultConfig;
-    private Map<String, Config> configs;
+    private List<Config> configs;
 
     public ConfigsDto() {
-
     }
 
     public String getDefaultConfig() {
@@ -24,11 +20,20 @@ public class ConfigsDto {
         this.defaultConfig = defaultConfig;
     }
 
-    public Map<String, Config> getConfigs() {
+    public List<Config> getConfigs() {
         return configs;
     }
 
-    public void setConfigs(Map<String, Config> configs) {
+    public void setConfigs(List<Config> configs) {
         this.configs = configs;
+    }
+
+    public Config getConfig(String name) {
+        for(Config config : configs) {
+            if (config.getName() == name) {
+                return config;
+            }
+        }
+        throw new IllegalArgumentException("'" + name + "': no such config");
     }
 }

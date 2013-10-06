@@ -4,24 +4,11 @@ import org.apache.http.client.HttpClient;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.SmsDeliveryFailureException;
-import org.motechproject.sms.model.Configs;
+import org.motechproject.sms.model.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Service;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.springframework.util.CollectionUtils;
-
-import java.util.HashMap;
-import java.util.List;
 
 //@Service
 public class SmsHttpService {
@@ -29,7 +16,7 @@ public class SmsHttpService {
     private EventRelay eventRelay;
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
-    private Configs configs;
+    private Settings settings;
 
     @Autowired
     public SmsHttpService(EventRelay eventRelay, HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
@@ -37,7 +24,7 @@ public class SmsHttpService {
         this.eventRelay = eventRelay;
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
-        this.configs = new Configs(settings);
+        this.settings = new Settings(settings);
     }
 
 /*
