@@ -1,16 +1,21 @@
 (function () {
     'use strict';
 
-    var smsModule = angular.module('motech-sms');
-
-    smsModule.directive('focus', function () {
+    // from http://stackoverflow.com/questions/14859266/input-autofocus-attribute
+    angular.module('ng').directive('ngFocus', function($timeout) {
         return {
-            link: function (scope, element, attrs) {
-                attrs.$observe('focus', function (newValue) {
-                    if (newValue === 'true') {
-                        element[0].focus();
+            link: function ( scope, element, attrs ) {
+                scope.$watch( attrs.ngFocus, function ( val ) {
+                    if ( angular.isDefined( val ) && val ) {
+                        $timeout( function () { element[0].focus(); } );
                     }
-                    return true;
+                }, true);
+
+                element.bind('blur', function () {
+                    if ( angular.isDefined( attrs.ngFocusLost ) ) {
+                        scope.$apply( attrs.ngFocusLost );
+
+                    }
                 });
             }
         };
