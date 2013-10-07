@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 
 
 /**
- * Test model Builders
+ * Test settings Builders
  *
  * @author yyonkov
  */

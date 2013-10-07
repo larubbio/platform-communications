@@ -2,9 +2,12 @@ package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
-import org.motechproject.sms.model.Settings;
-import org.motechproject.sms.model.ConfigsDto;
-import org.motechproject.sms.model.Templates;
+import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.settings.ConfigsDto;
+import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.templates.TemplateForWeb;
+import org.motechproject.sms.templates.TemplateReader;
+import org.motechproject.sms.templates.Templates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,17 +25,23 @@ import java.util.Properties;
 @Controller
 public class SettingsController {
     private SettingsFacade settingsFacade;
+    private TemplateReader templateReader;
 
     @Autowired
-    public SettingsController(@Qualifier("smsSettings") final SettingsFacade settingsFacade) {
+    public SettingsController(@Qualifier("smsSettings") SettingsFacade settingsFacade, TemplateReader templateReader) {
         this.settingsFacade = settingsFacade;
+        this.templateReader = templateReader;
     }
 
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Properties> getTemplates() {
-        Templates templates = new Templates(settingsFacade);
-        return templates.getTemplates();
+    public Map<String, TemplateForWeb> getTemplates() {
+        List<Template> templates = templateReader.getTemplates();
+        Map<String, TemplateForWeb> ret = new HashMap<String, TemplateForWeb>();
+        for (Template template : templates) {
+            ret.put(template.getName(), new TemplateForWeb(template));
+        }
+        return ret;
     }
 
     @RequestMapping(value = "/defaults", method = RequestMethod.GET)

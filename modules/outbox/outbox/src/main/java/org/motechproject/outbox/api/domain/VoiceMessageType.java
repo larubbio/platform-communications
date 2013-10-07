@@ -28,18 +28,18 @@ public class VoiceMessageType {
     }
 
     /**
-     * Identifies the template to be used to build the message.
+     * Identifies the templates to be used to build the message.
      *
-     * @return a String identifying the template
+     * @return a String identifying the templates
      */
     public String getTemplateName() {
         return templateName;
     }
 
     /**
-     * Name of the template to be used to build this message.
+     * Name of the templates to be used to build this message.
      *
-     * @param templateName a string specifying the template
+     * @param templateName a string specifying the templates
      */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;

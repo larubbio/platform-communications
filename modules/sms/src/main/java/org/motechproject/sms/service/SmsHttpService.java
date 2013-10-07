@@ -12,7 +12,11 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.event.SendSmsEvent;
-import org.motechproject.sms.model.*;
+import org.motechproject.sms.settings.*;
+import org.motechproject.sms.templates.HttpMethodType;
+import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.templates.TemplateReader;
+import org.motechproject.sms.templates.Templates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +33,24 @@ public class SmsHttpService {
 
     private Logger logger = LoggerFactory.getLogger(SmsHttpService.class);
     private Settings settings;
-    private Templates templates;
+    private List<Template> templates;
     private EventRelay eventRelay;
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
 
     @Autowired
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                          HttpClient commonsHttpClient, MotechSchedulerService schedulerService) {
+                          HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
+                          TemplateReader templateReader) {
         settings = new Settings(settingsFacade);
-        templates = new Templates(settingsFacade);
+        templates = templateReader.getTemplates();
         this.eventRelay = eventRelay;
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
     }
 
     public void send(OutgoingSms sms) {
+/*
         //todo: verify we're not reading settings from file/db every time
         ConfigsDto configsDto = settings.getConfigsDto();
         Config config = configsDto.getConfigOrDefault(sms.getConfig());
@@ -57,9 +63,9 @@ public class SmsHttpService {
         try {
             Map<String, String> replaceMap = new HashMap<String, String>();
 
-            //todo: do we want a template-variable recipient separator?
-            replaceMap.put("recipients", StringUtils.join(sms.getRecipients(), ","));
-            replaceMap.put("message", sms.getMessage());
+            //todo: do we want a templates-variable recipient separator?
+            replaceMap.put("$recipients", StringUtils.join(sms.getRecipients(), ","));
+            replaceMap.put("$message", sms.getMessage());
 
             if (template.getHttpMethod() == HttpMethodType.GET) {
                 //
@@ -138,8 +144,9 @@ public class SmsHttpService {
         //
 
         if (!error) {
+        */
         /*
-        if (!new SMSGatewayResponse(template(), response).isSuccess()) {
+        if (!new SMSGatewayResponse(templates(), response).isSuccess()) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
             addSmsRecord(recipients, message, sendTime, KEEPTRYING);
             raiseFailureEvent(recipients, message, failureCount);
@@ -153,12 +160,13 @@ public class SmsHttpService {
             }
         }
         */
+        /*
         }
 
         if (error) {
             if (sms.getFailureCount() < config.getMaxRetries()) {
                 //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-                logger.error("SMS delivery failure {} of {}, will keep trying", sms.getFailureCount(),
+                logger.error("SMS delivery failure {} of {}, will keep trying", sms.getFailureCount() + 1,
                         config.getMaxRetries());
                 eventRelay.sendEventMessage(new SendSmsEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
                         sms.getFailureCount() + 1).toMotechEvent());
@@ -169,6 +177,7 @@ public class SmsHttpService {
                 //todo? eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
             }
         }
+        */
     }
 
     static private void replaceValues(Map<String, String> replaceMap, Map<String, String> replaceValues) {
@@ -185,7 +194,7 @@ public class SmsHttpService {
         if (in != null && !in.isEmpty()) {
             String[] pairs = in.split("&");
             for (String pair : pairs) {
-                String[] keyval = pair.split("=");
+                String[] keyval = pair.split(":");
                 ret.put(keyval[0], keyval[1]);
             }
         }

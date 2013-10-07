@@ -19,7 +19,7 @@ public class FormDataParserTest {
     @Test
     public void shouldConvertFormXMLToDataString() {
         String xml = "<?xml version='1.0' encoding='UTF-8' ?>" +
-                "<patientreg description-template=\"${/patientreg/lastname}$ in ${/patientreg/continent}$\" id=\"1\" name=\"Patient Registration\" " +
+                "<patientreg description-templates=\"${/patientreg/lastname}$ in ${/patientreg/continent}$\" id=\"1\" name=\"Patient Registration\" " +
                 "xmlns:xf=\"http://www.w3.org/2002/xforms\" " +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

@@ -1,7 +1,7 @@
 package org.motechproject.sms.web;
 
 import org.motechproject.sms.SmsDeliveryFailureException;
-import org.motechproject.sms.model.OutgoingSms;
+import org.motechproject.sms.settings.OutgoingSms;
 import org.motechproject.sms.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

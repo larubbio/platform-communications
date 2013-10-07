@@ -1,9 +1,9 @@
 {
-    "defaultConfigName" : "Nuntium HTTP",
+    "defaultConfigName" : "Clickatell",
     "configs" :
         [{
             "name" : "Clickatell",
-            "templateName" : "clickatell.properties",
+            "templateName" : "Clickatell",
             "multiRecipientSupport"  : true,
             "maxRetries" : 3,
             "maxSmsSize" : 27,
@@ -18,7 +18,7 @@
         },
         {
             "name" : "Nuntium HTTP",
-            "templateName" : "nuntium.properties",
+            "templateName" : "Nuntium",
             "multiRecipientSupport"  : false,
             "maxRetries" : 3,
             "maxSmsSize" : 160,
@@ -32,7 +32,7 @@
         },
         {
             "name" : "Voxeo",
-            "templateName" : "voxeo.properties",
+            "templateName" : "Voxeo",
             "multiRecipientSupport"  : false,
             "maxRetries" : 3,
             "maxSmsSize" : 160,

@@ -3,7 +3,7 @@ package org.motechproject.sms.event;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.sms.constants.SendSmsEventConstants;
-import org.motechproject.sms.model.OutgoingSms;
+import org.motechproject.sms.settings.OutgoingSms;
 import org.motechproject.sms.service.SmsHttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

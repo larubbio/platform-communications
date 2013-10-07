@@ -147,14 +147,14 @@ public class FormControllerIT {
         String newLine = System.getProperty("line.separator");
         String expectedFormContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + newLine +
                 "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">" + newLine +
-                "  <xf:model>" + newLine +
+                "  <xf:settings>" + newLine +
                 "    <xf:instance id=\"death\">" + newLine +
                 "      <death id=\"7\" name=\"Client Death\">" + newLine +
                 "        <staffId/>" + newLine +
                 "      </death>" + newLine +
                 "    </xf:instance>" + newLine +
                 "    <xf:bind id=\"staffId\" nodeset=\"/death/staffId\" required=\"true()\" type=\"xsd:int\" constraint=\". &lt; 2147483647\" message=\"Number too large. Keep under 2147483647\"/>" + newLine +
-                "  </xf:model>" + newLine +
+                "  </xf:settings>" + newLine +
                 "</xf:xforms>";
 
         int groupIndex = 1;

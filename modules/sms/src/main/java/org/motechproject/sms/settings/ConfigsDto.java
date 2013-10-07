@@ -1,4 +1,4 @@
-package org.motechproject.sms.model;
+package org.motechproject.sms.settings;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 

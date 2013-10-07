@@ -4,14 +4,14 @@ import org.motechproject.callflow.domain.IvrEvent;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Server IVR provider's markup document based on a decision tree model object and the corresponding velocity template.
+ * Server IVR provider's markup document based on a decision tree settings object and the corresponding velocity templates.
  */
 public interface CallFlowServer {
 
     String CURRENT_NODE_PARAM = "CurrentNode";
 
     /**
-     * Generates an ivr markup document based on a velocity template defined by an ivr provider module (kookoo, verboice etc).
+     * Generates an ivr markup document based on a velocity templates defined by an ivr provider module (kookoo, verboice etc).
      */
     ModelAndView getResponse(String flowSessionId, String phoneNumber, String provider, String tree, String transitionKey, String language);
 

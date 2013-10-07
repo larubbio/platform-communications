@@ -19,13 +19,7 @@
         <property name="rawConfigFiles">
             <list>
                 <value>classpath:sms-settings.json</value>
-            </list>
-        </property>
-        <property name="configFiles">
-            <list>
-                <value>classpath:clickatell.properties</value>
-                <value>classpath:nuntium.properties</value>
-                <value>classpath:voxeo.properties</value>
+                <value>classpath:sms-templates.json</value>
             </list>
         </property>
     </bean>

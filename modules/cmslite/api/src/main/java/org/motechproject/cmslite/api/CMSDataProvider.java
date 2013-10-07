@@ -71,7 +71,7 @@ public class CMSDataProvider extends AbstractDataProvider {
 
     @Override
     public String getPackageRoot() {
-        return "org.motechproject.cmslite.api.model";
+        return "org.motechproject.cmslite.api.settings";
     }
 
     private Object getStringContent(String stringContentId) {

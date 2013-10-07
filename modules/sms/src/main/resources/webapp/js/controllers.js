@@ -99,7 +99,7 @@
             }
         };
 
-        /* TODO
+        /* TODO: FIX!
 
             This replaces the configuration's properties with the ones from the selected template.
             Do we want to 'remember' the old template properties in case the user chooses to select the old template

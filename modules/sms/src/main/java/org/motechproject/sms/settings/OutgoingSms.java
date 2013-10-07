@@ -1,4 +1,4 @@
-package org.motechproject.sms.model;
+package org.motechproject.sms.settings;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
@@ -25,7 +25,9 @@ public class OutgoingSms {
         recipients = (List<String>) params.get(SendSmsEventConstants.RECIPIENTS);
         message = (String) params.get(SendSmsEventConstants.MESSAGE);
         deliveryTime = (DateTime) params.get(SendSmsEventConstants.DELIVERY_TIME);
-        failureCount = (Integer) params.get(SendSmsEventConstants.FAILURE_COUNT);
+        if (params.containsKey(SendSmsEventConstants.FAILURE_COUNT)) {
+            failureCount = (Integer) params.get(SendSmsEventConstants.FAILURE_COUNT);
+        }
     }
 
     public OutgoingSms(String config, List<String> recipients, String message, DateTime deliveryTime) {

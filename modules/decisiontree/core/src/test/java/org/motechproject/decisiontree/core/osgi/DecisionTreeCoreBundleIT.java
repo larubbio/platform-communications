@@ -27,7 +27,7 @@ public class DecisionTreeCoreBundleIT extends BaseOsgiIT {
 
     @Override
     protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.decisiontree.core.model");
+        return Arrays.asList("org.motechproject.decisiontree.core.settings");
     }
 
     @Override

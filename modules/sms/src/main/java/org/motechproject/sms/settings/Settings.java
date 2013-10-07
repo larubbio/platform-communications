@@ -1,4 +1,4 @@
-package org.motechproject.sms.model;
+package org.motechproject.sms.settings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;

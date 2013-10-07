@@ -22,7 +22,7 @@ import static java.lang.String.format;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
- * VXML documents based on stored in outbox objects and the corresponding Velocity template
+ * VXML documents based on stored in outbox objects and the corresponding Velocity templates
  */
 @Controller
 public class VxmlOutboxController extends MultiActionController {
@@ -56,7 +56,7 @@ public class VxmlOutboxController extends MultiActionController {
     private RetrievedMessagesService retrievedMessagesService;
 
     /**
-     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
+     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity templates.
      * The HTTP request may contain an optional 'mId' parameter with value of ID of the message for which
      * VXML document will be generated. If the "mId" parameter is not passed the next pending voice message
      * will be obtained from the outbox and a VXML document will be generated for that message
@@ -257,7 +257,7 @@ public class VxmlOutboxController extends MultiActionController {
 
     /**
      * Handles Outbox HTTP requests to remove saved in the outbox message and generates a VXML document
-     * with message remove confirmation. The generated VXML document based on the msgRemovedConf.vm  Velocity template.
+     * with message remove confirmation. The generated VXML document based on the msgRemovedConf.vm  Velocity templates.
      * <p/>
      * The message will not be physically removed. The message status will be set to PLAYED.
      * <p/>
@@ -319,7 +319,7 @@ public class VxmlOutboxController extends MultiActionController {
 
 
     /**
-     * Handles Outbox HTTP requests and generates a VXML document based on a Velocity template and data saved in the outbox.
+     * Handles Outbox HTTP requests and generates a VXML document based on a Velocity templates and data saved in the outbox.
      * <p></p>
      * <p></p>
      * URL to request a saved VoiceXML message from outbox :

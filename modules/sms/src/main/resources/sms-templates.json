@@ -1,0 +1,81 @@
+[
+    {
+        "name":"Clickatell",
+        "outgoing":{
+            "request":{
+                "urlPath":"http://api.clickatell.com/http/sendmsg",
+
+                "recipientsSeparator":",",
+                "queryParameters":{
+                    "user":"motechtest",
+                    "password":"p@ssw0rd4motech",
+                    "api_id":"3429991",
+                    "to":"$recipients",
+                    "text":"$message"
+                }
+            },
+            "response":{
+                "success":".*(ID: ).*"
+            }
+        },
+        "incoming":{
+            "messageKey": "$message",
+            "senderKey": "$sender",
+            "timestampKey": "$time"
+        }
+    },
+    {
+        "name":"Nuntium",
+        "outgoing":{
+            "request":{
+                "urlPath":"http://api.clickatell.com/http/sendmsg",
+
+                "recipientsSeparator":",",
+                "queryParameters":{
+                    "user":"motechtest",
+                    "password":"p@ssw0rd4motech",
+                    "api_id":"3429991",
+                    "to":"$recipients",
+                    "text":"$message"
+                }
+            },
+            "response":{
+                "success":".*(ID: ).*"
+            }
+        },
+        "incoming":{
+            "messageKey": "$message",
+            "senderKey": "$sender",
+            "timestampKey": "$time"
+        }
+    },
+    {
+        "name":"Voxeo",
+        "outgoing":{
+            "request":{
+                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "type":"POST",
+                "bodyParameters":{
+                    "user":"$recipients",
+                    "msg":"$message",
+                    "botkey":"406920",
+                    "apimethod":"send",
+                    "network":"SMS",
+                    "from":"18572390865"
+                },
+                "authentication":{
+                    "username":"SSA_Grameen",
+                    "password":"NXT8TrubEJj7YMBvNUo9iE310"
+                }
+            },
+            "response":{
+                "success":".*\n.*(success msg=\"accepted\").*\n.*"
+            }
+        },
+        "incoming":{
+            "messagekey":"message",
+            "senderKey":"from",
+            "timestampKey":"time"
+        }
+    }
+]
