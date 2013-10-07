@@ -38,7 +38,7 @@ TODO  - valid (or at least non-null) properties
                             <accordion-heading>
                                 <div class="inbox-header">
                                     {{conf.name}}
-                                    <i ng-show="config.defaultConfig == conf.name" tooltip="This is the default configuration" class="icon-star"></i>
+                                    <i ng-show="config.defaultConfigName == conf.name" tooltip="This is the default configuration" class="icon-star"></i>
                                     <i ng-class="{'icon-chevron-down': accordions[$index], 'icon-chevron-right': !accordions[$index]}" class="icon-fixed-width icon-large pointer"></i>
                                 </div>
                             </accordion-heading>
@@ -85,7 +85,7 @@ TODO  - valid (or at least non-null) properties
                                 </div>
 
                                 <div class="controls">
-                                    <button ng-show="config.configs.length > 1" ng-disabled="config.defaultConfig == name" class="btn btn-small btn-primary" ng-click="setDefault($index)"> <i class="icon-star"></i> Set Default </button>
+                                    <button ng-show="config.configs.length > 1" ng-disabled="config.defaultConfigName == name" class="btn btn-small btn-primary" ng-click="config.defaultConfigName = conf.name"> <i class="icon-star"></i> Set Default </button>
                                     <button class="btn btn-small btn-danger" ng-click="deleteConfig($index)"> <i class="icon-trash"></i> Delete </button>
                                 </div>
                             </div>

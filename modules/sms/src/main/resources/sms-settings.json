@@ -1,5 +1,5 @@
 {
-    "defaultConfig" : "Nuntium HTTP",
+    "defaultConfigName" : "Nuntium HTTP",
     "configs" :
         [{
             "name" : "Clickatell",

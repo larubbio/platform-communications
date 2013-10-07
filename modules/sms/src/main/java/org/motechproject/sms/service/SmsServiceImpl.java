@@ -76,16 +76,17 @@ public class SmsServiceImpl implements SmsService {
     /**
      * TODO
      */
-    public void send(final OutgoingSms outgoingSms){
+    public void send(final OutgoingSms sms){
         ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
-        String configName = outgoingSms.getConfig();
         Config config;
 
-        if (configName == null) {
-            logger.info("No config specified, using default config.");
-            configName = configsDto.getDefaultConfig();
+        if (sms.hasConfig()) {
+            config = configsDto.getConfig(sms.getConfig());
         }
-        config = configsDto.getConfig(configName);
+        else {
+            logger.info("No config specified, using default config.");
+            config = configsDto.getDefaultConfig();
+        }
 
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
@@ -101,10 +102,10 @@ public class SmsServiceImpl implements SmsService {
             throw new IllegalArgumentException("The combined sizes of the header and footer templates are larger than the maximum SMS size!");
         }
 
-        List<String> messageParts = splitMessage(outgoingSms.getMessage(), maxSize, header, footer, excludeLastFooter);
+        List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
         logger.info("messageParts: {}", messageParts.toString().replace("\n", "\\n"));
 
-        /*
+        /* todo : schedulable jobs
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(new SendSmsEvent(recipients, message, deliveryTime).toMotechEvent(), deliveryTime.toDate());
         log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
         schedulerService.safeScheduleRunOnceJob(schedulableJob);
@@ -112,11 +113,11 @@ public class SmsServiceImpl implements SmsService {
 
         if (isMultiRecipientSupported) {
             for (String part : messageParts) {
-                logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"), outgoingSms.getRecipients());
-                eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), outgoingSms.getRecipients(), part).toMotechEvent());
+                logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"), sms.getRecipients());
+                eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), sms.getRecipients(), part).toMotechEvent());
             }
         } else {
-            for (String recipient : outgoingSms.getRecipients()) {
+            for (String recipient : sms.getRecipients()) {
                 for (String part : messageParts) {
                     logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
                     eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), Arrays.asList(recipient), part).toMotechEvent());

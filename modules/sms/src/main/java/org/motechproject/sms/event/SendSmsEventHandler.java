@@ -5,7 +5,9 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.SendSmsEventConstants;
+import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.OutgoingSms;
+import org.motechproject.sms.model.Settings;
 import org.motechproject.sms.service.SmsSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +33,23 @@ public class SendSmsEventHandler {
 
     @MotechListener (subjects = { SendSmsEventConstants.SEND_SMS })
     public void handle(MotechEvent event) {
-        logger.info("handling {}", event.toString().replace("\n", "\\n"));
+        logger.debug("handling {}", event.toString().replace("\n", "\\n"));
 
         Map<String, Object> params = event.getParameters();
         List<String> recipients = (List<String>) params.get(SendSmsEventConstants.RECIPIENTS);
         String message = (String) params.get(SendSmsEventConstants.MESSAGE);
         DateTime deliveryTime = (DateTime) params.get(SendSmsEventConstants.DELIVERY_TIME);
-        String configName = (String) params.get(SendSmsEventConstants.CONFIG);
+
+        String configName;
+        if (params.containsKey(SendSmsEventConstants.CONFIG)) {
+            configName = (String) params.get(SendSmsEventConstants.CONFIG);
+        }
+        else {
+            Settings settings = new Settings(settingsFacade);
+            ConfigsDto configsDto = settings.getConfigsDto();
+            configName = configsDto.getDefaultConfig().getName();
+            logger.debug("No config specified, using default config {}", configName);
+        }
 
         sender.send(new OutgoingSms(configName, recipients, message, deliveryTime));
     }

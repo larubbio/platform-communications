@@ -13,11 +13,14 @@
         $scope.messages = [];
         $scope.error = "";
 
+        //todo: kill next two debug-only helper lines
+        $scope.sms.recipients = ['123'];
+        $scope.sms.message = 'foobar!';
 
         $http.get('../sms/configs')
         .success(function(response) {
             $scope.config = response;
-            $scope.sms.config = $scope.config.defaultConfig;
+            $scope.sms.config = $scope.config.defaultConfigName;
         })
         .error(function(response) {
             $scope.error = $scope.msg('sms.settings.validate.no_config', response);

@@ -13,6 +13,8 @@ public class Templates {
 
     public Templates(SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
+        //todo: basic template validation? [like bad HttpMethod, for example]
+        //todo: some kind of template validator for 'hand-made' user provided templates?
         try {
             templates = settingsFacade.getAllProperties(settingsFacade.getSymbolicName());
         } catch (IOException e) {
@@ -23,5 +25,10 @@ public class Templates {
 
     public Map<String, Properties> getTemplates() {
         return templates;
+    }
+
+    public Template getTemplate(String name) {
+        Template template = new Template(templates.get(name));
+        return template;
     }
 }

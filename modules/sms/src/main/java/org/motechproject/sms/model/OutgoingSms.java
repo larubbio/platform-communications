@@ -44,6 +44,10 @@ public class OutgoingSms {
         return config;
     }
 
+    public Boolean hasConfig() {
+        return config != null && !config.isEmpty();
+    }
+
     public void setConfig(String config) {
         this.config = config;
     }

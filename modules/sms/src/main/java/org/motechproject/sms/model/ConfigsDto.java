@@ -1,23 +1,30 @@
 package org.motechproject.sms.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.List;
 
 /**
  * todo
  */
 public class ConfigsDto {
-    private String defaultConfig;
+    private String defaultConfigName;
     private List<Config> configs;
 
     public ConfigsDto() {
     }
 
-    public String getDefaultConfig() {
-        return defaultConfig;
+    @JsonIgnore
+    public Config getDefaultConfig() {
+        return getConfig(defaultConfigName);
     }
 
-    public void setDefaultConfig(String defaultConfig) {
-        this.defaultConfig = defaultConfig;
+    public String getDefaultConfigName() {
+        return defaultConfigName;
+    }
+
+    public void setDefaultConfigName(String defaultConfig) {
+        this.defaultConfigName = defaultConfig;
     }
 
     public List<Config> getConfigs() {
@@ -30,7 +37,7 @@ public class ConfigsDto {
 
     public Config getConfig(String name) {
         for(Config config : configs) {
-            if (config.getName() == name) {
+            if (config.getName().equals(name)) {
                 return config;
             }
         }
