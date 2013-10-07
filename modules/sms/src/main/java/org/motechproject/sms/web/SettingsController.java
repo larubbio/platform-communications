@@ -36,12 +36,8 @@ public class SettingsController {
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, TemplateForWeb> getTemplates() {
-        List<Template> templates = templateReader.getTemplates();
-        Map<String, TemplateForWeb> ret = new HashMap<String, TemplateForWeb>();
-        for (Template template : templates) {
-            ret.put(template.getName(), new TemplateForWeb(template));
-        }
-        return ret;
+        Templates templates = templateReader.getTemplates();
+        return templates.templatesForWeb();
     }
 
     @RequestMapping(value = "/defaults", method = RequestMethod.GET)

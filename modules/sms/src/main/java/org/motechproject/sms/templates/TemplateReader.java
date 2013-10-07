@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * todo
@@ -31,8 +33,10 @@ public class TemplateReader {
         this.templateFileName = FILE_NAME;
     }
 
-    public List<Template> getTemplates() {
+    //todo: cache that & use the soon coming settings feature to get notification & refresh if the data changes
+    public Templates getTemplates() {
         List<Template> templates;
+        Map<String, Template> ret = new HashMap<String, Template>();
         Type type = new TypeToken<List<Template>>() { }.getType();
         InputStream is = settingsFacade.getRawConfig(templateFileName);
         try {
@@ -44,6 +48,6 @@ public class TemplateReader {
             throw new JsonIOException("Might you have a malformed " + FILE_NAME + " file? " + e.toString());
         }
 
-        return templates;
+        return new Templates(templates);
     }
 }

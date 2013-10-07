@@ -8,20 +8,20 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.event.SendSmsEvent;
 import org.motechproject.sms.settings.*;
-import org.motechproject.sms.templates.HttpMethodType;
-import org.motechproject.sms.templates.Template;
-import org.motechproject.sms.templates.TemplateReader;
-import org.motechproject.sms.templates.Templates;
+import org.motechproject.sms.templates.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,8 @@ public class SmsHttpService {
 
     private Logger logger = LoggerFactory.getLogger(SmsHttpService.class);
     private Settings settings;
-    private List<Template> templates;
+    private ConfigsDto configsDto;
+    private Templates templates;
     private EventRelay eventRelay;
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
@@ -42,142 +43,82 @@ public class SmsHttpService {
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
                           HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
                           TemplateReader templateReader) {
+
+        //todo: unified module-wide caching strategy
         settings = new Settings(settingsFacade);
+        configsDto = settings.getConfigsDto();
         templates = templateReader.getTemplates();
         this.eventRelay = eventRelay;
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
     }
 
+
     public void send(OutgoingSms sms) {
-/*
-        //todo: verify we're not reading settings from file/db every time
-        ConfigsDto configsDto = settings.getConfigsDto();
+        Boolean error = false;
         Config config = configsDto.getConfigOrDefault(sms.getConfig());
         Template template = templates.getTemplate(config.getTemplateName());
+        String response = null;
         HttpMethod httpMethod = null;
-        Boolean error = false;
-
-        logger.info("Business happening here, using {}", sms.toString());
+        Integer failureCount = sms.getFailureCount();
 
         try {
-            Map<String, String> replaceMap = new HashMap<String, String>();
-
-            //todo: do we want a templates-variable recipient separator?
-            replaceMap.put("$recipients", StringUtils.join(sms.getRecipients(), ","));
-            replaceMap.put("$message", sms.getMessage());
-
-            if (template.getHttpMethod() == HttpMethodType.GET) {
-                //
-                // POST
-                //
-
-                logger.info("Creating POST request");
-                PostMethod postMethod = new PostMethod(template.getURL());
-                postMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
-
-                Map<String, String> bodyParameters = stringToMap(template.getBodyParameters());
-                for (Map.Entry<String, String> entry: bodyParameters.entrySet()) {
-                    String value;
-                    if (replaceMap.containsKey(entry.getKey())) {
-                        value = replaceMap.get(entry.getKey());
-                    }
-                    else {
-                        value = entry.getValue();
-                    }
-                    postMethod.setParameter(entry.getKey(), value);
-                }
-
-                httpMethod = postMethod;
-            }
-            else {
-                //
-                // GET
-                //
-                logger.info("Creating GET request");
-                httpMethod = new GetMethod(template.getURL());
-            }
-
-            //
-            // Query string
-            //
-            List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
-            Map<String, String> queryParameters = stringToMap(template.getQueryParameters());
-            for (Map.Entry< String, String > entry : queryParameters.entrySet()) {
-                String value;
-                if (replaceMap.containsKey(entry.getKey())) {
-                    value = replaceMap.get(entry.getKey());
-                }
-                else {
-                    value = entry.getValue();
-                }
-                queryStringValues.add(new NameValuePair(entry.getKey(), value));
-            }
-            NameValuePair[] a = queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
-            httpMethod.setQueryString(a);
-
-            //
-            // AUTH
-            //
-            if (template.hasAuthentication()) {
-                commonsHttpClient.getParams().setAuthenticationPreemptive(true);
-                commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(template.getUsername(), template.getPassword()));
-            }
+            httpMethod = template.generateRequestFor(sms.getRecipients(), sms.getMessage());
+            setAuthenticationInfo(template.getAuthentication());
 
             int status = commonsHttpClient.executeMethod(httpMethod);
-            String response = httpMethod.getResponseBodyAsString();
+            response = httpMethod.getResponseBodyAsString();
 
             logger.info("HTTP Status:" + status + "|Response:" + response);
-
-        } catch (Exception e) {
-            logger.error("SMSDeliveryFailure : {}", e);
+        }
+        catch (Exception e) {
+            logger.error("SMSDeliveryFailure due to : ", e);
 
             error = true;
-        } finally {
+        }
+        finally {
             if (httpMethod != null) {
                 httpMethod.releaseConnection();
             }
         }
 
-        //
-        // look at provider's response
-        //
-
         if (!error) {
-        */
-        /*
-        if (!new SMSGatewayResponse(templates(), response).isSuccess()) {
-            log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
-            addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-            raiseFailureEvent(recipients, message, failureCount);
-        } else {
-            try {
-                log.debug("SMS with message : {}, sent successfully to {}", message,
-                        StringUtils.join(recipients.iterator(), ","));
-                addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
-            } catch (Exception e) {
-                log.error("SMS record failure due to : ", e);
+            if (response != null && response.matches(template.getSuccessfulResponsePattern())) {
+                logger.debug("SMS with message : {}, sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
+                //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
             }
-        }
-        */
-        /*
+            else {
+                error = true;
+                logger.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
+                //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
+                //todo raiseFailureEvent(recipients, message, failureCount);
+            }
         }
 
         if (error) {
-            if (sms.getFailureCount() < config.getMaxRetries()) {
+            failureCount++;
+            if (failureCount < config.getMaxRetries()) {
                 //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-                logger.error("SMS delivery failure {} of {}, will keep trying", sms.getFailureCount() + 1,
-                        config.getMaxRetries());
+                logger.error("SMS delivery failure {} of {}, will keep trying", failureCount, config.getMaxRetries());
                 eventRelay.sendEventMessage(new SendSmsEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
-                        sms.getFailureCount() + 1).toMotechEvent());
-            } else {
-                logger.error("SMS delivery failure {} of {}, maximum reached, abandoning", sms.getFailureCount(),
+                        failureCount).toMotechEvent());
+            }
+            else {
+                logger.error("SMS delivery failure {} of {}, maximum reached, abandoning", failureCount,
                         config.getMaxRetries());
                 //todo addSmsRecord(recipients, message, sendTime, ABORTED);
                 //todo? eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
             }
         }
-        */
+    }
+
+    private void setAuthenticationInfo(Authentication authentication) {
+        if (authentication == null) {
+            return;
+        }
+
+        commonsHttpClient.getParams().setAuthenticationPreemptive(true);
+        commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(authentication.getUsername(), authentication.getPassword()));
     }
 
     static private void replaceValues(Map<String, String> replaceMap, Map<String, String> replaceValues) {

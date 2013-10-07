@@ -15,28 +15,23 @@ import java.util.*;
  * todo
  */
 public class Templates {
-    private List<Template> templates;
-    private Boolean test = false;
+    private Map<String, Template> templates = new HashMap<String, Template>();
 
-    public Templates() {
-        test = true;
+    public Templates(List<Template> templates) {
+        for(Template template : templates) {
+            this.templates.put(template.getName(), template);
+        }
     }
 
-    public List<Template> getTemplates() {
-        Boolean foo = test;
-        return templates;
+    public Template getTemplate(String name) {
+        return templates.get(name);
     }
 
     public Map<String, TemplateForWeb> templatesForWeb() {
         Map<String, TemplateForWeb> ret = new HashMap<String, TemplateForWeb>();
-        for (Template template : templates) {
-            ret.put(template.getName(), new TemplateForWeb(template));
+        for (Map.Entry<String, Template> entry : templates.entrySet()) {
+            ret.put(entry.getKey(), new TemplateForWeb(entry.getValue()));
         }
         return ret;
-    }
-
-    public void setTemplates(List<Template> templates) {
-        Boolean foo = test;
-        this.templates = templates;
     }
 }

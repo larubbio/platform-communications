@@ -7,9 +7,9 @@
 
                 "recipientsSeparator":",",
                 "queryParameters":{
-                    "user":"motechtest",
-                    "password":"p@ssw0rd4motech",
-                    "api_id":"3429991",
+                    "user":"",
+                    "password":"",
+                    "api_id":"",
                     "to":"$recipients",
                     "text":"$message"
                 }
@@ -32,9 +32,9 @@
 
                 "recipientsSeparator":",",
                 "queryParameters":{
-                    "user":"motechtest",
-                    "password":"p@ssw0rd4motech",
-                    "api_id":"3429991",
+                    "user":"",
+                    "password":"",
+                    "api_id":"",
                     "to":"$recipients",
                     "text":"$message"
                 }
