@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.event.SendSmsEvent;
 import org.motechproject.sms.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class SmsSenderService {
+public class SmsHttpService {
 
-    private Logger logger = LoggerFactory.getLogger(SmsSenderService.class);
+    private Logger logger = LoggerFactory.getLogger(SmsHttpService.class);
     private Settings settings;
     private Templates templates;
     private EventRelay eventRelay;
@@ -34,8 +35,8 @@ public class SmsSenderService {
     private MotechSchedulerService schedulerService;
 
     @Autowired
-    public SmsSenderService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                            HttpClient commonsHttpClient, MotechSchedulerService schedulerService) {
+    public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
+                          HttpClient commonsHttpClient, MotechSchedulerService schedulerService) {
         settings = new Settings(settingsFacade);
         templates = new Templates(settingsFacade);
         this.eventRelay = eventRelay;
@@ -44,15 +45,16 @@ public class SmsSenderService {
     }
 
     public void send(OutgoingSms sms) {
+        //todo: verify we're not reading settings from file/db every time
+        ConfigsDto configsDto = settings.getConfigsDto();
+        Config config = configsDto.getConfigOrDefault(sms.getConfig());
+        Template template = templates.getTemplate(config.getTemplateName());
+        HttpMethod httpMethod = null;
+        Boolean error = false;
 
         logger.info("Business happening here, using {}", sms.toString());
 
         try {
-            //todo: verify we're not reading settings from file/db every time
-            ConfigsDto configsDto = settings.getConfigsDto();
-            Config config = configsDto.getConfig(sms.getConfig());
-            Template template = templates.getTemplate(config.getTemplateName());
-            HttpMethod httpMethod;
             Map<String, String> replaceMap = new HashMap<String, String>();
 
             //todo: do we want a template-variable recipient separator?
@@ -60,7 +62,11 @@ public class SmsSenderService {
             replaceMap.put("message", sms.getMessage());
 
             if (template.getHttpMethod() == HttpMethodType.GET) {
-                logger.info("Creating GET request");
+                //
+                // POST
+                //
+
+                logger.info("Creating POST request");
                 PostMethod postMethod = new PostMethod(template.getURL());
                 postMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
 
@@ -79,11 +85,16 @@ public class SmsSenderService {
                 httpMethod = postMethod;
             }
             else {
-                //POST
-                logger.info("Creating POST request");
+                //
+                // GET
+                //
+                logger.info("Creating GET request");
                 httpMethod = new GetMethod(template.getURL());
             }
 
+            //
+            // Query string
+            //
             List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
             Map<String, String> queryParameters = stringToMap(template.getQueryParameters());
             for (Map.Entry< String, String > entry : queryParameters.entrySet()) {
@@ -96,10 +107,12 @@ public class SmsSenderService {
                 }
                 queryStringValues.add(new NameValuePair(entry.getKey(), value));
             }
-            NameValuePair[] nvpa = queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
-            httpMethod.setQueryString(nvpa);
+            NameValuePair[] a = queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
+            httpMethod.setQueryString(a);
 
-
+            //
+            // AUTH
+            //
             if (template.hasAuthentication()) {
                 commonsHttpClient.getParams().setAuthenticationPreemptive(true);
                 commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(template.getUsername(), template.getPassword()));
@@ -110,25 +123,22 @@ public class SmsSenderService {
 
             logger.info("HTTP Status:" + status + "|Response:" + response);
 
-            //todo: post new event if we failed, unless we reached maxRetry
         } catch (Exception e) {
-            logger.error("SMSDeliveryFailure due to : ", e);
+            logger.error("SMSDeliveryFailure : {}", e);
 
-            if (failureCount >= maxRetries) {
-                addSmsRecord(recipients, message, sendTime, ABORTED);
-            } else {
-                addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-            }
-
-            raiseFailureEvent(recipients, message, failureCount);
-
-            return;
+            error = true;
         } finally {
             if (httpMethod != null) {
                 httpMethod.releaseConnection();
             }
         }
 
+        //
+        // look at provider's response
+        //
+
+        if (!error) {
+        /*
         if (!new SMSGatewayResponse(template(), response).isSuccess()) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
             addSmsRecord(recipients, message, sendTime, KEEPTRYING);
@@ -140,6 +150,23 @@ public class SmsSenderService {
                 addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
             } catch (Exception e) {
                 log.error("SMS record failure due to : ", e);
+            }
+        }
+        */
+        }
+
+        if (error) {
+            if (sms.getFailureCount() < config.getMaxRetries()) {
+                //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
+                logger.error("SMS delivery failure {} of {}, will keep trying", sms.getFailureCount(),
+                        config.getMaxRetries());
+                eventRelay.sendEventMessage(new SendSmsEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
+                        sms.getFailureCount() + 1).toMotechEvent());
+            } else {
+                logger.error("SMS delivery failure {} of {}, maximum reached, abandoning", sms.getFailureCount(),
+                        config.getMaxRetries());
+                //todo addSmsRecord(recipients, message, sendTime, ABORTED);
+                //todo? eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
             }
         }
     }

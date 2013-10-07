@@ -38,7 +38,6 @@ public class SmsServiceImpl implements SmsService {
     }
 
      static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate, boolean excludeLastFooter) {
-
         List<String> parts = new ArrayList<String>();
         int messageLength = message.length();
 
@@ -76,7 +75,7 @@ public class SmsServiceImpl implements SmsService {
     /**
      * TODO
      */
-    public void send(final OutgoingSms sms){
+    public void send(OutgoingSms sms){
         ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
         Config config;
 

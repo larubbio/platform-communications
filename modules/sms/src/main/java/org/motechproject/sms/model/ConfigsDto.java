@@ -43,4 +43,11 @@ public class ConfigsDto {
         }
         throw new IllegalArgumentException("'" + name + "': no such config");
     }
+
+    public Config getConfigOrDefault(String name) {
+        if (name == null || name.isEmpty()) {
+            return getDefaultConfig();
+        }
+        return getConfig(name);
+    }
 }

@@ -1,33 +1,23 @@
 package org.motechproject.sms.event;
 
-import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.SendSmsEventConstants;
-import org.motechproject.sms.model.ConfigsDto;
 import org.motechproject.sms.model.OutgoingSms;
-import org.motechproject.sms.model.Settings;
-import org.motechproject.sms.service.SmsSenderService;
+import org.motechproject.sms.service.SmsHttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class SendSmsEventHandler {
 
-    private SettingsFacade settingsFacade;
-    private SmsSenderService sender;
+    private SmsHttpService sender;
     private Logger logger = LoggerFactory.getLogger(SendSmsEventHandler.class);
 
     @Autowired
-    public SendSmsEventHandler(@Qualifier("smsSettings") SettingsFacade settingsFacade, SmsSenderService sender) {
-        this.settingsFacade = settingsFacade;
+    public SendSmsEventHandler(SmsHttpService sender) {
         this.sender = sender;
     }
 
@@ -35,23 +25,7 @@ public class SendSmsEventHandler {
     public void handle(MotechEvent event) {
         logger.debug("handling {}", event.toString().replace("\n", "\\n"));
 
-        Map<String, Object> params = event.getParameters();
-        List<String> recipients = (List<String>) params.get(SendSmsEventConstants.RECIPIENTS);
-        String message = (String) params.get(SendSmsEventConstants.MESSAGE);
-        DateTime deliveryTime = (DateTime) params.get(SendSmsEventConstants.DELIVERY_TIME);
-
-        String configName;
-        if (params.containsKey(SendSmsEventConstants.CONFIG)) {
-            configName = (String) params.get(SendSmsEventConstants.CONFIG);
-        }
-        else {
-            Settings settings = new Settings(settingsFacade);
-            ConfigsDto configsDto = settings.getConfigsDto();
-            configName = configsDto.getDefaultConfig().getName();
-            logger.debug("No config specified, using default config {}", configName);
-        }
-
-        sender.send(new OutgoingSms(configName, recipients, message, deliveryTime));
+        sender.send(new OutgoingSms(event));
     }
 }
 

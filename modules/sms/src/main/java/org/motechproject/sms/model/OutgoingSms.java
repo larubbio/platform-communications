@@ -1,8 +1,11 @@
 package org.motechproject.sms.model;
 
 import org.joda.time.DateTime;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.sms.constants.SendSmsEventConstants;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -11,8 +14,18 @@ public class OutgoingSms {
     private String message;
     private String config;
     private DateTime deliveryTime;
+    private Integer failureCount = 0;
 
     public OutgoingSms() {
+    }
+
+    public OutgoingSms(MotechEvent event) {
+        Map<String, Object> params = event.getParameters();
+        config = (String) params.get(SendSmsEventConstants.CONFIG);
+        recipients = (List<String>) params.get(SendSmsEventConstants.RECIPIENTS);
+        message = (String) params.get(SendSmsEventConstants.MESSAGE);
+        deliveryTime = (DateTime) params.get(SendSmsEventConstants.DELIVERY_TIME);
+        failureCount = (Integer) params.get(SendSmsEventConstants.FAILURE_COUNT);
     }
 
     public OutgoingSms(String config, List<String> recipients, String message, DateTime deliveryTime) {
@@ -74,6 +87,14 @@ public class OutgoingSms {
 
     public void setDeliveryTime(DateTime deliveryTime) {
         this.deliveryTime = deliveryTime;
+    }
+
+    public Integer getFailureCount() {
+        return failureCount;
+    }
+
+    public void setFailureCount(Integer failureCount) {
+        this.failureCount = failureCount;
     }
 
     @Override

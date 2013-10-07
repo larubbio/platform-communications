@@ -6,8 +6,6 @@ import java.util.Properties;
  * todo
  */
 public class Template {
-    private String name;
-    private HttpMethodType httpMethod;
     Properties props;
 
     public Template(Properties props) {
