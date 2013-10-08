@@ -9,10 +9,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.event.SendSmsEvent;
-import org.motechproject.sms.settings.Config;
-import org.motechproject.sms.settings.ConfigsDto;
-import org.motechproject.sms.settings.OutgoingSms;
-import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.settings.*;
 import org.motechproject.sms.templates.Authentication;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
@@ -60,8 +57,15 @@ public class SmsHttpService {
         HttpMethod httpMethod = null;
         Integer failureCount = sms.getFailureCount();
 
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("recipients", template.recipientsAsString(sms.getRecipients()));
+        props.put("message", sms.getMessage());
+        for (ConfigProp prop : config.getProps()) {
+            props.put(prop.getName(), prop.getValue());
+        }
+
         try {
-            httpMethod = template.generateRequestFor(sms.getRecipients(), sms.getMessage());
+            httpMethod = template.generateRequestFor(props);
             setAuthenticationInfo(template.getAuthentication());
 
             int status = commonsHttpClient.executeMethod(httpMethod);

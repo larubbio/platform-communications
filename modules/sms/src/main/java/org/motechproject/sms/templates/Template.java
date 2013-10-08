@@ -23,45 +23,47 @@ public class Template {
     private String name;
     private List<String> requires;
 
-    public HttpMethod generateRequestFor(List<String> recipients, String message) {
+    public HttpMethod generateRequestFor(Map<String, String> props) {
         HttpMethod httpMethod;
         if (HttpMethodType.POST.equals(outgoing.getRequest().getType())) {
             httpMethod = new PostMethod(outgoing.getRequest().getUrlPath());
             httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
-            addBodyParameters((PostMethod) httpMethod, recipients, message);
+            addBodyParameters((PostMethod) httpMethod, props);
         } else {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
         }
-        httpMethod.setQueryString(addQueryParameters(recipients, message));
+        httpMethod.setQueryString(addQueryParameters(props));
         return httpMethod;
     }
 
-    private NameValuePair[] addQueryParameters(List<String> recipients, String message) {
+    private NameValuePair[] addQueryParameters(Map<String, String> props) {
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
         Map<String, String> queryParameters = outgoing.getRequest().getQueryParameters();
         for (Map.Entry< String, String > entry : queryParameters.entrySet()) {
-            String value = placeHolderOrLiteral(entry.getValue(), recipients, message);
+            String value = placeHolderOrLiteral(entry.getValue(), props);
             queryStringValues.add(new NameValuePair(entry.getKey(), value));
         }
         return queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
     }
 
-    private void addBodyParameters(PostMethod postMethod, List<String> recipients, String message) {
+    private void addBodyParameters(PostMethod postMethod, Map<String, String> props) {
         Map<String, String> bodyParameters = outgoing.getRequest().getBodyParameters();
         for (Map.Entry<String,String> entry: bodyParameters.entrySet()) {
-            String value = placeHolderOrLiteral(entry.getValue(), recipients, message);
+            String value = placeHolderOrLiteral(entry.getValue(), props);
             postMethod.setParameter(entry.getKey(), value);
         }
     }
 
-    private String placeHolderOrLiteral(String value, List<String> recipients, String message) {
-        if (value.equals(MESSAGE_PLACEHOLDER)) {
-            return message;
-        }
-        if (value.equals(RECIPIENTS_PLACEHOLDER)) {
-            return StringUtils.join(recipients.iterator(), outgoing.getRequest().getRecipientsSeparator());
+    static private String placeHolderOrLiteral(String value, Map<String, String> props) {
+        String key = value.substring(1, value.length()-1);
+        if (props.containsKey(key)) {
+            return props.get(key);
         }
         return value;
+    }
+
+    public String recipientsAsString(List<String> recipients) {
+        return StringUtils.join(recipients.iterator(), outgoing.getRequest().getRecipientsSeparator());
     }
 
     public Outgoing getOutgoing() {

@@ -13,7 +13,8 @@
             "props" : [
                 {name: "username", value: "clickuser"},
                 {name: "password", value: "s3cr3t"},
-                {name: "clickatell_api_id", value: "5551212"}
+                {name: "clickatell_api_id", value: "5551212"},
+                {name: "from", value: "12065551212"}
             ]
         },
         {

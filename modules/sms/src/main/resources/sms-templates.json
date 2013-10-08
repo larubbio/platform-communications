@@ -4,6 +4,7 @@
 		"requires": [
 			"username",
 			"password",
+			"from",
 			"clickatell_api_id"
 		],
         "outgoing":{
@@ -15,6 +16,7 @@
                     "user":"[username]",
                     "password":"[password]",
                     "api_id":"[clickatell_api_id]",
+                    "from":"[from]",
                     "to":"[recipients]",
                     "text":"[message]"
                 }
