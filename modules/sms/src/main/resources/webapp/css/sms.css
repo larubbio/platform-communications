@@ -77,3 +77,9 @@
 .btn:focus {
     outline: 0;
 }
+
+input.ng-invalid:focus {
+    color: #B94A48 !important;
+    border-color: #E9322D !important;
+    box-shadow: 0 0 6px #F8B9B7 !important;
+}

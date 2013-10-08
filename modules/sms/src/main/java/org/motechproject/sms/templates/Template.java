@@ -21,6 +21,7 @@ public class Template {
     private Outgoing outgoing;
     private Incoming incoming;
     private String name;
+    private List<String> requires;
 
     public HttpMethod generateRequestFor(List<String> recipients, String message) {
         HttpMethod httpMethod;
@@ -93,5 +94,13 @@ public class Template {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<String> getRequires() {
+        return requires;
+    }
+
+    public void setRequires(List<String> requires) {
+        this.requires = requires;
     }
 }

@@ -1,17 +1,22 @@
 [
     {
         "name":"Clickatell",
+		"requires": [
+			"username",
+			"password",
+			"clickatell_api_id"
+		],
         "outgoing":{
             "request":{
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
-
+                "multiRecipient":"true",
                 "recipientsSeparator":",",
                 "queryParameters":{
-                    "user":"",
-                    "password":"",
-                    "api_id":"",
-                    "to":"$recipients",
-                    "text":"$message"
+                    "user":"[username]",
+                    "password":"[password]",
+                    "api_id":"[clickatell_api_id]",
+                    "to":"[recipients]",
+                    "text":"[message]"
                 }
             },
             "response":{
@@ -26,10 +31,14 @@
     },
     {
         "name":"Nuntium",
+		"requires": [
+			"username",
+			"password"
+		],
         "outgoing":{
             "request":{
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
-
+                "multiRecipient":"true",
                 "recipientsSeparator":",",
                 "queryParameters":{
                     "user":"",
@@ -51,9 +60,14 @@
     },
     {
         "name":"Voxeo",
+		"requires": [
+			"username",
+			"password"
+		],
         "outgoing":{
             "request":{
                 "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "multiRecipient":"false",
                 "type":"POST",
                 "bodyParameters":{
                     "user":"$recipients",

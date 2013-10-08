@@ -106,20 +106,11 @@
             back from the dropdown?
         */
         $scope.changeTemplateProperties = function (config) {
-            var key;
-            //remove the previous template's properties
-            for (key in config) {
-                if (key.substring(0,5) === "user.") {
-                    delete config[key];
-                }
+            var i, requires = $scope.templates[config.templateName].requires;
+            config.props = [];
+            for (i=0 ; i<requires.length ; i=i+1) {
+                config.props.push({"name": requires[i], "value": ""});
             }
-            //insert the new template's properties
-            for (key in $scope.templates[config.template]) {
-                if (key.substring(0,5) === "user.") {
-                    config[key] = $scope.templates[config.template][key];
-                }
-            }
-
         };
 
         $scope.setNewDefaultConfig = function() {
@@ -142,16 +133,23 @@
 
         $scope.reset = function () {
             $scope.config = angular.copy($scope.originalConfig);
-            $scope.collapseAccordions();
             $scope.setNewDefaultConfig();
+            setAccordions($scope.config.configs);
         };
 
         $scope.addConfig = function () {
-            $scope.config.configs.push({'name':$scope.msg('sms.settings.name.default'), 'template':'', 'max_retries':$scope.msg('sms.settings.max_retries.default'), 'default':'false'});
+            var firstTemplateName = Object.keys($scope.templates)[0], newLength, newConfig;
+            newConfig = {
+                'name':'',
+                'templateName':firstTemplateName,
+                'maxRetries':parseInt($scope.msg('sms.settings.max_retries.default'), 10)
+                };
+            newLength = $scope.config.configs.push(newConfig);
             $scope.accordions.push(true);
             if ($scope.config.configs.length === 1) {
                 $scope.config.defaultConfig = $scope.config.configs[0].name;
             }
+            $scope.changeTemplateProperties($scope.config.configs[newLength-1]);
         };
 
         $scope.isDirty = function () {

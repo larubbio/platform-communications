@@ -46,21 +46,21 @@ TODO  - valid (or at least non-null) properties
                                 <div class="control-group">
                                     <label class="control-label">{{msg('sms.settings.name')}}</label>
                                     <div class="controls">
-                                        <input class="input-medium-fluid" type="text" ng-model="conf.name" tooltip="{{msg('sms.settings.name.tooltip')}}" tooltip-placement="right">
+                                        <input class="input-medium-fluid" type="text" ng-model="conf.name" tooltip="{{msg('sms.settings.name.tooltip')}}" tooltip-placement="right" required ng-focus="accordions[$index]">
                                     </div>
                                 </div>
 
                                 <div class="control-group">
                                     <label class="control-label">{{msg('sms.settings.template')}}</label>
                                     <div class="controls">
-                                        <select ng-model="conf.templateName" ng-options="key as val.name for (key, val) in templates" ng-change="changeTemplateProperties(config)" tooltip="{{msg('sms.settings.template.tooltip')}}" tooltip-placement="right"></select>
+                                        <select ng-model="conf.templateName" ng-options="key as val.name for (key, val) in templates" ng-change="changeTemplateProperties(conf)" tooltip="{{msg('sms.settings.template.tooltip')}}" tooltip-placement="right" required></select>
                                     </div>
                                 </div>
 
                                 <div class="control-group">
                                     <label class="control-label">{{msg('sms.settings.max_retries')}}</label>
                                     <div class="controls">
-                                        <input class="input-mini-fluid" type="text" ng-model="conf.maxRetries" tooltip="{{msg('sms.settings.max_retries.tooltip')}}" tooltip-placement="right">
+                                        <input class="input-mini-fluid" type="text" ng-pattern="/^[0-9]+$/" ng-model="conf.maxRetries" tooltip="{{msg('sms.settings.max_retries.tooltip')}}" tooltip-placement="right" required>
                                     </div>
                                 </div>
 
@@ -80,7 +80,7 @@ TODO  - valid (or at least non-null) properties
                                 <div ng-repeat="prop in conf.props" class="control-group">
                                     <label class="control-label" for="{{$index}}.{{prop.name}}">{{betterMsg(prop.name)}}</label>
                                     <div class="controls">
-                                        <input id="{{$index}}.{{prop.name}}" class="input-medium-fluid" type="text" ng-model="prop.value" tooltip="{{tooltipOrBlank(prop.name)}}" tooltip-placement="right">
+                                        <input id="{{$index}}.{{prop.name}}" class="input-medium-fluid" type="text" ng-model="prop.value" tooltip="{{tooltipOrBlank(prop.name)}}" tooltip-placement="right" required>
                                     </div>
                                 </div>
 
@@ -94,7 +94,7 @@ TODO  - valid (or at least non-null) properties
                 </div>
                 <div class="control-group" ng-show="isDirty() || (!form.$pristine && errors.length > 0)">
                     <button class="btn btn-primary" ng-click="reset()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="submit()">Save</button>
+                    <button class="btn btn-primary" ng-disabled="!form.$valid" ng-click="submit()">Save</button>
                 </div>
             </form>
         </div>
@@ -102,8 +102,8 @@ TODO  - valid (or at least non-null) properties
 </div>
 
 <!-- DEBUG
+-->
 <div class="alert alert-block">templates:{{templates}}</div>
 <div class="alert alert-block">config:{{config}}</div>
 <div class="alert alert-block">errors:{{errors}}</div>
 <div class="alert alert-block">originalConfig:{{originalConfig}}</div>
--->

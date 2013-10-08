@@ -195,7 +195,6 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.sms.service;version=${project.version},
-                            org.motechproject.sms.model;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.apache.velocity.exception,

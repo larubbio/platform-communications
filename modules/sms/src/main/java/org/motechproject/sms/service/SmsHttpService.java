@@ -2,30 +2,28 @@ package org.motechproject.sms.service;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.event.SendSmsEvent;
-import org.motechproject.sms.settings.*;
-import org.motechproject.sms.templates.*;
+import org.motechproject.sms.settings.Config;
+import org.motechproject.sms.settings.ConfigsDto;
+import org.motechproject.sms.settings.OutgoingSms;
+import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.templates.Authentication;
+import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.templates.TemplateReader;
+import org.motechproject.sms.templates.Templates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
