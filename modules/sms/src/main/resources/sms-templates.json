@@ -23,7 +23,9 @@
                 }
             },
             "response":{
-                "success":".*(ID: ).*"
+                "successStatus":"200",
+                "successResponse":"ID: [0-9a-zA-Z]+",
+                "extractRefNum":"ID: ([0-9a-zA-Z]+)"
             }
         },
         "incoming":{
@@ -52,7 +54,7 @@
                 }
             },
             "response":{
-                "success":".*(ID: ).*"
+                "successStatus":"200"
             }
         },
         "incoming":{
@@ -86,7 +88,7 @@
                 }
             },
             "response":{
-                "success":".*\n.*(success msg=\"accepted\").*\n.*"
+                "successResponse":".*\n.*(success msg=\"accepted\").*\n.*"
             }
         },
         "incoming":{

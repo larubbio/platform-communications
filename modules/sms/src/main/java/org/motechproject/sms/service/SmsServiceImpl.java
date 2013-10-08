@@ -77,6 +77,7 @@ public class SmsServiceImpl implements SmsService {
      * TODO
      */
     public void send(OutgoingSms sms){
+        //todo: cache that!
         ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
         Config config;
 
@@ -91,10 +92,13 @@ public class SmsServiceImpl implements SmsService {
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
 
+
+
         Integer maxSize = config.getMaxSmsSize();
         String header = config.getSplitHeader();
         String footer = config.getSplitFooter();
         Boolean excludeLastFooter = config.getExcludeLastFooter();
+        //todo: maximum number of supported recipients : per template/provider and/or per http specs
         Boolean isMultiRecipientSupported = config.getMultiRecipientSupport();
 
         // -2 to account for the added \n after the header and before the footer

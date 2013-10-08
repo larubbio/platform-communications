@@ -57,6 +57,8 @@ public class SmsHttpService {
         String response = null;
         HttpMethod httpMethod = null;
         Integer failureCount = sms.getFailureCount();
+        Integer httpStatus = null;
+        String httpResponse = null;
 
         Map<String, String> props = new HashMap<String, String>();
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
@@ -69,10 +71,10 @@ public class SmsHttpService {
             httpMethod = template.generateRequestFor(props);
             setAuthenticationInfo(template.getAuthentication());
 
-            int status = commonsHttpClient.executeMethod(httpMethod);
-            response = httpMethod.getResponseBodyAsString();
+            httpStatus = commonsHttpClient.executeMethod(httpMethod);
+            httpResponse = httpMethod.getResponseBodyAsString();
 
-            logger.info("HTTP Status:" + status + "|Response:" + response);
+            logger.info("HTTP status:" + httpStatus + ", response:" + httpResponse);
         }
         catch (Exception e) {
             logger.error("SMSDeliveryFailure due to : ", e);
@@ -86,8 +88,8 @@ public class SmsHttpService {
         }
 
         if (!error) {
-            if (response != null && response.matches(template.getSuccessfulResponsePattern())) {
-                logger.debug("SMS with message : {}, sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
+            if (template.outgoingSuccess(httpStatus, httpResponse)) {
+                logger.debug("SMS with message \"{}\" sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
                 //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
                 eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
                         sms.getMessage(), sms.getDeliveryTime(), failureCount));
