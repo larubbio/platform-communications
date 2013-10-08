@@ -2,12 +2,13 @@ package org.motechproject.sms.service;
 
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.event.SendSmsEvent;
+import org.motechproject.sms.event.SmsEvents;
 import org.motechproject.sms.settings.Config;
-import org.motechproject.sms.settings.Settings;
 import org.motechproject.sms.settings.ConfigsDto;
 import org.motechproject.sms.settings.OutgoingSms;
+import org.motechproject.sms.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,22 +105,39 @@ public class SmsServiceImpl implements SmsService {
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
         logger.info("messageParts: {}", messageParts.toString().replace("\n", "\\n"));
 
-        /* todo : schedulable jobs
-        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(new SendSmsEvent(recipients, message, deliveryTime).toMotechEvent(), deliveryTime.toDate());
-        log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
-        schedulerService.safeScheduleRunOnceJob(schedulableJob);
-         */
-
+        //todo: delivery_time
         if (isMultiRecipientSupported) {
             for (String part : messageParts) {
-                logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"), sms.getRecipients());
-                eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), sms.getRecipients(), part).toMotechEvent());
+                if (sms.hasDeliveryTime()) {
+                    RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
+                            SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part),
+                            sms.getDeliveryTime().toDate());
+                    schedulerService.safeScheduleRunOnceJob(schedulableJob);
+                    logger.info(String.format("Scheduling message [%s] to multiple recipients %s at %s.",
+                            part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                }
+                else {
+                    eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part));
+                    logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"),
+                            sms.getRecipients());
+                }
             }
         } else {
             for (String recipient : sms.getRecipients()) {
                 for (String part : messageParts) {
-                    logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
-                    eventRelay.sendEventMessage(new SendSmsEvent(config.getName(), Arrays.asList(recipient), part).toMotechEvent());
+                    if (sms.hasDeliveryTime()) {
+                        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
+                                SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient), part),
+                                sms.getDeliveryTime().toDate());
+                        schedulerService.safeScheduleRunOnceJob(schedulableJob);
+                        logger.info(String.format("Scheduling message [%s] to one recipient %s at %s.",
+                                part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                    }
+                    else {
+                        logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
+                        eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient),
+                                part));
+                    }
                 }
             }
         }

@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.event.SendSmsEvent;
 import org.motechproject.sms.settings.*;
 import org.motechproject.sms.templates.Authentication;
 import org.motechproject.sms.templates.Template;
@@ -22,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.motechproject.sms.event.SmsEvents.*;
 
 @Service
 public class SmsHttpService {
@@ -88,6 +89,8 @@ public class SmsHttpService {
             if (response != null && response.matches(template.getSuccessfulResponsePattern())) {
                 logger.debug("SMS with message : {}, sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
                 //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
+                eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
+                        sms.getMessage(), sms.getDeliveryTime(), failureCount));
             }
             else {
                 error = true;
@@ -101,15 +104,16 @@ public class SmsHttpService {
             failureCount++;
             if (failureCount < config.getMaxRetries()) {
                 //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-                logger.error("SMS delivery failure {} of {}, will keep trying", failureCount, config.getMaxRetries());
-                eventRelay.sendEventMessage(new SendSmsEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
-                        failureCount).toMotechEvent());
+                logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
+                eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
+                        sms.getDeliveryTime(), failureCount));
             }
             else {
-                logger.error("SMS delivery failure {} of {}, maximum reached, abandoning", failureCount,
+                logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
                         config.getMaxRetries());
                 //todo addSmsRecord(recipients, message, sendTime, ABORTED);
-                //todo? eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
+                eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), sms.getRecipients(),
+                        sms.getMessage(), sms.getDeliveryTime(), failureCount));
             }
         }
     }
@@ -121,26 +125,5 @@ public class SmsHttpService {
 
         commonsHttpClient.getParams().setAuthenticationPreemptive(true);
         commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(authentication.getUsername(), authentication.getPassword()));
-    }
-
-    static private void replaceValues(Map<String, String> replaceMap, Map<String, String> replaceValues) {
-        for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
-            if (replaceValues.containsKey(entry.getKey())) {
-                replaceValues.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    //from http://stackoverflow.com/questions/10514473/string-to-hashmap-java
-    static private Map<String, String> stringToMap(String in) {
-        Map<String, String> ret = new HashMap<String, String>();
-        if (in != null && !in.isEmpty()) {
-            String[] pairs = in.split("&");
-            for (String pair : pairs) {
-                String[] keyval = pair.split(":");
-                ret.put(keyval[0], keyval[1]);
-            }
-        }
-        return ret;
     }
 }

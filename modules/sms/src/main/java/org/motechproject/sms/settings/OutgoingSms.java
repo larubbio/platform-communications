@@ -2,7 +2,7 @@ package org.motechproject.sms.settings;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.sms.constants.SendSmsEventConstants;
+import org.motechproject.sms.event.SmsEvents;
 
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,12 @@ public class OutgoingSms {
 
     public OutgoingSms(MotechEvent event) {
         Map<String, Object> params = event.getParameters();
-        config = (String) params.get(SendSmsEventConstants.CONFIG);
-        recipients = (List<String>) params.get(SendSmsEventConstants.RECIPIENTS);
-        message = (String) params.get(SendSmsEventConstants.MESSAGE);
-        deliveryTime = (DateTime) params.get(SendSmsEventConstants.DELIVERY_TIME);
-        if (params.containsKey(SendSmsEventConstants.FAILURE_COUNT)) {
-            failureCount = (Integer) params.get(SendSmsEventConstants.FAILURE_COUNT);
+        config = (String) params.get(SmsEvents.CONFIG);
+        recipients = (List<String>) params.get(SmsEvents.RECIPIENTS);
+        message = (String) params.get(SmsEvents.MESSAGE);
+        deliveryTime = (DateTime) params.get(SmsEvents.DELIVERY_TIME);
+        if (params.containsKey(SmsEvents.FAILURE_COUNT)) {
+            failureCount = (Integer) params.get(SmsEvents.FAILURE_COUNT);
         }
     }
 
@@ -86,6 +86,11 @@ public class OutgoingSms {
     public DateTime getDeliveryTime() {
         return deliveryTime;
     }
+
+    public Boolean hasDeliveryTime() {
+        return deliveryTime != null;
+    }
+
 
     public void setDeliveryTime(DateTime deliveryTime) {
         this.deliveryTime = deliveryTime;

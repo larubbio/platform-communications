@@ -2,7 +2,6 @@ package org.motechproject.sms.event;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.sms.constants.SendSmsEventConstants;
 import org.motechproject.sms.settings.OutgoingSms;
 import org.motechproject.sms.service.SmsHttpService;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public class SendSmsEventHandler {
         this.sender = sender;
     }
 
-    @MotechListener (subjects = { SendSmsEventConstants.SEND_SMS })
+    @MotechListener (subjects = { SmsEvents.SEND_SMS })
     public void handle(MotechEvent event) {
         logger.debug("handling {}", event.toString().replace("\n", "\\n"));
 
