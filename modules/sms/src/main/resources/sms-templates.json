@@ -13,6 +13,7 @@
                 "multiRecipient":"true",
                 "recipientsSeparator":",",
                 "queryParameters":{
+                    "mo":"1",
                     "user":"[username]",
                     "password":"[password]",
                     "api_id":"[clickatell_api_id]",

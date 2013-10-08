@@ -55,9 +55,11 @@ public class Template {
     }
 
     static private String placeHolderOrLiteral(String value, Map<String, String> props) {
-        String key = value.substring(1, value.length()-1);
-        if (props.containsKey(key)) {
-            return props.get(key);
+        if (value.matches("^\\[[\\w]+\\]$")) {
+            String key = value.substring(1, value.length()-1);
+            if (props.containsKey(key)) {
+                return props.get(key);
+            }
         }
         return value;
     }
