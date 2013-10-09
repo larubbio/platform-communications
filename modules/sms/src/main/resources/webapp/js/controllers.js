@@ -10,12 +10,9 @@
      */
     smsModule.controller('SendController', function ($log, $scope, $timeout, $http, SendService, ConfigService) {
         $scope.sms = {};
+        $scope.dt = "now";
         $scope.messages = [];
         $scope.error = "";
-
-        //todo: kill next two debug-only helper lines
-        $scope.sms.recipients = ['123'];
-        $scope.sms.message = 'foobar!';
 
         $http.get('../sms/configs')
         .success(function(response) {
@@ -33,8 +30,18 @@
         }
 
         $scope.sendSms = function () {
-
+            var now = new Date();
             $scope.error = null;
+
+            if ($scope.dt === "now") {
+                $scope.sms.deliveryTime = null;
+            } else if ($scope.dt === "10sec") {
+                $scope.sms.deliveryTime = new Date(now.getTime() + 10*1000);
+            } else if ($scope.dt === "1min") {
+                $scope.sms.deliveryTime = new Date(now.getTime() + now + 60*1000);
+            } else if ($scope.dt === "1hour") {
+                $scope.sms.deliveryTime = new Date(now.getTime() + now + 3600*1000);
+            }
             $http.post('../sms/send', $scope.sms)
                 .success(function(response) {
                     var index = $scope.messages.push(response);
