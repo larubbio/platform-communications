@@ -15,6 +15,7 @@ public class OutgoingSms {
     private String config;
     private DateTime deliveryTime;
     private Integer failureCount = 0;
+    private String messageId;
 
     public OutgoingSms() {
     }
@@ -104,6 +105,18 @@ public class OutgoingSms {
         this.failureCount = failureCount;
     }
 
+    public Boolean hasMessageId() {
+        return messageId != null && !messageId.isEmpty();
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(recipients, message, deliveryTime);
@@ -124,12 +137,15 @@ public class OutgoingSms {
         return Objects.equals(this.config, other.config)
                 && Objects.equals(this.recipients, other.recipients)
                 && Objects.equals(this.message, other.message)
-                && Objects.equals(this.deliveryTime, other.deliveryTime);
+                && Objects.equals(this.deliveryTime, other.deliveryTime)
+                && Objects.equals(this.failureCount, other.failureCount)
+                && Objects.equals(this.messageId, other.messageId);
     }
 
     @Override
     public String toString() {
-        return String.format("Sms{config='%s', recipients='%s', message='%s', deliveryTime='%s'}",
-                config, recipients, message.replace("\n", "\\n"), deliveryTime);
+        return String.format(
+                "Sms{config='%s', recipients='%s', message='%s', messageId='%s', deliveryTime='%s', failureCount='%d'}",
+                config, recipients, message.replace("\n", "\\n"), messageId, deliveryTime, failureCount);
     }
 }

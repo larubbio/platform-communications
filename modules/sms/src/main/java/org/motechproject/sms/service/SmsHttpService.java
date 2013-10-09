@@ -60,9 +60,14 @@ public class SmsHttpService {
         Integer httpStatus = null;
         String httpResponse = null;
 
+        if (!sms.hasMessageId()) {
+            sms.setMessageId(java.util.UUID.randomUUID().toString().replace("-", ""));
+        }
+
         Map<String, String> props = new HashMap<String, String>();
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
         props.put("message", sms.getMessage());
+        props.put("uuid", sms.getMessageId());
         for (ConfigProp prop : config.getProps()) {
             props.put(prop.getName(), prop.getValue());
         }
@@ -92,7 +97,7 @@ public class SmsHttpService {
                 logger.debug("SMS with message \"{}\" sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
                 //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
                 eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getDeliveryTime(), failureCount));
+                        sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
             }
             else {
                 error = true;
@@ -108,14 +113,14 @@ public class SmsHttpService {
                 //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
                 logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
                 eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
-                        sms.getDeliveryTime(), failureCount));
+                        sms.getMessageId(), sms.getDeliveryTime(), failureCount));
             }
             else {
                 logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
                         config.getMaxRetries());
                 //todo addSmsRecord(recipients, message, sendTime, ABORTED);
                 eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getDeliveryTime(), failureCount));
+                        sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
             }
         }
     }

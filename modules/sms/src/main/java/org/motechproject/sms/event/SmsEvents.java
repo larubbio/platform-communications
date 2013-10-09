@@ -17,32 +17,34 @@ public class SmsEvents {
     public static final String MESSAGE = "message";
     public static final String DELIVERY_TIME = "delivery_time";
     public static final String FAILURE_COUNT = "failure_count";
+    public static final String MESSAGE_ID = "message_id";
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message) {
-        return makeEvent(SEND_SMS, config, recipients, message, null, null);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId) {
+        return makeEvent(SEND_SMS, config, recipients, message, messageId, null, null);
     }
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, DateTime deliveryTime) {
-        return makeEvent(SEND_SMS, config, recipients, message, deliveryTime, null);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime) {
+        return makeEvent(SEND_SMS, config, recipients, message, messageId, deliveryTime, null);
     }
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(SEND_SMS, config, recipients, message, deliveryTime, failureCount);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(SEND_SMS, config, recipients, message, messageId, deliveryTime, failureCount);
     }
 
-    public static MotechEvent makeOutboundSmsFailureEvent(String config, List<String> recipients, String message, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(OUTBOUND_SMS_FAILURE, config, recipients, message, deliveryTime, failureCount);
+    public static MotechEvent makeOutboundSmsFailureEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(OUTBOUND_SMS_FAILURE, config, recipients, message, messageId, deliveryTime, failureCount);
     }
 
-    public static MotechEvent makeOutboundSmsSuccessEvent(String config, List<String> recipients, String message, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(OUTBOUND_SMS_SUCCESS, config, recipients, message, deliveryTime, failureCount);
+    public static MotechEvent makeOutboundSmsSuccessEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(OUTBOUND_SMS_SUCCESS, config, recipients, message, messageId, deliveryTime, failureCount);
     }
 
-    private static MotechEvent makeEvent(String subject, String config, List<String> recipients, String message, DateTime deliveryTime, Integer failureCount) {
+    private static MotechEvent makeEvent(String subject, String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
         Map<String, Object> params = new HashMap<>();
         params.put(CONFIG, config);
         params.put(RECIPIENTS, recipients);
         params.put(MESSAGE, message);
+        params.put(MESSAGE_ID, messageId);
         if (deliveryTime != null) {
             params.put(DELIVERY_TIME, deliveryTime);
         }

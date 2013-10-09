@@ -14,6 +14,7 @@
                 "recipientsSeparator":",",
                 "queryParameters":{
                     "mo":"1",
+                    "climsgid":"[messageId]",
                     "user":"[username]",
                     "password":"[password]",
                     "api_id":"[clickatell_api_id]",

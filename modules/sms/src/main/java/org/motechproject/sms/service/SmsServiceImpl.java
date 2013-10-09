@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
@@ -29,7 +30,8 @@ public class SmsServiceImpl implements SmsService {
 
 
     @Autowired
-    public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay, MotechSchedulerService schedulerService) {
+    public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
+                          MotechSchedulerService schedulerService) {
         //todo: persist settings or reload them for each call?
         //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
@@ -38,7 +40,8 @@ public class SmsServiceImpl implements SmsService {
         this.schedulerService = schedulerService;
     }
 
-     static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate, boolean excludeLastFooter) {
+     static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate,
+                                              boolean excludeLastFooter) {
         List<String> parts = new ArrayList<String>();
         int messageLength = message.length();
 
@@ -89,10 +92,12 @@ public class SmsServiceImpl implements SmsService {
             config = configsDto.getDefaultConfig();
         }
 
+        if (!sms.hasMessageId()) {
+            sms.setMessageId(UUID.randomUUID().toString().replace("-", ""));
+        }
+
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
-
-
 
         Integer maxSize = config.getMaxSmsSize();
         String header = config.getSplitHeader();
@@ -103,7 +108,8 @@ public class SmsServiceImpl implements SmsService {
 
         // -2 to account for the added \n after the header and before the footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
-            throw new IllegalArgumentException("The combined sizes of the header and footer templates are larger than the maximum SMS size!");
+            throw new IllegalArgumentException(
+                    "The combined sizes of the header and footer templates are larger than the maximum SMS size!");
         }
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
@@ -114,14 +120,15 @@ public class SmsServiceImpl implements SmsService {
             for (String part : messageParts) {
                 if (sms.hasDeliveryTime()) {
                     RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
-                            SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part),
+                            SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part, sms.getMessageId()),
                             sms.getDeliveryTime().toDate());
                     schedulerService.safeScheduleRunOnceJob(schedulableJob);
                     logger.info(String.format("Scheduling message [%s] to multiple recipients %s at %s.",
                             part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
                 }
                 else {
-                    eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part));
+                    eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part,
+                            sms.getMessageId()));
                     logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"),
                             sms.getRecipients());
                 }
@@ -131,8 +138,8 @@ public class SmsServiceImpl implements SmsService {
                 for (String part : messageParts) {
                     if (sms.hasDeliveryTime()) {
                         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
-                                SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient), part),
-                                sms.getDeliveryTime().toDate());
+                                SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient), part,
+                                        sms.getMessageId()), sms.getDeliveryTime().toDate());
                         schedulerService.safeScheduleRunOnceJob(schedulableJob);
                         logger.info(String.format("Scheduling message [%s] to one recipient %s at %s.",
                                 part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
@@ -140,7 +147,7 @@ public class SmsServiceImpl implements SmsService {
                     else {
                         logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
                         eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient),
-                                part));
+                                part, sms.getMessageId()));
                     }
                 }
             }

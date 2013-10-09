@@ -123,6 +123,10 @@
                                   "displayName" : "sms.task.action.send.message"
                                 },
                                 {
+                                  "key" : "message_id",
+                                  "displayName" : "sms.task.action.send.message_id"
+                                },
+                                {
                                   "key" : "delivery_time",
                                   "type" : "DATE",
                                   "displayName" : "sms.task.action.send.delivery-time",
