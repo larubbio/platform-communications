@@ -94,16 +94,14 @@ public class SmsHttpService {
 
         if (!error) {
             if (template.outgoingSuccess(httpStatus, httpResponse)) {
-                logger.debug("SMS with message \"{}\" sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
+                logger.info("SMS with message \"{}\" sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
                 //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
                 eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
                         sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
             }
             else {
                 error = true;
-                logger.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
-                //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-                //todo raiseFailureEvent(recipients, message, failureCount);
+                logger.error(String.format("SMS delivery failed."));
             }
         }
 
