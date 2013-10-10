@@ -86,16 +86,16 @@
                                     "displayName" : "sms.task.trigger.inbound.sender"
                                   },
                                   {
+                                    "eventKey" : "recipient",
+                                    "displayName" : "sms.task.trigger.inbound.recipient"
+                                  },
+                                  {
                                     "eventKey" : "message",
                                     "displayName" : "sms.task.trigger.inbound.message"
                                   },
                                   {
                                     "eventKey" : "message_id",
                                     "displayName" : "sms.task.trigger.inbound.message-id"
-                                  },
-                                  {
-                                    "eventKey" : "reference_id",
-                                    "displayName" : "sms.task.trigger.inbound.reference-id"
                                   },
                                   {
                                     "eventKey" : "timestamp",

@@ -12,8 +12,12 @@ public class SmsEvents {
     public static final String SEND_SMS = "send_sms";
     public static final String OUTBOUND_SMS_SUCCESS = "outbound_sms_success";
     public static final String OUTBOUND_SMS_FAILURE = "outbound_sms_failure";
+    public static final String INBOUND_SMS = "inbound_sms";
     public static final String CONFIG = "config";
     public static final String RECIPIENTS = "recipients";
+    public static final String RECIPIENT = "recipient";
+    public static final String SENDER = "sender";
+    public static final String TIMESTAMP = "timestamp";
     public static final String MESSAGE = "message";
     public static final String DELIVERY_TIME = "delivery_time";
     public static final String FAILURE_COUNT = "failure_count";
@@ -37,6 +41,17 @@ public class SmsEvents {
 
     public static MotechEvent makeOutboundSmsSuccessEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
         return makeEvent(OUTBOUND_SMS_SUCCESS, config, recipients, message, messageId, deliveryTime, failureCount);
+    }
+
+    public static MotechEvent makeInboundSmsEvent(String config, String sender, String recipient, String message, String messageId, DateTime timestamp) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(CONFIG, config);
+        params.put(SENDER, sender);
+        params.put(RECIPIENT, recipient);
+        params.put(MESSAGE, message);
+        params.put(MESSAGE_ID, messageId);
+        params.put(TIMESTAMP, timestamp);
+        return new MotechEvent(INBOUND_SMS, params);
     }
 
     private static MotechEvent makeEvent(String subject, String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {

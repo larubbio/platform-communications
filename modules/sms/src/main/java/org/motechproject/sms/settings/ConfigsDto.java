@@ -44,6 +44,15 @@ public class ConfigsDto {
         throw new IllegalArgumentException("'" + name + "': no such config");
     }
 
+    public Boolean hasConfig(String name) {
+        for(Config config : configs) {
+            if (config.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Config getConfigOrDefault(String name) {
         if (name == null || name.isEmpty()) {
             return getDefaultConfig();

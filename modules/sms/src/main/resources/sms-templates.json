@@ -30,9 +30,12 @@
             }
         },
         "incoming":{
-            "messageKey": "$message",
-            "senderKey": "$sender",
-            "timestampKey": "$time"
+            "messageKey": "text",
+            "senderKey": "from",
+            "recipientKey": "to",
+            "msgIdKey": "moMsgId",
+            "timestampKey": "timestamp",
+            "response": "Thanks"
         }
     },
     {
