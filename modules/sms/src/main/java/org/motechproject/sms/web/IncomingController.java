@@ -1,6 +1,5 @@
 package org.motechproject.sms.web;
 
-import org.apache.http.params.HttpParams;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
@@ -17,14 +16,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 
 import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
-import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsSuccessEvent;
 
 /**
  * todo
@@ -52,7 +47,7 @@ public class IncomingController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @RequestMapping(value = "/{configName}", method = RequestMethod.GET)
-    public String handleIncoming(@PathVariable String configName, WebRequest request) {
+    public String handleIncoming(@PathVariable String configName, @RequestParam Map<String, String> params) {
         String sender = null;
         String recipient = null;
         String message = null;
@@ -60,7 +55,7 @@ public class IncomingController {
         DateTime timestamp = null;
         String response = "OK"; //todo: better default?
 
-        logger.info("Received SMS, configName = {}, params = {}", configName, request.getParameterMap().toString());
+        logger.info("Received SMS, configName = {}, params = {}", configName, params);
 
         Config config;
         if (configsDto.hasConfig(configName)) {
@@ -71,27 +66,25 @@ public class IncomingController {
             config = configsDto.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
-        Map<String, String[]> params = request.getParameterMap();
 
         if (params.containsKey(template.getIncoming().getSenderKey())) {
-            //todo: see why param values are string arrays & make sure we're doing the right stuff
-            sender = params.get(template.getIncoming().getSenderKey())[0];
+            sender = params.get(template.getIncoming().getSenderKey());
         }
 
         if (params.containsKey(template.getIncoming().getRecipientKey())) {
-            recipient = params.get(template.getIncoming().getRecipientKey())[0];
+            recipient = params.get(template.getIncoming().getRecipientKey());
         }
 
         if (params.containsKey(template.getIncoming().getMessageKey())) {
-            message = params.get(template.getIncoming().getMessageKey())[0];
+            message = params.get(template.getIncoming().getMessageKey());
         }
 
         if (params.containsKey(template.getIncoming().getMsgIdKey())) {
-            messageId = params.get(template.getIncoming().getMsgIdKey())[0];
+            messageId = params.get(template.getIncoming().getMsgIdKey());
         }
 
         if (params.containsKey(template.getIncoming().getTimestampKey())) {
-            timestamp = DateTime.parse(params.get(template.getIncoming().getTimestampKey())[0]);
+            timestamp = DateTime.parse(params.get(template.getIncoming().getTimestampKey()));
         }
 
         if (template.getIncoming().getResponse() != null && template.getIncoming().getResponse().length() > 0) {

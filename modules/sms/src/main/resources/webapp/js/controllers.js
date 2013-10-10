@@ -30,17 +30,20 @@
         }
 
         $scope.sendSms = function () {
-            var now = new Date();
+            var now = new Date(), then;
             $scope.error = null;
 
             if ($scope.dt === "now") {
                 $scope.sms.deliveryTime = null;
             } else if ($scope.dt === "10sec") {
-                $scope.sms.deliveryTime = new Date(now.getTime() + 10*1000);
+                then = new Date(now.getTime() + 10*1000);
+                $scope.sms.deliveryTime = then;
             } else if ($scope.dt === "1min") {
-                $scope.sms.deliveryTime = new Date(now.getTime() + now + 60*1000);
+                then = new Date(now.getTime() + 60*1000);
+                $scope.sms.deliveryTime = then;
             } else if ($scope.dt === "1hour") {
-                $scope.sms.deliveryTime = new Date(now.getTime() + now + 3600*1000);
+                then = new Date(now.getTime() + 3600*1000);
+                $scope.sms.deliveryTime = then;
             }
             $http.post('../sms/send', $scope.sms)
                 .success(function(response) {

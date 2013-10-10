@@ -113,7 +113,6 @@ public class SmsServiceImpl implements SmsService {
         }
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
-        logger.info("messageParts: {}", messageParts.toString().replace("\n", "\\n"));
 
         //todo: delivery_time
         if (isMultiRecipientSupported) {
