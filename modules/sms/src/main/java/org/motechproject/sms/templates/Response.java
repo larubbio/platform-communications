@@ -4,9 +4,13 @@ package org.motechproject.sms.templates;
  * todo
  */
 public class Response {
+    private Boolean multiLineRecipientResponse;
     private String successStatus;
     private String successResponse;
-    private String extractRefNum;
+    private String successRecipient;
+    private String successMessageId;
+    private String failureRecipient;
+    private String failureMessage;
 
     public String getSuccessStatus() {
         return successStatus;
@@ -32,15 +36,59 @@ public class Response {
         this.successResponse = successResponse;
     }
 
-    public Boolean hasExtractRefNum() {
-        return extractRefNum != null && !extractRefNum.isEmpty();
+    public Boolean getMultiLineRecipientResponse() {
+        return multiLineRecipientResponse;
     }
 
-    public String getExtractRefNum() {
-        return extractRefNum;
+    public void setMultiLineRecipientResponse(Boolean multiLineRecipientResponse) {
+        this.multiLineRecipientResponse = multiLineRecipientResponse;
     }
 
-    public void setExtractRefNum(String extractRefNum) {
-        this.extractRefNum = extractRefNum;
+    public Boolean hasSuccessRecipient() {
+        return successRecipient != null && !successRecipient.isEmpty();
+    }
+
+    public String getSuccessRecipient() {
+        return successRecipient;
+    }
+
+    public void setSuccessRecipient(String successRecipient) {
+        this.successRecipient = successRecipient;
+    }
+
+    public Boolean hasSuccessMessageId() {
+        return successMessageId != null && !successMessageId.isEmpty();
+    }
+
+    public String getSuccessMessageId() {
+        return successMessageId;
+    }
+
+    public void setSuccessMessageId(String successMessageId) {
+        this.successMessageId = successMessageId;
+    }
+
+    public Boolean hasFailureRecipient() {
+        return failureRecipient != null && !failureRecipient.isEmpty();
+    }
+
+    public String getFailureRecipient() {
+        return failureRecipient;
+    }
+
+    public void setFailureRecipient(String failureRecipient) {
+        this.failureRecipient = failureRecipient;
+    }
+
+    public Boolean hasFailureMessage() {
+        return failureMessage != null && !failureMessage.isEmpty();
+    }
+
+    public String getFailureMessage() {
+        return failureMessage;
+    }
+
+    public void setFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
     }
 }

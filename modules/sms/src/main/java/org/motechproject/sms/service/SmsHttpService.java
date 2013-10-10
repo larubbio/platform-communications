@@ -9,10 +9,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.settings.*;
-import org.motechproject.sms.templates.Authentication;
-import org.motechproject.sms.templates.Template;
-import org.motechproject.sms.templates.TemplateReader;
-import org.motechproject.sms.templates.Templates;
+import org.motechproject.sms.templates.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +76,10 @@ public class SmsHttpService {
             httpStatus = commonsHttpClient.executeMethod(httpMethod);
             httpResponse = httpMethod.getResponseBodyAsString();
 
-            logger.info("HTTP status:" + httpStatus + ", response:" + httpResponse);
+            logger.info("HTTP status:{}, response:{}", httpStatus, httpResponse);
         }
         catch (Exception e) {
-            logger.error("SMSDeliveryFailure due to : ", e);
+            logger.error("Error while communicating with '{}': {}", config.getName(), e);
 
             error = true;
         }
@@ -93,15 +90,40 @@ public class SmsHttpService {
         }
 
         if (!error) {
-            if (template.outgoingSuccess(httpStatus, httpResponse)) {
-                logger.info("SMS with message \"{}\" sent successfully to {}", sms.getMessage(), StringUtils.join(sms.getRecipients().iterator(), ","));
-                //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
-                eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+            if (httpStatus == 200) {
+                //
+                // analyze sms provider's response
+                //
+                if (template.getOutgoing().getResponse().getMultiLineRecipientResponse()) {
+                    //TODO
+                    //TODO
+                    //TODO
+                }
+                else if (template.getOutgoing().getResponse().hasSuccessResponse()) {
+                    //
+                    // Simple one-size-fits-all success response from the provider
+                    //
+                    if (httpResponse.matches(template.getOutgoing().getResponse().getSuccessResponse())) {
+                        String messageForLog = sms.getMessage().replace("\n", "\\n");
+                        String recipientsForLog = StringUtils.join(sms.getRecipients().iterator(), ",");
+                        logger.info("SMS with message \"{}\" sent successfully to {}", messageForLog, recipientsForLog);
+                        //todo addSmsRecord(recipients, message, sendTime, DELIVERY_CONFIRMED);
+                        eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
+                            sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                    }
+                    else
+                    {
+                        error = true;
+                    }
+                } else {
+                    //
+                    // provider returned HTTP 200,  assume success
+                    //
+                }
             }
             else {
                 error = true;
-                logger.error(String.format("SMS delivery failed."));
+                logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, httpResponse);
             }
         }
 

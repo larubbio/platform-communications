@@ -2,10 +2,12 @@ package org.motechproject.sms.event;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.scheduler.MotechSchedulerService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class SmsEvents {
 
@@ -29,6 +31,15 @@ public class SmsEvents {
 
     public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime) {
         return makeEvent(SEND_SMS, config, recipients, message, messageId, deliveryTime, null);
+    }
+
+    public static MotechEvent makeScheduledSendEvent(String config, List<String> recipients, String message, String messageId) {
+        MotechEvent event = makeEvent(SEND_SMS, config, recipients, message, messageId, null, null);
+        //todo: use messageId instead of new uuid?
+        //todo: randomUUID perf
+        //MOTECH scheduler needs unique job ids
+        event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, UUID.randomUUID().toString());
+        return event;
     }
 
     public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {

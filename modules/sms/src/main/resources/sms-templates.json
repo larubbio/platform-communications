@@ -8,25 +8,30 @@
 			"clickatell_api_id"
 		],
         "outgoing":{
+            "maxRecipient":"300",
+            "millisecondsBetweenMessageChunks":"1000",
             "request":{
+                "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
-                "multiRecipient":"true",
                 "recipientsSeparator":",",
                 "queryParameters":{
                     "mo":"1",
                     "climsgid":"[messageId]",
                     "user":"[username]",
                     "password":"[password]",
-                    "api_id":"[clickatell_api_id]",
+                    "api_id":"[api_id]",
                     "from":"[from]",
                     "to":"[recipients]",
                     "text":"[message]"
                 }
             },
             "response":{
-                "successStatus":"200",
-                "successResponse":"ID: [0-9a-zA-Z]+",
-                "extractRefNum":"ID: ([0-9a-zA-Z]+)"
+                "multiLineRecipientResponse": "true",
+                "successResponse":  "^ID: [0-9a-zA-Z]+ To: [0-9]+$",
+                "successRecipient": "^ID: [0-9a-zA-Z]+ To: ([0-9]+)$",
+                "successMessageId": "^ID: ([0-9a-zA-Z]+) To: [0-9]+$",
+                "failureRecipient": "^ERR: .* To: ([0-9]+)$",
+                "failureMessage": "^ERR: (.*) To: [0-9]+$"
             }
         },
         "incoming":{
@@ -46,9 +51,11 @@
 		],
         "outgoing":{
             "request":{
+                "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
-                "multiRecipient":"true",
+                "maxRecipient":"10",
                 "recipientsSeparator":",",
+                "millisecondsBetweenMessageChunks":"0",
                 "queryParameters":{
                     "user":"",
                     "password":"",
@@ -58,7 +65,8 @@
                 }
             },
             "response":{
-                "successStatus":"200"
+                "multiLineRecipientResponse": "false",
+                "successResponse":".*\n.*(success msg=\"accepted\").*\n.*"
             }
         },
         "incoming":{
@@ -75,9 +83,9 @@
 		],
         "outgoing":{
             "request":{
-                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
-                "multiRecipient":"false",
                 "type":"POST",
+                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "maxRecipient":"1",
                 "bodyParameters":{
                     "user":"$recipients",
                     "msg":"$message",
@@ -92,6 +100,7 @@
                 }
             },
             "response":{
+                "multiLineRecipientResponse": "false",
                 "successResponse":".*\n.*(success msg=\"accepted\").*\n.*"
             }
         },

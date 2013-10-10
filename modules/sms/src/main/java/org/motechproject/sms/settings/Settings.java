@@ -9,7 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import java.io.InputStream;
 
 public class Settings {
-    public static final String SMS_SETTINGS_FILE_NAME = "sms-settings.json";
+    public static final String SMS_CONFIGS_FILE_NAME = "sms-configs.json";
     private SettingsFacade settingsFacade;
 
     public Settings(SettingsFacade settingsFacade) {
@@ -18,7 +18,7 @@ public class Settings {
 
     public ConfigsDto getConfigsDto() {
         ConfigsDto configsDto;
-        InputStream is = settingsFacade.getRawConfig(SMS_SETTINGS_FILE_NAME);
+        InputStream is = settingsFacade.getRawConfig(SMS_CONFIGS_FILE_NAME);
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
@@ -26,7 +26,7 @@ public class Settings {
             configsDto = gson.fromJson(jsonText, ConfigsDto.class);
         } catch (Exception e) {
             //todo: what do we do with these? (might be coming from malformed .json config file)
-            throw new JsonIOException("Might you have a malformed " + SMS_SETTINGS_FILE_NAME + " file? " + e.toString());
+            throw new JsonIOException("Might you have a malformed " + SMS_CONFIGS_FILE_NAME + " file? " + e.toString());
         }
         return configsDto;
     }
@@ -39,6 +39,6 @@ public class Settings {
         //Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
         String jsonText = gson.toJson(configsDto, ConfigsDto.class);
         ByteArrayResource resource = new ByteArrayResource(jsonText.getBytes());
-        settingsFacade.saveRawConfig(SMS_SETTINGS_FILE_NAME, resource);
+        settingsFacade.saveRawConfig(SMS_CONFIGS_FILE_NAME, resource);
     }
 }

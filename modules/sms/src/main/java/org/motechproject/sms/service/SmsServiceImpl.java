@@ -1,5 +1,6 @@
 package org.motechproject.sms.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
@@ -9,6 +10,9 @@ import org.motechproject.sms.settings.Config;
 import org.motechproject.sms.settings.ConfigsDto;
 import org.motechproject.sms.settings.OutgoingSms;
 import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.templates.TemplateReader;
+import org.motechproject.sms.templates.Templates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +31,19 @@ public class SmsServiceImpl implements SmsService {
     private Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
     private EventRelay eventRelay;
     private MotechSchedulerService schedulerService;
+    private Templates templates;
 
 
     @Autowired
     public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                          MotechSchedulerService schedulerService) {
+                          MotechSchedulerService schedulerService, TemplateReader templateReader) {
         //todo: persist settings or reload them for each call?
         //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
         this.settingsFacade = settingsFacade;
         this.eventRelay = eventRelay;
         this.schedulerService = schedulerService;
+        templates = templateReader.getTemplates();
     }
 
      static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate,
@@ -80,9 +86,12 @@ public class SmsServiceImpl implements SmsService {
      * TODO
      */
     public void send(OutgoingSms sms){
+
         //todo: cache that!
         ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
         Config config;
+        Template template;
+        Integer milliDelay = 1;
 
         if (sms.hasConfig()) {
             config = configsDto.getConfig(sms.getConfig());
@@ -90,6 +99,10 @@ public class SmsServiceImpl implements SmsService {
         else {
             logger.info("No config specified, using default config.");
             config = configsDto.getDefaultConfig();
+        }
+        template = templates.getTemplate(config.getTemplateName());
+        if (template.getOutgoing().getMillisecondsBetweenMessageChunks() > 0) {
+            milliDelay = template.getOutgoing().getMillisecondsBetweenMessageChunks();
         }
 
         if (!sms.hasMessageId()) {
@@ -114,39 +127,50 @@ public class SmsServiceImpl implements SmsService {
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
 
-        //todo: delivery_time
+        //todo: delivery_time on the sms provider's side if they support it?
         if (isMultiRecipientSupported) {
-            for (String part : messageParts) {
-                if (sms.hasDeliveryTime()) {
-                    RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
-                            SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part, sms.getMessageId()),
-                            sms.getDeliveryTime().toDate());
-                    schedulerService.safeScheduleRunOnceJob(schedulableJob);
-                    logger.info(String.format("Scheduling message [%s] to multiple recipients %s at %s.",
-                            part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+            if (sms.hasDeliveryTime()) {
+                DateTime dt = sms.getDeliveryTime();
+                for (String part : messageParts) {
+                    RunOnceSchedulableJob job = new RunOnceSchedulableJob(SmsEvents.makeScheduledSendEvent(
+                        config.getName(), sms.getRecipients(), part, sms.getMessageId()), dt.toDate());
+                    schedulerService.safeScheduleRunOnceJob(job);
+                    logger.info(String.format("Scheduling message [%s] to recipients %s at %s.",
+                        part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                    //add (at least) one millisecond to the next sms part so they will be delivered in order
+                    //without that it seems Quartz doesn't fire events in the order they were scheduled
+                    dt = dt.plus(milliDelay);
                 }
-                else {
+            }
+            else {
+                for (String part : messageParts) {
                     eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part,
-                            sms.getMessageId()));
-                    logger.info("Sending message [{}] to multiple recipients {}.", part.replace("\n", "\\n"),
-                            sms.getRecipients());
+                        sms.getMessageId()));
+                    logger.info("Sending message [{}] to recipients {}.", part.replace("\n", "\\n"),
+                        sms.getRecipients());
                 }
             }
         } else {
             for (String recipient : sms.getRecipients()) {
+                DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
                     if (sms.hasDeliveryTime()) {
-                        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(
-                                SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient), part,
-                                        sms.getMessageId()), sms.getDeliveryTime().toDate());
-                        schedulerService.safeScheduleRunOnceJob(schedulableJob);
-                        logger.info(String.format("Scheduling message [%s] to one recipient %s at %s.",
-                                part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                        if (template.getOutgoing().getMillisecondsBetweenMessageChunks() > 0) {
+                            milliDelay = template.getOutgoing().getMillisecondsBetweenMessageChunks();
+                        }
+                        RunOnceSchedulableJob job = new RunOnceSchedulableJob(SmsEvents.makeScheduledSendEvent(
+                            config.getName(), Arrays.asList(recipient), part, sms.getMessageId()), dt.toDate());
+                        schedulerService.safeScheduleRunOnceJob(job);
+                        logger.info(String.format("Scheduling message [%s] to recipient %s at %s.",
+                            part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                        //add (at least) one millisecond to the next sms part so they will be delivered in order
+                        //without that it seems Quartz doesn't fire events in the order they were scheduled
+                        dt = dt.plus(milliDelay);
                     }
                     else {
-                        logger.info("Sending message [{}] to one recipient {}.", part.replace("\n", "\\n"), recipient);
+                        logger.info("Sending message [{}] to recipient {}.", part.replace("\n", "\\n"), recipient);
                         eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient),
-                                part, sms.getMessageId()));
+                            part, sms.getMessageId()));
                     }
                 }
             }

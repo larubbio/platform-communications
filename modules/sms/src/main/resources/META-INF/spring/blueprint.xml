@@ -18,7 +18,7 @@
         <property name="moduleName" value="motech-sms"/>
         <property name="rawConfigFiles">
             <list>
-                <value>classpath:sms-settings.json</value>
+                <value>classpath:sms-configs.json</value>
                 <value>classpath:sms-templates.json</value>
             </list>
         </property>
