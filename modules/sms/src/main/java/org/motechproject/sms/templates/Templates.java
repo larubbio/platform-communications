@@ -1,14 +1,5 @@
 package org.motechproject.sms.templates;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import org.apache.commons.io.IOUtils;
-import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.settings.ConfigsDto;
-import org.springframework.core.io.ByteArrayResource;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**

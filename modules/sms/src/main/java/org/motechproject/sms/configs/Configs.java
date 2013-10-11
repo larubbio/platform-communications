@@ -1,4 +1,4 @@
-package org.motechproject.sms.settings;
+package org.motechproject.sms.configs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -7,11 +7,11 @@ import java.util.List;
 /**
  * todo
  */
-public class ConfigsDto {
+public class Configs {
     private String defaultConfigName;
     private List<Config> configs;
 
-    public ConfigsDto() {
+    public Configs() {
     }
 
     @JsonIgnore

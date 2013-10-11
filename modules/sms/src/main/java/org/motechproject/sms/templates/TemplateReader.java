@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.settings.ConfigsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -33,7 +31,7 @@ public class TemplateReader {
         this.templateFileName = FILE_NAME;
     }
 
-    //todo: cache that & use the soon coming settings feature to get notification & refresh if the data changes
+    //todo: cache that & use the soon coming configs feature to get notification & refresh if the data changes
     public Templates getTemplates() {
         List<Template> templates;
         Map<String, Template> ret = new HashMap<String, Template>();

@@ -6,10 +6,9 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.event.SmsEvents;
-import org.motechproject.sms.settings.Config;
-import org.motechproject.sms.settings.ConfigsDto;
-import org.motechproject.sms.settings.OutgoingSms;
-import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.configs.Config;
+import org.motechproject.sms.configs.ConfigReader;
+import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -37,7 +36,7 @@ public class SmsServiceImpl implements SmsService {
     @Autowired
     public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
                           MotechSchedulerService schedulerService, TemplateReader templateReader) {
-        //todo: persist settings or reload them for each call?
+        //todo: persist configs or reload them for each call?
         //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
         this.settingsFacade = settingsFacade;
@@ -88,17 +87,17 @@ public class SmsServiceImpl implements SmsService {
     public void send(OutgoingSms sms){
 
         //todo: cache that!
-        ConfigsDto configsDto = new Settings(settingsFacade).getConfigsDto();
+        Configs configs = new ConfigReader(settingsFacade).getConfigs();
         Config config;
         Template template;
         Integer milliDelay = 1;
 
         if (sms.hasConfig()) {
-            config = configsDto.getConfig(sms.getConfig());
+            config = configs.getConfig(sms.getConfig());
         }
         else {
             logger.info("No config specified, using default config.");
-            config = configsDto.getDefaultConfig();
+            config = configs.getDefaultConfig();
         }
         template = templates.getTemplate(config.getTemplateName());
         if (template.getOutgoing().getMillisecondsBetweenMessageChunks() > 0) {

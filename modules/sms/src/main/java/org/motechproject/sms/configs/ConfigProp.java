@@ -1,4 +1,4 @@
-package org.motechproject.sms.settings;
+package org.motechproject.sms.configs;
 
 /**
  * todo

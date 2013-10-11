@@ -36,36 +36,6 @@ public class Template {
         return httpMethod;
     }
 
-    public Boolean outgoingSuccess(Integer status, String response) {
-        Response templateResp = outgoing.getResponse();
-
-        if (templateResp.hasSuccessStatus()) {
-            if (!status.toString().matches(templateResp.getSuccessStatus())) {
-                return false;
-            }
-            if (templateResp.hasSuccessResponse()) {
-                if (response.matches(templateResp.getSuccessResponse())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        if (templateResp.hasSuccessResponse()) {
-            if (response.matches(templateResp.getSuccessResponse())) {
-                return true;
-            }
-            return false;
-        }
-
-        // no success status or success response, assume HTTP 200 is success
-        if (status == 200) {
-            return true;
-        }
-
-        return false;
-    }
-
     private NameValuePair[] addQueryParameters(Map<String, String> props) {
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
         Map<String, String> queryParameters = outgoing.getRequest().getQueryParameters();

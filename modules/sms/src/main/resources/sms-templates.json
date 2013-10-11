@@ -14,7 +14,7 @@
                 "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
                 "recipientsSeparator":",",
-                "queryParameters":{
+                "bodyParameters":{
                     "mo":"1",
                     "climsgid":"[messageId]",
                     "user":"[username]",
@@ -28,10 +28,8 @@
             "response":{
                 "multiLineRecipientResponse": "true",
                 "successResponse":  "^ID: [0-9a-zA-Z]+ To: [0-9]+$",
-                "extractSuccessRecipient": "^ID: [0-9a-zA-Z]+ To: ([0-9]+)$",
-                "extractSuccessMessageId": "^ID: ([0-9a-zA-Z]+) To: [0-9]+$",
-                "extractFailureRecipient": "^ERR: .* To: ([0-9]+)$",
-                "extractFailureMessage": "^ERR: (.*) To: [0-9]+$"
+                "extractSuccessMessageIdAndRecipient": "^ID: ([0-9a-zA-Z]+) To: ([0-9]+)$",
+                "extractFailureMessageAndRecipient": "^ERR: (.*) To: ([0-9]+)$"
             }
         },
         "incoming":{

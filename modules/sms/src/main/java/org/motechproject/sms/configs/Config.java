@@ -1,4 +1,4 @@
-package org.motechproject.sms.settings;
+package org.motechproject.sms.configs;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ public class Config {
 
     private String name;
     private Integer maxRetries;
+    //todo: should that not be a property of the template? I think yes.
     private Integer maxSmsSize;
     private Boolean excludeLastFooter;
     private Boolean multiRecipientSupport;

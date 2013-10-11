@@ -44,7 +44,7 @@ public class SettingsControllerTest {
     @Test
     public void shouldReturnSettingsDto() throws Exception {
         controller.perform(
-                get("/settings")
+                get("/configs")
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
@@ -65,7 +65,7 @@ public class SettingsControllerTest {
         String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(
+                post("/configs").body(
                         settingsJson(
                                 remotehost, port, logAddress, logBody, logPurge, logPurgeTime,
                                 logPurgeMultiplier
@@ -92,7 +92,7 @@ public class SettingsControllerTest {
         String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(
+                post("/configs").body(settingsJson(
                         "", port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
@@ -114,7 +114,7 @@ public class SettingsControllerTest {
         String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(
+                post("/configs").body(settingsJson(
                         remotehost, "", logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
@@ -137,7 +137,7 @@ public class SettingsControllerTest {
         String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(
+                post("/configs").body(settingsJson(
                         remotehost, port, logAddress, logBody, logPurge, logPurgeTime,logPurgeMultiplier
                 ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(

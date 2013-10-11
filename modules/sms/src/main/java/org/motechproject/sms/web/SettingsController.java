@@ -2,9 +2,8 @@ package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.constants.Defaults;
-import org.motechproject.sms.settings.Settings;
-import org.motechproject.sms.settings.ConfigsDto;
-import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.configs.ConfigReader;
+import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.templates.TemplateForWeb;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -16,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 //todo: find a way to report useful information to implementers who drop in malformed templates
 
@@ -55,18 +52,18 @@ public class SettingsController {
 
     @RequestMapping(value = "/configs", method = RequestMethod.GET)
     @ResponseBody
-    public ConfigsDto getConfigs() {
-        Settings settings = new Settings(settingsFacade);
-        return settings.getConfigsDto();
+    public Configs getConfigs() {
+        ConfigReader configReader = new ConfigReader(settingsFacade);
+        return configReader.getConfigs();
     }
 
     @RequestMapping(value = "/configs", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ConfigsDto setConfigs(@RequestBody ConfigsDto configsDto) {
-        Settings settings = new Settings(settingsFacade);
-        settings.setConfigsDto(configsDto);
-        return settings.getConfigsDto();
+    public Configs setConfigs(@RequestBody Configs configs) {
+        ConfigReader configReader = new ConfigReader(settingsFacade);
+        configReader.setConfigs(configs);
+        return configReader.getConfigs();
     }
 
     //todo: since configs are validated client-side, do we need that?

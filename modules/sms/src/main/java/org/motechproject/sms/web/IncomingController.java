@@ -3,9 +3,9 @@ package org.motechproject.sms.web;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.settings.Config;
-import org.motechproject.sms.settings.ConfigsDto;
-import org.motechproject.sms.settings.Settings;
+import org.motechproject.sms.configs.Config;
+import org.motechproject.sms.configs.ConfigReader;
+import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -29,8 +29,8 @@ import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
 public class IncomingController {
 
     private Logger logger = LoggerFactory.getLogger(IncomingController.class);
-    private Settings settings;
-    private ConfigsDto configsDto;
+    private ConfigReader configReader;
+    private Configs configs;
     private Templates templates;
     private EventRelay eventRelay;
 
@@ -38,8 +38,8 @@ public class IncomingController {
     public IncomingController(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
                               TemplateReader templateReader) {
         this.eventRelay = eventRelay;
-        settings = new Settings(settingsFacade);
-        configsDto = settings.getConfigsDto();
+        configReader = new ConfigReader(settingsFacade);
+        configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
     }
 
@@ -58,12 +58,12 @@ public class IncomingController {
         logger.info("Received SMS, configName = {}, params = {}", configName, params);
 
         Config config;
-        if (configsDto.hasConfig(configName)) {
-            config = configsDto.getConfig(configName);
+        if (configs.hasConfig(configName)) {
+            config = configs.getConfig(configName);
         }
         else {
             //todo: do we really want to do that?
-            config = configsDto.getDefaultConfig();
+            config = configs.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
 
