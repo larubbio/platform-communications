@@ -14,6 +14,10 @@ public class Response {
     private String extractSuccessMessageId;
     private String extractFailureRecipient;
     private String extractFailureMessage;
+    Pattern pExtractSuccessRecipient = null;
+    Pattern pExtractSuccessMessageId = null;
+    Pattern pExtractFailureRecipient = null;
+    Pattern pExtractFailureMessage = null;
 
     public String getSuccessStatus() {
         return successStatus;
@@ -49,7 +53,7 @@ public class Response {
 
     public String extractSuccessRecipient(String response) {
         if (hasExtractSuccessRecipient()) {
-            //todo: cache that at class-level
+            //todo: cache that at class-level?
             Pattern p = Pattern.compile(extractSuccessRecipient);
             Matcher m = p.matcher(response);
             if (m.find()) {

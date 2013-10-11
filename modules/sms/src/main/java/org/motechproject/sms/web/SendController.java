@@ -1,8 +1,7 @@
 package org.motechproject.sms.web;
 
-import org.motechproject.sms.SmsDeliveryFailureException;
-import org.motechproject.sms.settings.OutgoingSms;
 import org.motechproject.sms.service.SmsService;
+import org.motechproject.sms.settings.OutgoingSms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -30,7 +29,7 @@ public class SendController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public String handleException(SmsDeliveryFailureException e) throws IOException {
+    public String handleException(Exception e) throws IOException {
         String ret = e.getMessage();
         return ret;
     }

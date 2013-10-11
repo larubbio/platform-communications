@@ -22,7 +22,8 @@ public class SendSmsEventHandler {
 
     @MotechListener (subjects = { SmsEvents.SEND_SMS })
     public void handle(MotechEvent event) {
-        logger.info("Handling {}", event.getParameters().get("message").toString().replace("\n", "\\n"));
+        logger.info("Handling {}: {}", event.getSubject(),
+            event.getParameters().get("message").toString().replace("\n", "\\n"));
         sender.send(new OutgoingSms(event));
     }
 }
