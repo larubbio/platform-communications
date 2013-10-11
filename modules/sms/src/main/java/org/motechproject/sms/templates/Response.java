@@ -1,5 +1,8 @@
 package org.motechproject.sms.templates;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * todo
  */
@@ -7,10 +10,10 @@ public class Response {
     private Boolean multiLineRecipientResponse;
     private String successStatus;
     private String successResponse;
-    private String successRecipient;
-    private String successMessageId;
-    private String failureRecipient;
-    private String failureMessage;
+    private String extractSuccessRecipient;
+    private String extractSuccessMessageId;
+    private String extractFailureRecipient;
+    private String extractFailureMessage;
 
     public String getSuccessStatus() {
         return successStatus;
@@ -44,51 +47,99 @@ public class Response {
         this.multiLineRecipientResponse = multiLineRecipientResponse;
     }
 
-    public Boolean hasSuccessRecipient() {
-        return successRecipient != null && !successRecipient.isEmpty();
+    public String extractSuccessRecipient(String response) {
+        if (hasExtractSuccessRecipient()) {
+            //todo: cache that at class-level
+            Pattern p = Pattern.compile(extractSuccessRecipient);
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                return m.group(1);
+            }
+        }
+        return null;
     }
 
-    public String getSuccessRecipient() {
-        return successRecipient;
+    public Boolean hasExtractSuccessRecipient() {
+        return extractSuccessRecipient != null && !extractSuccessRecipient.isEmpty();
     }
 
-    public void setSuccessRecipient(String successRecipient) {
-        this.successRecipient = successRecipient;
+    public String getExtractSuccessRecipient() {
+        return extractSuccessRecipient;
     }
 
-    public Boolean hasSuccessMessageId() {
-        return successMessageId != null && !successMessageId.isEmpty();
+    public void setExtractSuccessRecipient(String extractSuccessRecipient) {
+        this.extractSuccessRecipient = extractSuccessRecipient;
     }
 
-    public String getSuccessMessageId() {
-        return successMessageId;
+    public String extractSuccessMessageId(String response) {
+        if (hasExtractSuccessMessageId()) {
+            //todo: cache that at class-level
+            Pattern p = Pattern.compile(extractSuccessMessageId);
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                return m.group(1);
+            }
+        }
+        return null;
     }
 
-    public void setSuccessMessageId(String successMessageId) {
-        this.successMessageId = successMessageId;
+    public Boolean hasExtractSuccessMessageId() {
+        return extractSuccessMessageId != null && !extractSuccessMessageId.isEmpty();
     }
 
-    public Boolean hasFailureRecipient() {
-        return failureRecipient != null && !failureRecipient.isEmpty();
+    public String getExtractSuccessMessageId() {
+        return extractSuccessMessageId;
     }
 
-    public String getFailureRecipient() {
-        return failureRecipient;
+    public void setExtractSuccessMessageId(String extractSuccessMessageId) {
+        this.extractSuccessMessageId = extractSuccessMessageId;
     }
 
-    public void setFailureRecipient(String failureRecipient) {
-        this.failureRecipient = failureRecipient;
+    public String extractFailureRecipient(String response) {
+        if (hasExtractFailureRecipient()) {
+            //todo: cache that at class-level
+            Pattern p = Pattern.compile(extractFailureRecipient);
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                return m.group(1);
+            }
+        }
+        return null;
     }
 
-    public Boolean hasFailureMessage() {
-        return failureMessage != null && !failureMessage.isEmpty();
+    public Boolean hasExtractFailureRecipient() {
+        return extractFailureRecipient != null && !extractFailureRecipient.isEmpty();
     }
 
-    public String getFailureMessage() {
-        return failureMessage;
+    public String getExtractFailureRecipient() {
+        return extractFailureRecipient;
     }
 
-    public void setFailureMessage(String failureMessage) {
-        this.failureMessage = failureMessage;
+    public void setExtractFailureRecipient(String extractFailureRecipient) {
+        this.extractFailureRecipient = extractFailureRecipient;
+    }
+
+    public String extractFailureMessage(String response) {
+        if (hasExtractFailureMessage()) {
+            //todo: cache that at class-level
+            Pattern p = Pattern.compile(extractFailureMessage);
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                return m.group(1);
+            }
+        }
+        return null;
+    }
+
+    public Boolean hasExtractFailureMessage() {
+        return extractFailureMessage != null && !extractFailureMessage.isEmpty();
+    }
+
+    public String getExtractFailureMessage() {
+        return extractFailureMessage;
+    }
+
+    public void setExtractFailureMessage(String extractFailureMessage) {
+        this.extractFailureMessage = extractFailureMessage;
     }
 }

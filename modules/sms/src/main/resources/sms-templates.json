@@ -28,10 +28,10 @@
             "response":{
                 "multiLineRecipientResponse": "true",
                 "successResponse":  "^ID: [0-9a-zA-Z]+ To: [0-9]+$",
-                "successRecipient": "^ID: [0-9a-zA-Z]+ To: ([0-9]+)$",
-                "successMessageId": "^ID: ([0-9a-zA-Z]+) To: [0-9]+$",
-                "failureRecipient": "^ERR: .* To: ([0-9]+)$",
-                "failureMessage": "^ERR: (.*) To: [0-9]+$"
+                "extractSuccessRecipient": "^ID: [0-9a-zA-Z]+ To: ([0-9]+)$",
+                "extractSuccessMessageId": "^ID: ([0-9a-zA-Z]+) To: [0-9]+$",
+                "extractFailureRecipient": "^ERR: .* To: ([0-9]+)$",
+                "extractFailureMessage": "^ERR: (.*) To: [0-9]+$"
             }
         },
         "incoming":{

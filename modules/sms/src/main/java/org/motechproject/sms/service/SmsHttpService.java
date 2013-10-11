@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.motechproject.sms.event.SmsEvents.*;
 
@@ -51,12 +54,12 @@ public class SmsHttpService {
         Boolean error = false;
         Config config = configsDto.getConfigOrDefault(sms.getConfig());
         Template template = templates.getTemplate(config.getTemplateName());
-        String response = null;
         HttpMethod httpMethod = null;
         Integer failureCount = sms.getFailureCount();
         Integer httpStatus = null;
         String httpResponse = null;
 
+        //todo: cleanup motechMessageId(ie: uuid) and SMS provider messageId
         if (!sms.hasMessageId()) {
             sms.setMessageId(java.util.UUID.randomUUID().toString().replace("-", ""));
         }
@@ -89,21 +92,78 @@ public class SmsHttpService {
             }
         }
 
+        String msgForLog = sms.getMessage().replace("\n", "\\n");
+
         if (!error) {
+            Response resp = template.getOutgoing().getResponse();
             if (httpStatus == 200) {
                 //
                 // analyze sms provider's response
                 //
-                if (template.getOutgoing().getResponse().getMultiLineRecipientResponse()) {
-                    //TODO
-                    //TODO
-                    //TODO
+                if (resp.getMultiLineRecipientResponse()) {
+                    if (resp.hasExtractSuccessRecipient()) {
+                        List<String> failedRecipients = new ArrayList<String>();
+
+                        //todo: store these in Template.Outgoing.Response class
+                        Pattern pExtractSuccessRecipient = Pattern.compile(resp.getExtractSuccessRecipient());
+                        Pattern pExtractSuccessMessageId = null;
+                        if (resp.hasExtractSuccessMessageId()) {
+                            pExtractSuccessMessageId = Pattern.compile(resp.getExtractSuccessMessageId());
+                        }
+                        Pattern pExtractFailureRecipient = null;
+                        if (resp.hasExtractFailureRecipient()) {
+                            pExtractFailureRecipient = Pattern.compile(resp.getExtractFailureRecipient());
+                        }
+                        Pattern pExtractFailureMessage = null;
+                        if (resp.hasExtractFailureMessage()) {
+                            pExtractFailureMessage = Pattern.compile(resp.getExtractFailureMessage());
+                        }
+
+                        for (String responseLine : httpResponse.split("\\r?\\n")) {
+                            String recipient = resp.extractSuccessRecipient(responseLine);
+                            if (recipient != null && !recipient.isEmpty()) {
+                                String messageId = resp.extractSuccessMessageId(responseLine);
+                                if (messageId != null) {
+                                    logger.info(String.format("Successfully sent messageId %s '%s' to %s", messageId,
+                                        msgForLog, recipient));
+                                }
+                                else {
+                                    logger.info("Successfully sent message {} to {}", msgForLog, recipient);
+                                }
+                                //todo: post outbound success event
+                            }
+                            else {
+                                recipient = resp.extractFailureRecipient(responseLine);
+                                if (recipient != null && !recipient.isEmpty()) {
+                                    String failureMessage = resp.extractFailureMessage(responseLine);
+                                    if (failureMessage != null) {
+                                        logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                            recipient, failureMessage));
+                                    }
+                                    else {
+                                        logger.error("Failed to send message {} to {}", msgForLog, recipient);
+                                    }
+                                    //todo #############################################################################
+                                    //todo: add send event for this guy
+                                    //todo #############################################################################
+                                }
+                                else {
+                                    logger.error("Unknown error: {}", responseLine);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        throw new IllegalStateException(String.format(
+                            "Error with '{}' template: multiLineRecipientResponse set, but no extractSuccessRecipient.",
+                            template.getName()));
+                    }
                 }
-                else if (template.getOutgoing().getResponse().hasSuccessResponse()) {
+                else if (resp.hasSuccessResponse()) {
                     //
                     // Simple one-size-fits-all success response from the provider
                     //
-                    if (httpResponse.matches(template.getOutgoing().getResponse().getSuccessResponse())) {
+                    if (httpResponse.matches(resp.getSuccessResponse())) {
                         String messageForLog = sms.getMessage().replace("\n", "\\n");
                         String recipientsForLog = StringUtils.join(sms.getRecipients().iterator(), ",");
                         logger.info("SMS with message \"{}\" sent successfully to {}", messageForLog, recipientsForLog);
@@ -125,22 +185,22 @@ public class SmsHttpService {
                 error = true;
                 logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, httpResponse);
             }
-        }
 
-        if (error) {
-            failureCount++;
-            if (failureCount < config.getMaxRetries()) {
-                //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
-                logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
-                eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
-                        sms.getMessageId(), sms.getDeliveryTime(), failureCount));
-            }
-            else {
-                logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
-                        config.getMaxRetries());
-                //todo addSmsRecord(recipients, message, sendTime, ABORTED);
-                eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+            if (error) {
+                failureCount++;
+                if (failureCount < config.getMaxRetries()) {
+                    //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
+                    logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
+                    eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), sms.getRecipients(), sms.getMessage(),
+                            sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                }
+                else {
+                    logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
+                            config.getMaxRetries());
+                    //todo addSmsRecord(recipients, message, sendTime, ABORTED);
+                    eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), sms.getRecipients(),
+                            sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                }
             }
         }
     }
