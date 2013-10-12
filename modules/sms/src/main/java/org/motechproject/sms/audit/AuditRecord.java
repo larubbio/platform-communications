@@ -11,7 +11,7 @@ import org.motechproject.commons.date.util.DateUtil;
  * todo
  */
 @TypeDiscriminator("doc.type === 'SmsAuditRecord'")
-public class SmsAuditRecord extends MotechBaseDataObject {
+public class AuditRecord extends MotechBaseDataObject {
 
     @JsonProperty
     private SmsType smsType;
@@ -26,10 +26,10 @@ public class SmsAuditRecord extends MotechBaseDataObject {
     @JsonProperty
     private String referenceNumber;
 
-    public SmsAuditRecord() {
+    public AuditRecord() {
     }
 
-    public SmsAuditRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime messageTime, SmsDeliveryStatus deliveryStatus, String referenceNumber) {
+    public AuditRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime messageTime, SmsDeliveryStatus deliveryStatus, String referenceNumber) {
         super("SmsAuditRecord");
         this.smsType = smsType;
         this.phoneNumber = phoneNumber;

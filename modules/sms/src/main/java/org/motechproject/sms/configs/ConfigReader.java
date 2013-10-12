@@ -19,6 +19,9 @@ public class ConfigReader {
     public Configs getConfigs() {
         Configs configs;
         InputStream is = settingsFacade.getRawConfig(SMS_CONFIGS_FILE_NAME);
+        if (is == null) {
+            throw new JsonIOException(SMS_CONFIGS_FILE_NAME + " missing");
+        }
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();

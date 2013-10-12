@@ -8,10 +8,15 @@ import java.util.regex.Pattern;
  */
 public class Response {
     private Boolean multiLineRecipientResponse = false;
+    private Boolean singleRecipientResponse = false;
     private String successStatus = null;
     private String successResponse = null;
+    private String extractSingleSuccessMessageId = null;
+    private String extractSingleFailureMessage = null;
     private String extractSuccessMessageIdAndRecipient = null;
     private String extractFailureMessageAndRecipient = null;
+    Pattern pExtractSingleSuccessMessageId = null;
+    Pattern pExtractSingleFailureMessage = null;
     Pattern pExtractSuccessMessageIdAndRecipient = null;
     Pattern pExtractFailureMessageAndRecipient = null;
 
@@ -33,6 +38,32 @@ public class Response {
 
     public Boolean supportsMultiLineRecipientResponse() {
         return multiLineRecipientResponse;
+    }
+
+    public Boolean supportsSingleRecipientResponse() {
+        return singleRecipientResponse;
+    }
+
+    public String extractSingleSuccessMessageId(String response) {
+        if (pExtractSingleSuccessMessageId == null) {
+            pExtractSingleSuccessMessageId = Pattern.compile(extractSingleSuccessMessageId);
+        }
+        Matcher m = pExtractSingleSuccessMessageId.matcher(response);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return null;
+    }
+
+    public String extractSingleFailureMessage(String response) {
+        if (pExtractSingleFailureMessage == null) {
+            pExtractSingleFailureMessage = Pattern.compile(extractSingleFailureMessage);
+        }
+        Matcher m = pExtractSingleFailureMessage.matcher(response);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return null;
     }
 
     public String[] extractSuccessMessageIdAndRecipient(String response) {

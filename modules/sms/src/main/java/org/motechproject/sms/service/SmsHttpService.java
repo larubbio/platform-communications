@@ -51,7 +51,6 @@ public class SmsHttpService {
         this.schedulerService = schedulerService;
     }
 
-
     public void send(OutgoingSms sms) {
         Boolean error = false;
         Config config = configs.getConfigOrDefault(sms.getConfig());
@@ -107,32 +106,60 @@ public class SmsHttpService {
                 //
                 // analyze sms provider's response
                 //
-                if (sms.getRecipients().size() > 1 && resp.supportsMultiLineRecipientResponse()) {
+                if (resp.supportsMultiLineRecipientResponse()) {
                     for (String responseLine : httpResponse.split("\\r?\\n")) {
                         // todo: as of now, assume all providers return one msgid & recipient per line
                         // todo: but if we discover a provider that doesn't, then we'll add code here...
-                        String[] messageAndRecipient = resp.extractSuccessMessageIdAndRecipient(responseLine);
 
-                        if (messageAndRecipient != null) {
-                            //
-                            // success
-                            //
-                            logger.info(String.format("Successfully sent messageId %s '%s' to %s",
-                                messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
+                        // Some multi-line response providers have a special case for single recipients
+                        if (sms.getRecipients().size() == 1 && resp.supportsSingleRecipientResponse()) {
+                            String messageId = resp.extractSingleSuccessMessageId(responseLine);
+                            if (messageId != null) {
+                                //
+                                // success
+                                //
+                                logger.info(String.format("Successfully sent messageId %s '%s' to %s",
+                                        messageId, msgForLog, sms.getRecipients().get(0)));
                                 //todo: audit record
                                 //todo: post outbound success event
+                            }
+                            else {
+                                //
+                                // failure
+                                //
+                                error = true;
+                                String failureMessage = resp.extractSingleFailureMessage(responseLine);
+                                logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                        sms.getRecipients().get(0), failureMessage));
+                                failedRecipients.add(sms.getRecipients().get(0));
+                                //todo: post outbound failure event
+                                //todo: audit record
+                            }
                         }
                         else {
-                            //
-                            // failure
-                            //
-                            error = true;
-                            messageAndRecipient = resp.extractFailureMessageAndRecipient(responseLine);
-                            logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
-                                messageAndRecipient[1], messageAndRecipient[0]));
-                            failedRecipients.add(messageAndRecipient[1]);
-                            //todo: post outbound failure event
-                            //todo: audit record
+                            String[] messageAndRecipient = resp.extractSuccessMessageIdAndRecipient(responseLine);
+
+                            if (messageAndRecipient != null) {
+                                //
+                                // success
+                                //
+                                logger.info(String.format("Successfully sent messageId %s '%s' to %s",
+                                    messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
+                                    //todo: audit record
+                                    //todo: post outbound success event
+                            }
+                            else {
+                                //
+                                // failure
+                                //
+                                error = true;
+                                messageAndRecipient = resp.extractFailureMessageAndRecipient(responseLine);
+                                logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                    messageAndRecipient[1], messageAndRecipient[0]));
+                                failedRecipients.add(messageAndRecipient[1]);
+                                //todo: post outbound failure event
+                                //todo: audit record
+                            }
                         }
                     }
                 }
