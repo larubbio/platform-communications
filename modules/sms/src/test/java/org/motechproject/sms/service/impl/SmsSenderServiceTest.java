@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.service.SmsAuditService;
 import org.motechproject.sms.service.SmsService;
 import org.motechproject.sms.service.SmsServiceImpl;
 import org.motechproject.sms.templates.TemplateReader;
@@ -22,9 +23,12 @@ public class SmsSenderServiceTest {
     MotechSchedulerService schedulerService;
     @Mock
     TemplateReader templateReader;
+    @Mock
+    SmsAuditService smsAuditService;
 
     @InjectMocks
-    private SmsService smsSender = new SmsServiceImpl(settings, eventRelay, schedulerService, templateReader);
+    private SmsService smsSender = new SmsServiceImpl(settings, eventRelay, schedulerService, templateReader,
+        smsAuditService);
 
     @Before
     public void setUp() {

@@ -5,10 +5,11 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.event.SmsEvents;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
+import org.motechproject.sms.domain.SmsRecord;
+import org.motechproject.sms.event.SmsEvents;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -23,6 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.sms.SMSType.OUTBOUND;
+import static org.motechproject.sms.DeliveryStatus.PENDING;
+
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
 
@@ -31,11 +36,12 @@ public class SmsServiceImpl implements SmsService {
     private EventRelay eventRelay;
     private MotechSchedulerService schedulerService;
     private Templates templates;
-
+    private SmsAuditService smsAuditService;
 
     @Autowired
     public SmsServiceImpl(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                          MotechSchedulerService schedulerService, TemplateReader templateReader) {
+                          MotechSchedulerService schedulerService, TemplateReader templateReader,
+                          SmsAuditService smsAuditService) {
         //todo: persist configs or reload them for each call?
         //todo: right now I'm doing the latter...
         //todo: ... but I'm not wed to it.
@@ -43,6 +49,7 @@ public class SmsServiceImpl implements SmsService {
         this.eventRelay = eventRelay;
         this.schedulerService = schedulerService;
         templates = templateReader.getTemplates();
+        this.smsAuditService = smsAuditService;
     }
 
      static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate,
@@ -147,6 +154,8 @@ public class SmsServiceImpl implements SmsService {
                         sms.getMessageId()));
                     logger.info("Sending message [{}] to recipients {}.", part.replace("\n", "\\n"),
                         sms.getRecipients());
+                    smsAuditService.log(new SmsRecord(OUTBOUND, template.recipientsAsString(sms.getRecipients()),
+                        sms.getMessage(), now(), PENDING, sms.getMessageId()));
                 }
             }
         } else {
