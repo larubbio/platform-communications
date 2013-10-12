@@ -118,7 +118,7 @@ public class SmsServiceImpl implements SmsService {
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
 
-        Integer maxSize = config.getMaxSmsSize();
+        Integer maxSize = template.getOutgoing().getMaxSmsSize();
         String header = config.getSplitHeader();
         String footer = config.getSplitFooter();
         Boolean excludeLastFooter = config.getExcludeLastFooter();

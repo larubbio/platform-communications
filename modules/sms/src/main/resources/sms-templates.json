@@ -8,6 +8,7 @@
 			"clickatell_api_id"
 		],
         "outgoing":{
+            "msxSmsSize":"140",
             "maxRecipient":"300",
             "millisecondsBetweenMessageChunks":"1000",
             "request":{
@@ -50,6 +51,7 @@
 			"password"
 		],
         "outgoing":{
+            "msxSmsSize":"140",
             "request":{
                 "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
@@ -82,6 +84,7 @@
 			"password"
 		],
         "outgoing":{
+            "msxSmsSize":"140",
             "request":{
                 "type":"POST",
                 "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",

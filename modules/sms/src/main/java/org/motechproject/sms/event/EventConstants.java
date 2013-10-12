@@ -1,9 +1,9 @@
-package org.motechproject.sms.constants;
+package org.motechproject.sms.event;
 
 /**
  * todo
  */
-public class Events {
+public class EventConstants {
     public static final String SEND_SMS = "send_sms";
     public static final String OUTBOUND_SMS_SUCCESS = "outbound_sms_success";
     public static final String OUTBOUND_SMS_FAILURE = "outbound_sms_failure";

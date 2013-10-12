@@ -80,8 +80,7 @@
      * Settings
      *
      */
-    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService,
-        ValidateConfigs) {
+    smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
 
         $scope.errors = [];
 
@@ -89,8 +88,8 @@
             .success(function(response){
                 $scope.templates = response;
             })
-            .error(function() {
-                 $scope.errors.push($scope.msg('sms.settings.validate.no_templates'));
+            .error(function(response) {
+                 $scope.errors.push($scope.msg('sms.settings.validate.no_templates', response));
              });
 
         function setAccordions(configs) {
@@ -161,7 +160,10 @@
             newConfig = {
                 'name':'',
                 'templateName':firstTemplateName,
-                'maxRetries':parseInt($scope.msg('sms.settings.max_retries.default'), 10)
+                'maxRetries':parseInt($scope.msg('sms.settings.max_retries.default'), 10),
+                'splitHeader':$scope.msg('sms.settings.split_header.default'),
+                'splitFooter':$scope.msg('sms.settings.split_footer.default'),
+                'splitExcludeLastFooter':$scope.msg('sms.settings.split_exclude.default')
                 };
             newLength = $scope.config.configs.push(newConfig);
             $scope.accordions.push(true);

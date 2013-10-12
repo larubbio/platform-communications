@@ -1,7 +1,6 @@
 package org.motechproject.sms.web;
 
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.constants.Defaults;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.templates.TemplateForWeb;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 //todo: find a way to report useful information to implementers who drop in malformed templates
@@ -35,19 +33,6 @@ public class SettingsController {
     public Map<String, TemplateForWeb> getTemplates() {
         Templates templates = templateReader.getTemplates();
         return templates.templatesForWeb();
-    }
-
-    @RequestMapping(value = "/defaults", method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Object> getDefaults() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("max_retries", Defaults.MAX_RETRIES);
-        map.put("max_sms_size", Defaults.MAX_SMS_SIZE);
-        map.put("split_header", Defaults.SPLIT_HEADER);
-        map.put("split_footer", Defaults.SPLIT_FOOTER);
-        map.put("split_exclude_last_footer", Defaults.SPLIT_EXCLUDE);
-        map.put("multi_recipient", Defaults.MULTI_RECIPIENT);
-        return map;
     }
 
     @RequestMapping(value = "/configs", method = RequestMethod.GET)

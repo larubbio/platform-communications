@@ -7,7 +7,8 @@ public class Outgoing {
     private Request request;
     private Response response;
     private Boolean multiRecipient;
-    private Integer millisecondsBetweenMessageChunks;
+    private Integer millisecondsBetweenMessageChunks = 1; //at a minimum
+    private Integer maxSmsSize = 140; //todo: is it fine to have this default here?
 
     public Request getRequest() {
         return request;
@@ -39,5 +40,13 @@ public class Outgoing {
 
     public void setMillisecondsBetweenMessageChunks(Integer millisecondsBetweenMessageChunks) {
         this.millisecondsBetweenMessageChunks = millisecondsBetweenMessageChunks;
+    }
+
+    public Integer getMaxSmsSize() {
+        return maxSmsSize;
+    }
+
+    public void setMaxSmsSize(Integer maxSmsSize) {
+        this.maxSmsSize = maxSmsSize;
     }
 }
