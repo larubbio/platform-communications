@@ -1,6 +1,6 @@
-package org.motechproject.sms;
+package org.motechproject.sms.audit;
 
-public enum DeliveryStatus {
+public enum SmsDeliveryStatus {
     UNKNOWN,
     KEEPTRYING,
     ABORTED,

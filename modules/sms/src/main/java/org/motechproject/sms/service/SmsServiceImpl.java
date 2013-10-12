@@ -8,7 +8,7 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.domain.SmsRecord;
+import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.event.SmsEvents;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.SMSType.OUTBOUND;
-import static org.motechproject.sms.DeliveryStatus.PENDING;
+import static org.motechproject.sms.audit.SmsType.OUTBOUND;
+import static org.motechproject.sms.audit.SmsDeliveryStatus.PENDING;
 
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {

@@ -1,4 +1,4 @@
-package org.motechproject.sms.domain;
+package org.motechproject.sms.audit;
 
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -6,14 +6,12 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.sms.DeliveryStatus;
-import org.motechproject.sms.SMSType;
 
 @TypeDiscriminator("doc.type === 'SmsRecord'")
 public class SmsRecord extends MotechBaseDataObject {
 
     @JsonProperty
-    private SMSType smsType;
+    private SmsType smsType;
     @JsonProperty
     private String phoneNumber;
     @JsonProperty
@@ -21,24 +19,24 @@ public class SmsRecord extends MotechBaseDataObject {
     @JsonProperty
     private DateTime messageTime;
     @JsonProperty
-    private DeliveryStatus deliveryStatus;
+    private SmsDeliveryStatus smsDeliveryStatus;
     @JsonProperty
     private String referenceNumber;
 
     public SmsRecord() {
     }
 
-    public SmsRecord(SMSType smsType, String phoneNumber, String messageContent, DateTime messageTime, DeliveryStatus deliveryStatus, String referenceNumber) {
+    public SmsRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime messageTime, SmsDeliveryStatus smsDeliveryStatus, String referenceNumber) {
         super("SmsRecord");
         this.smsType = smsType;
         this.phoneNumber = phoneNumber;
         this.messageContent = messageContent;
         this.messageTime = messageTime;
-        this.deliveryStatus = deliveryStatus;
+        this.smsDeliveryStatus = smsDeliveryStatus;
         this.referenceNumber = referenceNumber;
     }
 
-    public SMSType getSmsType() {
+    public SmsType getSmsType() {
         return smsType;
     }
 
@@ -58,12 +56,12 @@ public class SmsRecord extends MotechBaseDataObject {
         this.messageTime = messageTime;
     }
 
-    public DeliveryStatus getDeliveryStatus() {
-        return deliveryStatus;
+    public SmsDeliveryStatus getSmsDeliveryStatus() {
+        return smsDeliveryStatus;
     }
 
-    public void setStatus(DeliveryStatus status) {
-        this.deliveryStatus = status;
+    public void setStatus(SmsDeliveryStatus status) {
+        this.smsDeliveryStatus = status;
     }
 
     public String getReferenceNumber() {

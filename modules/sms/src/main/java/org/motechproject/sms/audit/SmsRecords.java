@@ -1,4 +1,4 @@
-package org.motechproject.sms.domain;
+package org.motechproject.sms.audit;
 
 import java.util.ArrayList;
 import java.util.List;

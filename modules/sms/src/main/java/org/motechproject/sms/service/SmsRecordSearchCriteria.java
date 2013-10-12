@@ -3,23 +3,23 @@ package org.motechproject.sms.service;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.couchdb.query.QueryParam;
-import org.motechproject.sms.DeliveryStatus;
-import org.motechproject.sms.SMSType;
+import org.motechproject.sms.audit.SmsDeliveryStatus;
+import org.motechproject.sms.audit.SmsType;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class SmsRecordSearchCriteria {
 
-    private Set<SMSType> smsTypes = new HashSet<>();
+    private Set<SmsType> smsTypes = new HashSet<>();
     private String phoneNumber;
     private String messageContent;
     private Range<DateTime> messageTimeRange;
-    private Set<DeliveryStatus> deliveryStatuses = new HashSet<>();
+    private Set<SmsDeliveryStatus> smsDeliveryStatuses = new HashSet<>();
     private String referenceNumber;
     private QueryParam queryParam = new QueryParam();
 
-    public SmsRecordSearchCriteria withSmsTypes(Set<SMSType> smsTypes) {
+    public SmsRecordSearchCriteria withSmsTypes(Set<SmsType> smsTypes) {
         this.smsTypes.addAll(smsTypes);
         return this;
     }
@@ -44,8 +44,8 @@ public class SmsRecordSearchCriteria {
         return this;
     }
 
-    public SmsRecordSearchCriteria withDeliveryStatuses(Set<DeliveryStatus> deliveryStatuses) {
-        this.deliveryStatuses.addAll(deliveryStatuses);
+    public SmsRecordSearchCriteria withDeliveryStatuses(Set<SmsDeliveryStatus> smsDeliveryStatuses) {
+        this.smsDeliveryStatuses.addAll(smsDeliveryStatuses);
         return this;
     }
 
@@ -77,8 +77,8 @@ public class SmsRecordSearchCriteria {
         return messageTimeRange;
     }
 
-    public Set<String> getDeliveryStatuses() {
-        return toStringSet(deliveryStatuses);
+    public Set<String> getSmsDeliveryStatuses() {
+        return toStringSet(smsDeliveryStatuses);
     }
 
     public String getReferenceNumber() {

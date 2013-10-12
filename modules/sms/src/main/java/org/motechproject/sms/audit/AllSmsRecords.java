@@ -1,4 +1,4 @@
-package org.motechproject.sms.repository;
+package org.motechproject.sms.audit;
 
 import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
 import com.github.ldriscoll.ektorplucene.CustomLuceneResult;
@@ -12,10 +12,7 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.lucene.query.CouchDbLuceneQuery;
 import org.motechproject.commons.couchdb.query.QueryParam;
-import org.motechproject.sms.DeliveryStatus;
-import org.motechproject.sms.domain.SmsRecord;
 import org.motechproject.sms.service.SmsRecordSearchCriteria;
-import org.motechproject.sms.domain.SmsRecords;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +39,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
     public void updateDeliveryStatus(String recipient, String referenceNumber, String deliveryStatus) {
         SmsRecord smsRecord = findLatestBy(recipient, referenceNumber);
         if (smsRecord != null) {
-            smsRecord.setStatus(DeliveryStatus.valueOf(deliveryStatus));
+            smsRecord.setStatus(SmsDeliveryStatus.valueOf(deliveryStatus));
             update(smsRecord);
         }
     }
@@ -89,7 +86,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                 .with("phoneNumber", criteria.getPhoneNumber())
                 .with("messageContent", criteria.getMessageContent())
                 .withDateRange("messageTime", criteria.getMessageTimeRange())
-                .withAny("deliveryStatus", criteria.getDeliveryStatuses())
+                .withAny("deliveryStatus", criteria.getSmsDeliveryStatuses())
                 .with("referenceNumber", criteria.getReferenceNumber())
                 .build();
         return runQuery(query, criteria.getQueryParam());
