@@ -15,7 +15,8 @@ public class OutgoingSms {
     private String config;
     private DateTime deliveryTime;
     private Integer failureCount = 0;
-    private String messageId;
+    private String motechId;
+    private String providerId;
 
     public OutgoingSms() {
     }
@@ -29,6 +30,8 @@ public class OutgoingSms {
         if (params.containsKey(SmsEvents.FAILURE_COUNT)) {
             failureCount = (Integer) params.get(SmsEvents.FAILURE_COUNT);
         }
+        motechId = (String) params.get(SmsEvents.MOTECH_ID);
+        providerId = (String) params.get(SmsEvents.PROVIDER_ID);
     }
 
     public OutgoingSms(String config, List<String> recipients, String message, DateTime deliveryTime) {
@@ -105,16 +108,24 @@ public class OutgoingSms {
         this.failureCount = failureCount;
     }
 
-    public Boolean hasMessageId() {
-        return messageId != null && !messageId.isEmpty();
+    public Boolean hasMotechId() {
+        return motechId != null && !motechId.isEmpty();
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getMotechId() {
+        return motechId;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setMotechId(String motechId) {
+        this.motechId = motechId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     @Override
@@ -139,13 +150,14 @@ public class OutgoingSms {
                 && Objects.equals(this.message, other.message)
                 && Objects.equals(this.deliveryTime, other.deliveryTime)
                 && Objects.equals(this.failureCount, other.failureCount)
-                && Objects.equals(this.messageId, other.messageId);
+                && Objects.equals(this.motechId, other.motechId)
+                && Objects.equals(this.providerId, other.providerId);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Sms{config='%s', recipients='%s', message='%s', messageId='%s', deliveryTime='%s', failureCount='%d'}",
-                config, recipients, message.replace("\n", "\\n"), messageId, deliveryTime, failureCount);
+            "Sms{config='%s', recipients='%s', message='%s', motechId='%s', providerId='%s', deliveryTime='%s', failureCount='%d'}",
+            config, recipients, message.replace("\n", "\\n"), motechId, providerId, deliveryTime, failureCount);
     }
 }

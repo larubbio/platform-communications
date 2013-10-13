@@ -17,7 +17,7 @@
                 "recipientsSeparator":",",
                 "bodyParameters":{
                     "mo":"1",
-                    "climsgid":"[messageId]",
+                    "climsgid":"[motechId]",
                     "user":"[username]",
                     "password":"[password]",
                     "api_id":"[api_id]",

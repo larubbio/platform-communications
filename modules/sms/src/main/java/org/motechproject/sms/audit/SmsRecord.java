@@ -17,23 +17,27 @@ public class SmsRecord extends MotechBaseDataObject {
     @JsonProperty
     private String messageContent;
     @JsonProperty
-    private DateTime messageTime;
+    private DateTime timestamp;
     @JsonProperty
     private SmsDeliveryStatus smsDeliveryStatus;
     @JsonProperty
-    private String referenceNumber;
+    private String motechId;
+    @JsonProperty
+    private String providerId;
 
     public SmsRecord() {
     }
 
-    public SmsRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime messageTime, SmsDeliveryStatus smsDeliveryStatus, String referenceNumber) {
+    public SmsRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime timestamp,
+                     SmsDeliveryStatus smsDeliveryStatus, String motechId, String providerId) {
         super("SmsRecord");
         this.smsType = smsType;
         this.phoneNumber = phoneNumber;
         this.messageContent = messageContent;
-        this.messageTime = messageTime;
+        this.timestamp = timestamp;
         this.smsDeliveryStatus = smsDeliveryStatus;
-        this.referenceNumber = referenceNumber;
+        this.motechId = motechId;
+        this.providerId = providerId;
     }
 
     public SmsType getSmsType() {
@@ -48,23 +52,19 @@ public class SmsRecord extends MotechBaseDataObject {
         return messageContent;
     }
 
-    public DateTime getMessageTime() {
-        return DateUtil.setTimeZoneUTC(messageTime);
-    }
-
-    public void setMessageTime(DateTime messageTime) {
-        this.messageTime = messageTime;
+    public DateTime getTimestamp() {
+        return DateUtil.setTimeZoneUTC(timestamp);
     }
 
     public SmsDeliveryStatus getSmsDeliveryStatus() {
         return smsDeliveryStatus;
     }
 
-    public void setStatus(SmsDeliveryStatus status) {
-        this.smsDeliveryStatus = status;
+    public String getMotechId() {
+        return motechId;
     }
 
-    public String getReferenceNumber() {
-        return referenceNumber;
+    public String getProviderId() {
+        return providerId;
     }
 }

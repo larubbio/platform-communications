@@ -23,54 +23,56 @@ public class SmsEvents {
     public static final String MESSAGE = "message";
     public static final String DELIVERY_TIME = "delivery_time";
     public static final String FAILURE_COUNT = "failure_count";
-    public static final String MESSAGE_ID = "message_id";
+    public static final String MOTECH_ID = "motech_id";
+    public static final String PROVIDER_ID = "provider_id";
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId) {
-        return makeEvent(SEND_SMS, config, recipients, message, messageId, null, null);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String motechId, String providerId) {
+        return makeEvent(SEND_SMS, config, recipients, message, motechId, providerId, null, null);
     }
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime) {
-        return makeEvent(SEND_SMS, config, recipients, message, messageId, deliveryTime, null);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String motechId, String providerId, DateTime deliveryTime) {
+        return makeEvent(SEND_SMS, config, recipients, message, motechId, providerId, deliveryTime, null);
     }
 
-    public static MotechEvent makeScheduledSendEvent(String config, List<String> recipients, String message, String messageId) {
-        MotechEvent event = makeEvent(SEND_SMS, config, recipients, message, messageId, null, null);
-        //todo: use messageId instead of new uuid?
+    public static MotechEvent makeScheduledSendEvent(String config, List<String> recipients, String message, String motechId, String providerId) {
+        MotechEvent event = makeEvent(SEND_SMS, config, recipients, message, motechId, providerId, null, null);
+        //todo: use motechId instead of new uuid?
         //todo: randomUUID perf
         //MOTECH scheduler needs unique job ids
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, UUID.randomUUID().toString());
         return event;
     }
 
-    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(SEND_SMS, config, recipients, message, messageId, deliveryTime, failureCount);
+    public static MotechEvent makeSendEvent(String config, List<String> recipients, String message, String motechId, String providerId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(SEND_SMS, config, recipients, message, motechId, providerId, deliveryTime, failureCount);
     }
 
-    public static MotechEvent makeOutboundSmsFailureEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(OUTBOUND_SMS_FAILURE, config, recipients, message, messageId, deliveryTime, failureCount);
+    public static MotechEvent makeOutboundSmsFailureEvent(String config, List<String> recipients, String message, String motechId, String providerId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(OUTBOUND_SMS_FAILURE, config, recipients, message, motechId, providerId, deliveryTime, failureCount);
     }
 
-    public static MotechEvent makeOutboundSmsSuccessEvent(String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
-        return makeEvent(OUTBOUND_SMS_SUCCESS, config, recipients, message, messageId, deliveryTime, failureCount);
+    public static MotechEvent makeOutboundSmsSuccessEvent(String config, List<String> recipients, String message, String motechId, String providerId, DateTime deliveryTime, Integer failureCount) {
+        return makeEvent(OUTBOUND_SMS_SUCCESS, config, recipients, message, motechId, providerId, deliveryTime, failureCount);
     }
 
-    public static MotechEvent makeInboundSmsEvent(String config, String sender, String recipient, String message, String messageId, DateTime timestamp) {
+    public static MotechEvent makeInboundSmsEvent(String config, String sender, String recipient, String message, String providerId, DateTime timestamp) {
         Map<String, Object> params = new HashMap<>();
         params.put(CONFIG, config);
         params.put(SENDER, sender);
         params.put(RECIPIENT, recipient);
         params.put(MESSAGE, message);
-        params.put(MESSAGE_ID, messageId);
+        params.put(PROVIDER_ID, providerId);
         params.put(TIMESTAMP, timestamp);
         return new MotechEvent(INBOUND_SMS, params);
     }
 
-    private static MotechEvent makeEvent(String subject, String config, List<String> recipients, String message, String messageId, DateTime deliveryTime, Integer failureCount) {
+    private static MotechEvent makeEvent(String subject, String config, List<String> recipients, String message, String motechId, String providerId, DateTime deliveryTime, Integer failureCount) {
         Map<String, Object> params = new HashMap<>();
         params.put(CONFIG, config);
         params.put(RECIPIENTS, recipients);
         params.put(MESSAGE, message);
-        params.put(MESSAGE_ID, messageId);
+        params.put(MOTECH_ID, motechId);
+        params.put(PROVIDER_ID, providerId);
         if (deliveryTime != null) {
             params.put(DELIVERY_TIME, deliveryTime);
         }

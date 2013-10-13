@@ -23,11 +23,6 @@ public class SmsAuditServiceImpl implements SmsAuditService {
         allSmsRecords.addOrReplace(smsRecord);
     }
 
-    @Override
-    public void updateDeliveryStatus(String recipient, String refNo, String deliveryStatus) {
-        allSmsRecords.updateDeliveryStatus(recipient, refNo, deliveryStatus);
-    }
-
     public List<SmsRecord> findAllSmsRecords() {
         return allSmsRecords.getAll();
     }

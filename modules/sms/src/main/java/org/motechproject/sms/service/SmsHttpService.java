@@ -4,10 +4,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigProp;
 import org.motechproject.sms.configs.ConfigReader;
@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.sms.audit.SmsDeliveryStatus.*;
+import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.*;
 
 @Service
@@ -36,11 +39,12 @@ public class SmsHttpService {
     private EventRelay eventRelay;
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
+    private SmsAuditService smsAuditService;
 
     @Autowired
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
                           HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
-                          TemplateReader templateReader) {
+                          TemplateReader templateReader, SmsAuditService smsAuditService) {
 
         //todo: unified module-wide caching strategy
         configReader = new ConfigReader(settingsFacade);
@@ -49,6 +53,7 @@ public class SmsHttpService {
         this.eventRelay = eventRelay;
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
+        this.smsAuditService = smsAuditService;
     }
 
     public void send(OutgoingSms sms) {
@@ -62,15 +67,10 @@ public class SmsHttpService {
         List<String> failedRecipients = new ArrayList<String>();
 
 
-        //todo: cleanup motechMessageId(ie: uuid) and SMS provider messageId
-        if (!sms.hasMessageId()) {
-            sms.setMessageId(java.util.UUID.randomUUID().toString().replace("-", ""));
-        }
-
         Map<String, String> props = new HashMap<String, String>();
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
         props.put("message", sms.getMessage());
-        props.put("uuid", sms.getMessageId());
+        props.put("motechId", sms.getMotechId());
         for (ConfigProp prop : config.getProps()) {
             props.put(prop.getName(), prop.getValue());
         }
@@ -98,7 +98,7 @@ public class SmsHttpService {
         String msgForLog = sms.getMessage().replace("\n", "\\n");
 
         if (error) {
-            //todo: audit
+            //todo: do we want to add an error to the sms audit log?
         }
         else {
             Response resp = template.getOutgoing().getResponse();
@@ -120,7 +120,8 @@ public class SmsHttpService {
                                 //
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                         messageId, msgForLog, sms.getRecipients().get(0)));
-                                //todo: audit record
+                                smsAuditService.log(new SmsRecord(OUTBOUND, sms.getRecipients().get(0),
+                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageId));
                                 //todo: post outbound success event
                             }
                             else {
@@ -133,7 +134,6 @@ public class SmsHttpService {
                                         sms.getRecipients().get(0), failureMessage));
                                 failedRecipients.add(sms.getRecipients().get(0));
                                 //todo: post outbound failure event
-                                //todo: audit record
                             }
                         }
                         else {
@@ -145,7 +145,8 @@ public class SmsHttpService {
                                 //
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                     messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
-                                    //todo: audit record
+                                smsAuditService.log(new SmsRecord(OUTBOUND, messageAndRecipient[1], sms.getMessage(),
+                                    now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0]));
                                     //todo: post outbound success event
                             }
                             else {
@@ -172,9 +173,9 @@ public class SmsHttpService {
                     // Either straight HTTP 200, or matched successful response
                     //
                     logger.info("SMS with message \"{}\" sent successfully to {}", msgForLog,
-                        StringUtils.join(sms.getRecipients().iterator(), ","));
+                        template.recipientsAsString(sms.getRecipients()));
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                        sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     //todo audit
                 }
             }
@@ -196,17 +197,23 @@ public class SmsHttpService {
                 }
 
                 if (failureCount < config.getMaxRetries()) {
-                    //todo addSmsRecord(recipients, message, sendTime, KEEPTRYING);
                     logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
                     eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
-                            sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                            sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
+                    for (String recipient : recipients) {
+                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, sms.getMessage(), now(), KEEPTRYING,
+                                sms.getMotechId(), null));
+                    }
                 }
                 else {
                     logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
                             config.getMaxRetries());
-                    //todo addSmsRecord(recipients, message, sendTime, ABORTED);
                     eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), recipients,
-                            sms.getMessage(), sms.getMessageId(), sms.getDeliveryTime(), failureCount));
+                            sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
+                    for (String recipient : recipients) {
+                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, sms.getMessage(), now(), ABORTED,
+                                sms.getMotechId(), null));
+                    }
                 }
             }
         }

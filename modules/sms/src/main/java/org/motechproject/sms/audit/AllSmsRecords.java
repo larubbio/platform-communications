@@ -36,26 +36,18 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
 
     private final Logger logger = LoggerFactory.getLogger(AllSmsRecords.class);
 
-    public void updateDeliveryStatus(String recipient, String referenceNumber, String deliveryStatus) {
-        SmsRecord smsRecord = findLatestBy(recipient, referenceNumber);
-        if (smsRecord != null) {
-            smsRecord.setStatus(SmsDeliveryStatus.valueOf(deliveryStatus));
-            update(smsRecord);
-        }
-    }
-
     SmsRecord findLatestBy(String recipient, String referenceNumber) {
         SmsRecords smsRecords = findAllBy(new SmsRecordSearchCriteria()
                 .withPhoneNumber(recipient)
                 .withReferenceNumber(referenceNumber));
-        return CollectionUtils.isEmpty(smsRecords.getRecords()) ? null : (SmsRecord) sort(smsRecords.getRecords(), on(SmsRecord.class).getMessageTime(), reverseOrder()).get(0);
+        return CollectionUtils.isEmpty(smsRecords.getRecords()) ? null : (SmsRecord) sort(smsRecords.getRecords(), on(SmsRecord.class).getTimestamp(), reverseOrder()).get(0);
     }
 
     public void addOrReplace(SmsRecord smsRecord) {
         SmsRecords smsRecordsInDb = findAllBy(new SmsRecordSearchCriteria()
                 .withPhoneNumber(smsRecord.getPhoneNumber())
-                .withMessageTime(smsRecord.getMessageTime())
-                .withReferenceNumber(smsRecord.getReferenceNumber()));
+                .withMessageTime(smsRecord.getTimestamp())
+                .withReferenceNumber(smsRecord.getMotechId()));
         if (CollectionUtils.isEmpty(smsRecordsInDb.getRecords())) {
             add(smsRecord);
         } else {
