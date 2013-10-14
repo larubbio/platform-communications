@@ -120,8 +120,9 @@ public class SmsHttpService {
                                 //
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                         messageId, msgForLog, sms.getRecipients().get(0)));
-                                smsAuditService.log(new SmsRecord(OUTBOUND, sms.getRecipients().get(0),
-                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageId));
+                                smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND,
+                                    sms.getRecipients().get(0), sms.getMessage(), now(), DISPATCHED, sms.getMotechId(),
+                                    messageId));
                                 //todo: post outbound success event
                             }
                             else {
@@ -145,8 +146,8 @@ public class SmsHttpService {
                                 //
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                     messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
-                                smsAuditService.log(new SmsRecord(OUTBOUND, messageAndRecipient[1], sms.getMessage(),
-                                    now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0]));
+                                smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, messageAndRecipient[1],
+                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0]));
                                     //todo: post outbound success event
                             }
                             else {
@@ -201,8 +202,8 @@ public class SmsHttpService {
                     eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
                             sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, sms.getMessage(), now(), KEEPTRYING,
-                                sms.getMotechId(), null));
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
+                            now(), KEEPTRYING, sms.getMotechId(), null));
                     }
                 }
                 else {
@@ -211,8 +212,8 @@ public class SmsHttpService {
                     eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), recipients,
                             sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, sms.getMessage(), now(), ABORTED,
-                                sms.getMotechId(), null));
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
+                            now(), ABORTED, sms.getMotechId(), null));
                     }
                 }
             }

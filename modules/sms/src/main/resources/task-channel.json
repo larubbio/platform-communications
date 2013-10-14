@@ -86,8 +86,8 @@
                                     "displayName" : "sms.task.trigger.inbound.sender"
                                   },
                                   {
-                                    "eventKey" : "recipient",
-                                    "displayName" : "sms.task.trigger.inbound.recipient"
+                                    "eventKey" : "phoneNumber",
+                                    "displayName" : "sms.task.trigger.inbound.phoneNumber"
                                   },
                                   {
                                     "eventKey" : "message",

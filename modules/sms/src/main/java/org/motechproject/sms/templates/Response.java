@@ -1,5 +1,7 @@
 package org.motechproject.sms.templates;
 
+//todo: handle malformed template files (ie: resulting in exceptions in the regex parsing) in a useful way for implementers
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

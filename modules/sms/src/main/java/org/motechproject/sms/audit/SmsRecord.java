@@ -11,6 +11,8 @@ import org.motechproject.commons.date.util.DateUtil;
 public class SmsRecord extends MotechBaseDataObject {
 
     @JsonProperty
+    private String config;
+    @JsonProperty
     private SmsType smsType;
     @JsonProperty
     private String phoneNumber;
@@ -28,9 +30,10 @@ public class SmsRecord extends MotechBaseDataObject {
     public SmsRecord() {
     }
 
-    public SmsRecord(SmsType smsType, String phoneNumber, String messageContent, DateTime timestamp,
+    public SmsRecord(String config, SmsType smsType, String phoneNumber, String messageContent, DateTime timestamp,
                      SmsDeliveryStatus smsDeliveryStatus, String motechId, String providerId) {
         super("SmsRecord");
+        this.config = config;
         this.smsType = smsType;
         this.phoneNumber = phoneNumber;
         this.messageContent = messageContent;
@@ -38,6 +41,10 @@ public class SmsRecord extends MotechBaseDataObject {
         this.smsDeliveryStatus = smsDeliveryStatus;
         this.motechId = motechId;
         this.providerId = providerId;
+    }
+
+    public String getConfig() {
+        return config;
     }
 
     public SmsType getSmsType() {
@@ -66,5 +73,10 @@ public class SmsRecord extends MotechBaseDataObject {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String toString() {
+        return String.format("config: %s, smsType: %s, number: %s, motechId: %s, providerId: %s, timestamp: %s, deliveryStatus: %s",
+            config, smsType.toString(), phoneNumber, motechId, providerId, timestamp, smsDeliveryStatus);
     }
 }

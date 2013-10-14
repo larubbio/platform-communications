@@ -146,7 +146,7 @@ public class SmsServiceImpl implements SmsService {
                     //without that it seems Quartz doesn't fire events in the order they were scheduled
                     dt = dt.plus(milliDelay);
                     for (String recipient : sms.getRecipients()) {
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, part, now(), SCHEDULED,
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
                             sms.getMotechId(), null));
                     }
                 }
@@ -158,7 +158,7 @@ public class SmsServiceImpl implements SmsService {
                     logger.info("Sending message [{}] to recipients {}.", part.replace("\n", "\\n"),
                         sms.getRecipients());
                     for (String recipient : sms.getRecipients()) {
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, part, now(), PENDING,
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
                             sms.getMotechId(), null));
                     }
                 }
@@ -179,14 +179,14 @@ public class SmsServiceImpl implements SmsService {
                         //add (at least) one millisecond to the next sms part so they will be delivered in order
                         //without that it seems Quartz doesn't fire events in the order they were scheduled
                         dt = dt.plus(milliDelay);
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, part, now(), SCHEDULED,
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
                                 sms.getMotechId(), null));
                     }
                     else {
                         logger.info("Sending message [{}] to recipient {}.", part.replace("\n", "\\n"), recipient);
                         eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient),
                                 part, sms.getMotechId(), null));
-                        smsAuditService.log(new SmsRecord(OUTBOUND, recipient, part, now(), PENDING,
+                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
                                 sms.getMotechId(), null));
                     }
                 }

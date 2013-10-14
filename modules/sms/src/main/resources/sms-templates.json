@@ -30,7 +30,7 @@
                 "multiLineRecipientResponse": "true",
                 "singleRecipientResponse": "true",
                 "extractSingleSuccessMessageId":  "^ID: ([0-9a-zA-Z]+)$",
-                "extractSingleErrorMessage":  "^ERR: (.*)$",
+                "extractSingleFailureMessage":  "^ERR: (.*)$",
                 "extractSuccessMessageIdAndRecipient": "^ID: ([0-9a-zA-Z]+) To: ([0-9]+)$",
                 "extractFailureMessageAndRecipient": "^ERR: (.*) To: ([0-9]+)$"
             }
