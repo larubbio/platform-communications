@@ -122,13 +122,13 @@ public class GridSettings {
         if (!deliveryStatusList.isEmpty()) {
             criteria.withSmsDeliveryStatuses(deliveryStatusList);
         }
-        if (StringUtils.isNotBlank(phoneNumber)) {
+        /*if (StringUtils.isNotBlank(phoneNumber)) {
             criteria.withPhoneNumber(phoneNumber + "*");
         }
         if (StringUtils.isNotBlank(messageContent)) {
             criteria.withMessageContent(messageContent + "*");
         }
-        criteria.withTimestampRange(range);
+        criteria.withTimestampRange(range);*/
         criteria.withQueryParam(queryParam);
         return criteria;
     }

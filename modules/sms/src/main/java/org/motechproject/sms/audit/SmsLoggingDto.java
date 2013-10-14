@@ -11,7 +11,7 @@ public class SmsLoggingDto {
     private String phoneNumber;
     private String smsType;
     private String timestamp;
-    private String deliveryStatus;
+    private String smsDeliveryStatus;
     private String messageContent;
 
     public SmsLoggingDto(SmsRecord record) {
@@ -19,7 +19,7 @@ public class SmsLoggingDto {
         this.smsType = record.getSmsType().toString();
         // DateUtil.setTimeZone converts the message time from UTC to local time for display
         this.timestamp = DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(record.getTimestamp()));
-        this.deliveryStatus = record.getSmsDeliveryStatus().toString();
+        this.smsDeliveryStatus = record.getSmsDeliveryStatus().toString();
         this.messageContent = record.getMessageContent();
     }
 
@@ -47,12 +47,12 @@ public class SmsLoggingDto {
         this.timestamp = timestamp;
     }
 
-    public String getDeliveryStatus() {
-        return deliveryStatus;
+    public String getSmsDeliveryStatus() {
+        return smsDeliveryStatus;
     }
 
-    public void setDeliveryStatus(String deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
+    public void setDeliveryStatus(String smsDeliveryStatus) {
+        this.smsDeliveryStatus = smsDeliveryStatus;
     }
 
     public String getMessageContent() {

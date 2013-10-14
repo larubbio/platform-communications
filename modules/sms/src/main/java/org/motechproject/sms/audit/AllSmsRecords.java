@@ -65,7 +65,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                     "result.add(doc.phoneNumber, {'field':'phoneNumber'});" +
                     "result.add(doc.messageContent, {'field':'messageContent'}); " +
                     "result.add(doc.timestamp,{'field':'timestamp', 'type':'date'}); " +
-                    "result.add(doc.deliveryStatus, {'field':'deliveryStatus'}); " +
+                    "result.add(doc.smsDeliveryStatus, {'field':'smsDeliveryStatus'}); " +
                     "result.add(doc.referenceNumber, {'field':'referenceNumber'}); " +
                     "return result " +
                     "}"
@@ -77,7 +77,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                 .with("phoneNumber", criteria.getPhoneNumber())
                 .with("messageContent", criteria.getMessageContent())
                 .withDateRange("timestamp", criteria.getTimestampRange())
-                .withAny("deliveryStatus", criteria.getSmsDeliveryStatuses())
+                .withAny("smsDeliveryStatus", criteria.getSmsDeliveryStatuses())
                 .with("referenceNumber", criteria.getReferenceNumber())
                 .build();
         return runQuery(query, criteria.getQueryParam());
