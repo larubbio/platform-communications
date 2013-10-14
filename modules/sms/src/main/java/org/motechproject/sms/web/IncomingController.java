@@ -3,9 +3,11 @@ package org.motechproject.sms.web;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
+import org.motechproject.sms.service.SmsAuditService;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.sms.audit.SmsDeliveryStatus.RECEIVED;
+import static org.motechproject.sms.audit.SmsType.INBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
 
 /**
@@ -33,14 +38,16 @@ public class IncomingController {
     private Configs configs;
     private Templates templates;
     private EventRelay eventRelay;
+    private SmsAuditService smsAuditService;
 
     @Autowired
     public IncomingController(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                              TemplateReader templateReader) {
+                              TemplateReader templateReader, SmsAuditService smsAuditService) {
         this.eventRelay = eventRelay;
         configReader = new ConfigReader(settingsFacade);
         configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
+        this.smsAuditService = smsAuditService;
     }
 
 
@@ -93,6 +100,9 @@ public class IncomingController {
 
         eventRelay.sendEventMessage(makeInboundSmsEvent(config.getName(), sender, recipient, message, messageId,
                 timestamp));
+
+        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, recipient, message, now(), RECEIVED, null,
+            messageId));
 
         return response;
     }
