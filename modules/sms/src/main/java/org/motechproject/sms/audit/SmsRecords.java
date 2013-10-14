@@ -1,10 +1,12 @@
 package org.motechproject.sms.audit;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SmsRecords {
+public class SmsRecords implements Serializable {
 
+    private static final long serialVersionUID = -1584588569625856505L;
     private int count;
     private List<SmsRecord> records;
 

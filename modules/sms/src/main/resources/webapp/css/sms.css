@@ -83,3 +83,11 @@ input.ng-invalid:focus {
     border-color: #E9322D !important;
     box-shadow: 0 0 6px #F8B9B7 !important;
 }
+
+#filters {
+    padding: 15px;
+}
+
+.ui-jqgrid .ui-icon-asc {
+    margin-left: 1px;
+}

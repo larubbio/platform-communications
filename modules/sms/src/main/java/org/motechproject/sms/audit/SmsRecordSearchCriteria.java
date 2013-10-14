@@ -1,26 +1,28 @@
-package org.motechproject.sms.service;
+package org.motechproject.sms.audit;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.couchdb.query.QueryParam;
-import org.motechproject.sms.audit.SmsDeliveryStatus;
-import org.motechproject.sms.audit.SmsType;
 
 import java.util.HashSet;
 import java.util.Set;
 
+
+/**
+ * todo
+ */
 public class SmsRecordSearchCriteria {
 
-    private Set<SmsType> smsTypes = new HashSet<>();
+    private Set<SmsType> SmsTypes = new HashSet<>();
     private String phoneNumber;
     private String messageContent;
-    private Range<DateTime> messageTimeRange;
+    private Range<DateTime> timestampRange;
     private Set<SmsDeliveryStatus> smsDeliveryStatuses = new HashSet<>();
     private String referenceNumber;
     private QueryParam queryParam = new QueryParam();
 
-    public SmsRecordSearchCriteria withSmsTypes(Set<SmsType> smsTypes) {
-        this.smsTypes.addAll(smsTypes);
+    public SmsRecordSearchCriteria withSmsTypes(Set<SmsType> SmsTypes) {
+        this.SmsTypes.addAll(SmsTypes);
         return this;
     }
 
@@ -34,17 +36,17 @@ public class SmsRecordSearchCriteria {
         return this;
     }
 
-    public SmsRecordSearchCriteria withMessageTime(DateTime messageTime) {
-        this.messageTimeRange = new Range<>(messageTime, messageTime);
+    public SmsRecordSearchCriteria withTimestamp(DateTime timestamp) {
+        this.timestampRange = new Range<>(timestamp, timestamp);
         return this;
     }
 
-    public SmsRecordSearchCriteria withMessageTimeRange(Range<DateTime> messageTimeRange) {
-        this.messageTimeRange = messageTimeRange;
+    public SmsRecordSearchCriteria withTimestampRange(Range<DateTime> timestampRange) {
+        this.timestampRange = timestampRange;
         return this;
     }
 
-    public SmsRecordSearchCriteria withDeliveryStatuses(Set<SmsDeliveryStatus> smsDeliveryStatuses) {
+    public SmsRecordSearchCriteria withSmsDeliveryStatuses(Set<SmsDeliveryStatus> smsDeliveryStatuses) {
         this.smsDeliveryStatuses.addAll(smsDeliveryStatuses);
         return this;
     }
@@ -62,7 +64,7 @@ public class SmsRecordSearchCriteria {
     // Getters
 
     public Set<String> getSmsTypes() {
-        return toStringSet(smsTypes);
+        return toStringSet(SmsTypes);
     }
 
     public String getPhoneNumber() {
@@ -73,8 +75,8 @@ public class SmsRecordSearchCriteria {
         return messageContent;
     }
 
-    public Range<DateTime> getMessageTimeRange() {
-        return messageTimeRange;
+    public Range<DateTime> getTimestampRange() {
+        return timestampRange;
     }
 
     public Set<String> getSmsDeliveryStatuses() {

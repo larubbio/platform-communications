@@ -1,3 +1,5 @@
+//todo: roles: who has sms-sending privilege
+
 package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;

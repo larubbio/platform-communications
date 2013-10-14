@@ -2,6 +2,7 @@ package org.motechproject.sms.service;
 
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.audit.AllSmsRecords;
+import org.motechproject.sms.audit.SmsRecordSearchCriteria;
 import org.motechproject.sms.audit.SmsRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

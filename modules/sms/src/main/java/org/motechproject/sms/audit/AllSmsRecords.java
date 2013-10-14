@@ -12,7 +12,6 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.lucene.query.CouchDbLuceneQuery;
 import org.motechproject.commons.couchdb.query.QueryParam;
-import org.motechproject.sms.service.SmsRecordSearchCriteria;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
     public void addOrReplace(SmsRecord smsRecord) {
         SmsRecords smsRecordsInDb = findAllBy(new SmsRecordSearchCriteria()
                 .withPhoneNumber(smsRecord.getPhoneNumber())
-                .withMessageTime(smsRecord.getTimestamp())
+                .withTimestamp(smsRecord.getTimestamp())
                 .withReferenceNumber(smsRecord.getMotechId()));
         if (CollectionUtils.isEmpty(smsRecordsInDb.getRecords())) {
             add(smsRecord);
@@ -65,7 +64,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                     "result.add(doc.smsType,{'field':'smsType'}); " +
                     "result.add(doc.phoneNumber, {'field':'phoneNumber'});" +
                     "result.add(doc.messageContent, {'field':'messageContent'}); " +
-                    "result.add(doc.messageTime,{'field':'messageTime', 'type':'date'}); " +
+                    "result.add(doc.timestamp,{'field':'timestamp', 'type':'date'}); " +
                     "result.add(doc.deliveryStatus, {'field':'deliveryStatus'}); " +
                     "result.add(doc.referenceNumber, {'field':'referenceNumber'}); " +
                     "return result " +
@@ -77,7 +76,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                 .withAny("smsType", criteria.getSmsTypes())
                 .with("phoneNumber", criteria.getPhoneNumber())
                 .with("messageContent", criteria.getMessageContent())
-                .withDateRange("messageTime", criteria.getMessageTimeRange())
+                .withDateRange("timestamp", criteria.getTimestampRange())
                 .withAny("deliveryStatus", criteria.getSmsDeliveryStatuses())
                 .with("referenceNumber", criteria.getReferenceNumber())
                 .build();

@@ -1,6 +1,7 @@
 package org.motechproject.sms.service;
 
 import org.motechproject.sms.audit.SmsRecord;
+import org.motechproject.sms.audit.SmsRecordSearchCriteria;
 import org.motechproject.sms.audit.SmsRecords;
 
 import java.util.List;
