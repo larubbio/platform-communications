@@ -65,7 +65,7 @@ public class SmsHttpService {
         Integer httpStatus = null;
         String httpResponse = null;
         List<String> failedRecipients = new ArrayList<String>();
-
+        Boolean providerResponseParsingError = false;
 
         Map<String, String> props = new HashMap<String, String>();
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
@@ -156,9 +156,17 @@ public class SmsHttpService {
                                 //
                                 error = true;
                                 messageAndRecipient = resp.extractFailureMessageAndRecipient(responseLine);
-                                logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
-                                    messageAndRecipient[1], messageAndRecipient[0]));
-                                failedRecipients.add(messageAndRecipient[1]);
+                                if (messageAndRecipient == null) {
+                                    providerResponseParsingError = true;
+                                    logger.info(String.format(
+                                        "Failed to sent message '%s', likely config or template error: unable to parse provider's response: %s",
+                                        msgForLog, responseLine));
+                                }
+                                else {
+                                    logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                        messageAndRecipient[1], messageAndRecipient[0]));
+                                    failedRecipients.add(messageAndRecipient[1]);
+                                }
                                 //todo: post outbound failure event
                                 //todo: audit record
                             }
@@ -188,9 +196,16 @@ public class SmsHttpService {
 
             if (error) {
                 failureCount++;
-
                 List<String> recipients;
-                if (resp.supportsMultiLineRecipientResponse()) {
+
+                // todo: do we want to add UNKNOWN status log events if we have a provider response parsing error?
+                // Best to assume failure or unknown for all recipients if we can't parse provider's response
+                // But the trade off is we might send an sms more than once.
+                // todo: check we're happy with that
+                //
+                //                                            ********************************
+                //                                            vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                if (resp.supportsMultiLineRecipientResponse() && !providerResponseParsingError) {
                     recipients = failedRecipients;
                 }
                 else {
@@ -200,7 +215,7 @@ public class SmsHttpService {
                 if (failureCount < config.getMaxRetries()) {
                     logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
                     eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
-                            sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
+                        sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
                             now(), KEEPTRYING, sms.getMotechId(), null));
