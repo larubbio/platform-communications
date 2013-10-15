@@ -14,11 +14,13 @@ import java.util.Set;
 public class SmsRecordSearchCriteria {
 
     private Set<SmsType> SmsTypes = new HashSet<>();
+    private String config;
     private String phoneNumber;
     private String messageContent;
     private Range<DateTime> timestampRange;
     private Set<SmsDeliveryStatus> smsDeliveryStatuses = new HashSet<>();
-    private String referenceNumber;
+    private String motechId;
+    private String providerId;
     private QueryParam queryParam = new QueryParam();
 
     public SmsRecordSearchCriteria withSmsTypes(Set<SmsType> SmsTypes) {
@@ -28,6 +30,21 @@ public class SmsRecordSearchCriteria {
 
     public SmsRecordSearchCriteria withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public SmsRecordSearchCriteria withConfig(String config) {
+        this.config = config;
+        return this;
+    }
+
+    public SmsRecordSearchCriteria withMotechId(String motechId) {
+        this.motechId = motechId;
+        return this;
+    }
+
+    public SmsRecordSearchCriteria withProviderId(String providerId) {
+        this.providerId = providerId;
         return this;
     }
 
@@ -51,11 +68,6 @@ public class SmsRecordSearchCriteria {
         return this;
     }
 
-    public SmsRecordSearchCriteria withReferenceNumber(String referenceNumber) {
-        this.referenceNumber = referenceNumber;
-        return this;
-    }
-
     public SmsRecordSearchCriteria withQueryParam(QueryParam queryParam) {
         this.queryParam = queryParam;
         return this;
@@ -65,6 +77,10 @@ public class SmsRecordSearchCriteria {
 
     public Set<String> getSmsTypes() {
         return toStringSet(SmsTypes);
+    }
+
+    public String getConfig() {
+        return config;
     }
 
     public String getPhoneNumber() {
@@ -83,8 +99,12 @@ public class SmsRecordSearchCriteria {
         return toStringSet(smsDeliveryStatuses);
     }
 
-    public String getReferenceNumber() {
-        return referenceNumber;
+    public String getMotechId() {
+        return motechId;
+    }
+
+    public String getProviderId() {
+        return providerId;
     }
 
     public QueryParam getQueryParam() {

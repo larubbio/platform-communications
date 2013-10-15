@@ -25,7 +25,7 @@ public class SmsAuditServiceImpl implements SmsAuditService {
     @Override
     public void log(SmsRecord smsRecord) {
         logger.info("AUDIT LOG: {}", smsRecord.toString());
-        allSmsRecords.addOrReplace(smsRecord);
+        allSmsRecords.add(smsRecord);
     }
 
     public List<SmsRecord> findAllSmsRecords() {

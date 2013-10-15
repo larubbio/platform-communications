@@ -22,12 +22,15 @@ public class GridSettings {
     private Integer page;
     private String sortColumn;
     private String sortDirection;
+    private String config;
     private String phoneNumber;
     private String messageContent;
     private String timeFrom;
     private String timeTo;
     private String smsDeliveryStatus;
     private String smsType;
+    private String motechId;
+    private String providerId;
 
     public Integer getRows() {
         return rows;
@@ -59,6 +62,14 @@ public class GridSettings {
 
     public void setSortDirection(String sortDirection) {
         this.sortDirection = sortDirection;
+    }
+
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
     }
 
     public String getPhoneNumber() {
@@ -109,6 +120,22 @@ public class GridSettings {
         this.smsType = smsType;
     }
 
+    public String getMotechId() {
+        return motechId;
+    }
+
+    public void setMotechId(String motechId) {
+        this.motechId = motechId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
     public SmsRecordSearchCriteria toSmsRecordSearchCriteria() {
         boolean reverse = "desc".equalsIgnoreCase(sortDirection);
         QueryParam queryParam = new QueryParam(page - 1, rows, sortColumn, reverse);
@@ -122,13 +149,22 @@ public class GridSettings {
         if (!deliveryStatusList.isEmpty()) {
             criteria.withSmsDeliveryStatuses(deliveryStatusList);
         }
-        /*if (StringUtils.isNotBlank(phoneNumber)) {
+        if (StringUtils.isNotBlank(config)) {
+            criteria.withConfig(config + "*");
+        }
+        if (StringUtils.isNotBlank(phoneNumber)) {
             criteria.withPhoneNumber(phoneNumber + "*");
         }
         if (StringUtils.isNotBlank(messageContent)) {
             criteria.withMessageContent(messageContent + "*");
         }
-        criteria.withTimestampRange(range);*/
+        if (StringUtils.isNotBlank(motechId)) {
+            criteria.withMotechId(motechId + "*");
+        }
+        if (StringUtils.isNotBlank(providerId)) {
+            criteria.withProviderId(providerId + "*");
+        }
+        criteria.withTimestampRange(range);
         criteria.withQueryParam(queryParam);
         return criteria;
     }

@@ -12,22 +12,17 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.lucene.query.CouchDbLuceneQuery;
 import org.motechproject.commons.couchdb.query.QueryParam;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.sort;
-import static java.util.Collections.reverseOrder;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Repository
@@ -35,38 +30,18 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
 
     private final Logger logger = LoggerFactory.getLogger(AllSmsRecords.class);
 
-    SmsRecord findLatestBy(String recipient, String referenceNumber) {
-        SmsRecords smsRecords = findAllBy(new SmsRecordSearchCriteria()
-                .withPhoneNumber(recipient)
-                .withReferenceNumber(referenceNumber));
-        return CollectionUtils.isEmpty(smsRecords.getRecords()) ? null : (SmsRecord) sort(smsRecords.getRecords(), on(SmsRecord.class).getTimestamp(), reverseOrder()).get(0);
-    }
-
-    public void addOrReplace(SmsRecord smsRecord) {
-        SmsRecords smsRecordsInDb = findAllBy(new SmsRecordSearchCriteria()
-                .withPhoneNumber(smsRecord.getPhoneNumber())
-                .withTimestamp(smsRecord.getTimestamp())
-                .withReferenceNumber(smsRecord.getMotechId()));
-        if (CollectionUtils.isEmpty(smsRecordsInDb.getRecords())) {
-            add(smsRecord);
-        } else {
-            SmsRecord smsRecordInDb = smsRecordsInDb.getRecords().get(0);
-            smsRecord.setId(smsRecordInDb.getId());
-            smsRecord.setRevision(smsRecordInDb.getRevision());
-            update(smsRecord);
-        }
-    }
-
     @FullText({@Index(
             name = "search",
             index = "function(doc) { " +
                     "var result=new Document(); " +
                     "result.add(doc.smsType,{'field':'smsType'}); " +
+                    "result.add(doc.config, {'field':'config'});" +
                     "result.add(doc.phoneNumber, {'field':'phoneNumber'});" +
                     "result.add(doc.messageContent, {'field':'messageContent'}); " +
                     "result.add(doc.timestamp,{'field':'timestamp', 'type':'date'}); " +
                     "result.add(doc.smsDeliveryStatus, {'field':'smsDeliveryStatus'}); " +
-                    "result.add(doc.referenceNumber, {'field':'referenceNumber'}); " +
+                    "result.add(doc.motechId, {'field':'motechId'}); " +
+                    "result.add(doc.providerId, {'field':'providerId'}); " +
                     "return result " +
                     "}"
     )})
@@ -74,11 +49,13 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
     public SmsRecords findAllBy(SmsRecordSearchCriteria criteria) {
         StringBuilder query = new CouchDbLuceneQuery()
                 .withAny("smsType", criteria.getSmsTypes())
+                .with("config", criteria.getConfig())
                 .with("phoneNumber", criteria.getPhoneNumber())
                 .with("messageContent", criteria.getMessageContent())
                 .withDateRange("timestamp", criteria.getTimestampRange())
                 .withAny("smsDeliveryStatus", criteria.getSmsDeliveryStatuses())
-                .with("referenceNumber", criteria.getReferenceNumber())
+                .with("motechId", criteria.getMotechId())
+                .with("providerId", criteria.getProviderId())
                 .build();
         return runQuery(query, criteria.getQueryParam());
     }

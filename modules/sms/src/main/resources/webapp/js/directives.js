@@ -162,7 +162,7 @@
                 marked with these deprecated codes in the SMS log
                 */
                 elem.jqGrid({
-                    url: '../sms/log?phoneNumber=&messageContent=&timeFrom=&timeTo=&smsDeliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,KEEPTRYING,ABORTED,UNKNOWN,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
+                    url: '../sms/log?smsDeliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,KEEPTRYING,ABORTED,UNKNOWN,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
@@ -177,6 +177,9 @@
                     rowNum: 10,
                     rowList: [10, 20, 50],
                     colModel: [{
+                        name: 'config',
+                        index: 'config'
+                    }, {
                         name: 'phoneNumber',
                         index: 'phoneNumber'
                     }, {
@@ -189,6 +192,12 @@
                         name: 'smsType',
                         index: 'smsType'
                     }, {
+                        name: 'motechId',
+                        index: 'motechId'
+                    }, {
+                        name: 'providerId',
+                        index: 'providerId'
+                    }, {
                         name: 'messageContent',
                         index: 'messageContent',
                         sortable: false
@@ -200,7 +209,7 @@
                     sortorder: 'desc',
                     viewrecords: true,
                     gridComplete: function () {
-                        angular.forEach(['phoneNumber', 'smsDeliveryStatus', 'timestamp', 'smsType', 'messageContent'], function (value) {
+                        angular.forEach(['config', 'phoneNumber', 'smsDeliveryStatus', 'timestamp', 'smsType', 'motechId', 'providerId', 'messageContent'], function (value) {
                             elem.jqGrid('setLabel', value, scope.msg('sms.log.' + value));
                         });
 

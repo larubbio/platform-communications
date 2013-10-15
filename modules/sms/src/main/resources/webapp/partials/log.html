@@ -39,6 +39,23 @@
             </div>
 
             <div class="row-fluid">
+                <div class="span3">
+                    <fieldset class="inside"><legend>{{msg('sms.log.motechId')}}</legend>
+                        <div class="control-group form-inline">
+                            <input type="text" class="input-medium search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="motechId" jqgrid-search="resourceTable">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="span3">
+                    <fieldset class="inside"><legend>{{msg('sms.log.providerId')}}</legend>
+                        <div class="control-group form-inline">
+                            <input type="text" class="span12 search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerId" jqgrid-search="resourceTable">
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="row-fluid">
                 <div class="span4">
                     <fieldset class="inside"><legend>{{msg('sms.log.direction')}}</legend>
                         <div data-toggle="buttons-checkbox" class="btn-group control-group">
