@@ -1,9 +1,6 @@
-package org.motechproject.sms.service;
+package org.motechproject.sms.audit;
 
-import org.motechproject.sms.audit.SmsRecord;
-import org.motechproject.sms.audit.AllSmsRecords;
-import org.motechproject.sms.audit.SmsRecordSearchCriteria;
-import org.motechproject.sms.audit.SmsRecords;
+import org.motechproject.sms.service.SmsAuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,7 @@ public class SmsAuditServiceImpl implements SmsAuditService {
 
     @Override
     public void log(SmsRecord smsRecord) {
-        logger.info("AUDIT LOG: {}", smsRecord.toString());
+        logger.info(smsRecord.toString());
         allSmsRecords.add(smsRecord);
     }
 

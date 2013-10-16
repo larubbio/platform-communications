@@ -6,9 +6,9 @@ import org.mockito.Mock;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.http.SmsServiceImpl;
 import org.motechproject.sms.service.SmsAuditService;
 import org.motechproject.sms.service.SmsService;
-import org.motechproject.sms.service.SmsServiceImpl;
 import org.motechproject.sms.templates.TemplateReader;
 
 import static org.mockito.MockitoAnnotations.initMocks;

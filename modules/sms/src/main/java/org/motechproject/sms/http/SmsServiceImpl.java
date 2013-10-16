@@ -1,6 +1,4 @@
-//todo: roles: who has sms-sending privilege
-
-package org.motechproject.sms.service;
+package org.motechproject.sms.http;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
@@ -11,7 +9,9 @@ import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.event.SmsEvents;
+import org.motechproject.sms.service.OutgoingSms;
+import org.motechproject.sms.service.SmsAuditService;
+import org.motechproject.sms.service.SmsService;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -30,6 +30,8 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.PENDING;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.SCHEDULED;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
+import static org.motechproject.sms.event.SmsEvents.makeScheduledSendEvent;
+import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
 
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
@@ -55,8 +57,8 @@ public class SmsServiceImpl implements SmsService {
         this.smsAuditService = smsAuditService;
     }
 
-     static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate,
-                                              boolean excludeLastFooter) {
+    static private List<String> splitMessage(String message, int maxSize, String headerTemplate, String footerTemplate,
+                                             boolean excludeLastFooter) {
         List<String> parts = new ArrayList<String>();
         int messageLength = message.length();
 
@@ -100,7 +102,6 @@ public class SmsServiceImpl implements SmsService {
         Configs configs = new ConfigReader(settingsFacade).getConfigs();
         Config config;
         Template template;
-        Integer milliDelay;
 
         if (sms.hasConfig()) {
             config = configs.getConfig(sms.getConfig());
@@ -110,7 +111,6 @@ public class SmsServiceImpl implements SmsService {
             config = configs.getDefaultConfig();
         }
         template = templates.getTemplate(config.getTemplateName());
-        milliDelay = template.getOutgoing().getMillisecondsBetweenMessageChunks();
 
         if (!sms.hasMotechId()) {
             sms.setMotechId(UUID.randomUUID().toString().replace("-", ""));
@@ -139,29 +139,29 @@ public class SmsServiceImpl implements SmsService {
             if (sms.hasDeliveryTime()) {
                 DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
-                    RunOnceSchedulableJob job = new RunOnceSchedulableJob(SmsEvents.makeScheduledSendEvent(
-                        config.getName(), sms.getRecipients(), part, sms.getMotechId(), null), dt.toDate());
+                    RunOnceSchedulableJob job = new RunOnceSchedulableJob(makeScheduledSendEvent(
+                            config.getName(), sms.getRecipients(), part, sms.getMotechId(), null), dt.toDate());
                     schedulerService.safeScheduleRunOnceJob(job);
                     logger.info(String.format("Scheduling message [%s] to recipients %s at %s.",
-                        part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
-                    //add (at least) one millisecond to the next sms part so they will be delivered in order
+                            part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                    //add one millisecond to the next sms part so they will be delivered in order
                     //without that it seems Quartz doesn't fire events in the order they were scheduled
-                    dt = dt.plus(milliDelay);
+                    dt = dt.plus(1);
                     for (String recipient : sms.getRecipients()) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
-                            sms.getMotechId(), null));
+                                sms.getMotechId(), null));
                     }
                 }
             }
             else {
                 for (String part : messageParts) {
-                    eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), sms.getRecipients(), part,
-                        sms.getMotechId(), null));
+                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), sms.getRecipients(), part,
+                            sms.getMotechId(), null));
                     logger.info("Sending message [{}] to recipients {}.", part.replace("\n", "\\n"),
-                        sms.getRecipients());
+                            sms.getRecipients());
                     for (String recipient : sms.getRecipients()) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
-                            sms.getMotechId(), null));
+                                sms.getMotechId(), null));
                     }
                 }
             }
@@ -170,23 +170,20 @@ public class SmsServiceImpl implements SmsService {
                 DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
                     if (sms.hasDeliveryTime()) {
-                        if (template.getOutgoing().getMillisecondsBetweenMessageChunks() > 0) {
-                            milliDelay = template.getOutgoing().getMillisecondsBetweenMessageChunks();
-                        }
-                        RunOnceSchedulableJob job = new RunOnceSchedulableJob(SmsEvents.makeScheduledSendEvent(
-                            config.getName(), Arrays.asList(recipient), part, sms.getMotechId(), null), dt.toDate());
+                        RunOnceSchedulableJob job = new RunOnceSchedulableJob(makeScheduledSendEvent(
+                                config.getName(), Arrays.asList(recipient), part, sms.getMotechId(), null), dt.toDate());
                         schedulerService.safeScheduleRunOnceJob(job);
                         logger.info(String.format("Scheduling message [%s] to recipient %s at %s.",
-                            part.replace("\n", "\\n"), recipient, sms.getDeliveryTime()));
-                        //add (at least) one millisecond to the next sms part so they will be delivered in order
+                                part.replace("\n", "\\n"), recipient, sms.getDeliveryTime()));
+                        //add one millisecond to the next sms part so they will be delivered in order
                         //without that it seems Quartz doesn't fire events in the order they were scheduled
-                        dt = dt.plus(milliDelay);
+                        dt = dt.plus(1);
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
                                 sms.getMotechId(), null));
                     }
                     else {
                         logger.info("Sending message [{}] to recipient {}.", part.replace("\n", "\\n"), recipient);
-                        eventRelay.sendEventMessage(SmsEvents.makeSendEvent(config.getName(), Arrays.asList(recipient),
+                        eventRelay.sendEventMessage(makeSendEvent(config.getName(), Arrays.asList(recipient),
                                 part, sms.getMotechId(), null));
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
                                 sms.getMotechId(), null));

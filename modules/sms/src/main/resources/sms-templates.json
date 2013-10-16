@@ -4,13 +4,14 @@
 		"requires": [
 			"username",
 			"password",
-			"from",
-			"clickatell_api_id"
+			"clickatell_api_id",
+			"from"
 		],
         "outgoing":{
-            "msxSmsSize":"140",
+            "msxSmsSize":"160",
             "maxRecipient":"300",
-            "millisecondsBetweenMessageChunks":"1000",
+            "millisecondsBetweenMessages":"1000",
+            "hasAuthentication":"false",
             "request":{
                 "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
@@ -45,19 +46,55 @@
         }
     },
     {
+        "name":"Voxeo",
+		"requires": [
+			"username",
+			"password",
+			"botkey",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "millisecondsBetweenMessages":"6000",
+            "maxRecipient":"1",
+            "hasAuthentication":"true",
+            "request":{
+                "type":"POST",
+                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "bodyParameters":{
+                    "user":"[recipients]",
+                    "msg":"[message]",
+                    "botkey":"[botkey]",
+                    "apimethod":"send",
+                    "network":"SMS",
+                    "from":"[from]"
+                }
+            },
+            "response":{
+                "multiLineRecipientResponse": "false",
+                "successResponse":'^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="[0-9a-z]*"/>\\W</rsp>$',
+                "extractSingleSuccessMessageId": '^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="([0-9a-z]*)"/>\\W</rsp>$',
+                "extractSingleFailureMessage": '^<rsp stat="fail">\\W<err msg="([^\\"]*)"/>\\W</rsp>$'
+            }
+        },
+        "incoming":{
+        }
+    },
+    {
         "name":"Nuntium",
 		"requires": [
 			"username",
 			"password"
 		],
         "outgoing":{
-            "msxSmsSize":"140",
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
             "request":{
                 "type":"POST",
                 "urlPath":"http://api.clickatell.com/http/sendmsg",
                 "maxRecipient":"10",
                 "recipientsSeparator":",",
-                "millisecondsBetweenMessageChunks":"0",
+                "millisecondsBetweenMessages":"1",
                 "queryParameters":{
                     "user":"",
                     "password":"",
@@ -75,42 +112,6 @@
             "messageKey": "$message",
             "senderKey": "$sender",
             "timestampKey": "$time"
-        }
-    },
-    {
-        "name":"Voxeo",
-		"requires": [
-			"username",
-			"password"
-		],
-        "outgoing":{
-            "msxSmsSize":"140",
-            "request":{
-                "type":"POST",
-                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
-                "maxRecipient":"1",
-                "bodyParameters":{
-                    "user":"$recipients",
-                    "msg":"$message",
-                    "botkey":"406920",
-                    "apimethod":"send",
-                    "network":"SMS",
-                    "from":"18572390865"
-                },
-                "authentication":{
-                    "username":"SSA_Grameen",
-                    "password":"NXT8TrubEJj7YMBvNUo9iE310"
-                }
-            },
-            "response":{
-                "multiLineRecipientResponse": "false",
-                "successResponse":".*\n.*(success msg=\"accepted\").*\n.*"
-            }
-        },
-        "incoming":{
-            "messagekey":"message",
-            "senderKey":"from",
-            "timestampKey":"time"
         }
     }
 ]

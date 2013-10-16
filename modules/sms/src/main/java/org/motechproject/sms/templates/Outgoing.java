@@ -7,7 +7,8 @@ public class Outgoing {
     private Request request;
     private Response response;
     private Boolean multiRecipient;
-    private Integer millisecondsBetweenMessageChunks = 1; //at a minimum
+    private Boolean hasAuthentication;
+    private Integer millisecondsBetweenMessages = 1; //at a minimum
     private Integer maxSmsSize = 140; //todo: is it fine to have this default here?
 
     public Request getRequest() {
@@ -34,12 +35,20 @@ public class Outgoing {
         this.multiRecipient = multiRecipient;
     }
 
-    public Integer getMillisecondsBetweenMessageChunks() {
-        return millisecondsBetweenMessageChunks;
+    public Boolean getHasAuthentication() {
+        return hasAuthentication;
     }
 
-    public void setMillisecondsBetweenMessageChunks(Integer millisecondsBetweenMessageChunks) {
-        this.millisecondsBetweenMessageChunks = millisecondsBetweenMessageChunks;
+    public void setHasAuthentication(Boolean hasAuthentication) {
+        this.hasAuthentication = hasAuthentication;
+    }
+
+    public Integer getMillisecondsBetweenMessages() {
+        return millisecondsBetweenMessages;
+    }
+
+    public void setMillisecondsBetweenMessages(Integer millisecondsBetweenMessages) {
+        this.millisecondsBetweenMessages = millisecondsBetweenMessages;
     }
 
     public Integer getMaxSmsSize() {

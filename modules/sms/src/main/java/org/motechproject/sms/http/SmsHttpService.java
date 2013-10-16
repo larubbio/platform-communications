@@ -1,4 +1,4 @@
-package org.motechproject.sms.service;
+package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -12,6 +12,8 @@ import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigProp;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
+import org.motechproject.sms.service.OutgoingSms;
+import org.motechproject.sms.service.SmsAuditService;
 import org.motechproject.sms.templates.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.*;
@@ -56,7 +55,7 @@ public class SmsHttpService {
         this.smsAuditService = smsAuditService;
     }
 
-    public void send(OutgoingSms sms) {
+    public synchronized void send(OutgoingSms sms) {
         Boolean error = false;
         Config config = configs.getConfigOrDefault(sms.getConfig());
         Template template = templates.getTemplate(config.getTemplateName());
@@ -77,12 +76,29 @@ public class SmsHttpService {
 
         try {
             httpMethod = template.generateRequestFor(props);
-            setAuthenticationInfo(template.getAuthentication());
+            if (template.getOutgoing().getHasAuthentication()) {
+                //todo: check if we have a user/pass and log error if not?
+                String u = props.get("username");
+                String p = props.get("password");
+                commonsHttpClient.getParams().setAuthenticationPreemptive(true);
+                commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(u, p));
+            }
 
             httpStatus = commonsHttpClient.executeMethod(httpMethod);
             httpResponse = httpMethod.getResponseBodyAsString();
 
             logger.debug("HTTP status:{}, response:{}", httpStatus, httpResponse.replace("\n", "\\n"));
+
+            //todo: serialize access to configs, ie: one provider may allow 100 sms/min and another may allow 10...
+            //This prevents us from sending more messages per second than the provider allows
+            Integer milliseconds = template.getOutgoing().getMillisecondsBetweenMessages();
+            logger.debug("Sleeping {}ms", milliseconds);
+            try {
+                Thread.sleep(milliseconds);
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            logger.debug("Thread id {}", Thread.currentThread().getId());
         }
         catch (Exception e) {
             logger.error("Error while communicating with '{}': {}", config.getName(), e);
@@ -181,11 +197,14 @@ public class SmsHttpService {
                     //
                     // Either straight HTTP 200, or matched successful response
                     //
+                    String providerId = resp.extractSingleSuccessMessageId(httpResponse);
+
                     logger.info("SMS with message \"{}\" sent successfully to {}", msgForLog,
                         template.recipientsAsString(sms.getRecipients()));
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
-                        sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
-                    //todo audit
+                        sms.getMessage(), sms.getMotechId(), providerId, sms.getDeliveryTime(), failureCount));
+                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
+                            sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId));
                 }
             }
             else {
@@ -233,15 +252,5 @@ public class SmsHttpService {
                 }
             }
         }
-    }
-
-    private void setAuthenticationInfo(Authentication authentication) {
-        if (authentication == null) {
-            return;
-        }
-
-        commonsHttpClient.getParams().setAuthenticationPreemptive(true);
-        commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(
-            authentication.getUsername(), authentication.getPassword()));
     }
 }

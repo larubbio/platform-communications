@@ -4,6 +4,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 
+//
+//todo: expose list of configs as task action parameter values to send_sms
+//
+
 /**
  * todo
  */

@@ -3,7 +3,7 @@ package org.motechproject.sms.event;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.sms.service.OutgoingSms;
-import org.motechproject.sms.service.SmsHttpService;
+import org.motechproject.sms.http.SmsHttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
