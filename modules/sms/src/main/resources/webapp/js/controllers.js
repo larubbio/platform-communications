@@ -177,17 +177,34 @@
             return !angular.equals($scope.originalConfig, $scope.config);
         };
 
-        $scope.betterMsg = function (name) {
-            var s = $scope.msg('sms.settings.prop.' + name);
-            if (s === '[sms.settings.prop.' + name + ']') {
-                s = name;
+        $scope.betterMsg = function (name, templateName) {
+            var ret, key;
+            if (templateName !== null) {
+                key = 'sms.settings.prop.' + name + '.' + templateName;
+                ret = $scope.msg(key);
+                if (ret !== '[' + key + ']') {
+                    return ret;
+                }
             }
-            return s;
+            key = 'sms.settings.prop.' + name;
+            ret = $scope.msg(key);
+            if (ret === '[' + key + ']') {
+                 ret = name;
+            }
+            return ret;
         };
 
-        $scope.tooltipOrBlank = function (name) {
-            var key = "sms.settings.prop." + name + ".tooltip",
+        $scope.tooltipOrBlank = function (name, templateName) {
+            var key, ret;
+            if (templateName !== null) {
+                key = "sms.settings.prop." + name + '.' + templateName + ".tooltip";
                 ret = $scope.msg(key);
+                if (ret !== "[" + key + "]") {
+                    return ret;
+                }
+            }
+            key = "sms.settings.prop." + name + ".tooltip";
+            ret = $scope.msg(key);
             if (ret === "[" + key + "]") {
                 ret = "";
             }

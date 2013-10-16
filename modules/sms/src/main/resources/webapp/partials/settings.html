@@ -78,9 +78,9 @@ TODO  - valid (or at least non-null) properties
                                 </div>
 
                                 <div ng-repeat="prop in conf.props" class="control-group">
-                                    <label class="control-label" for="{{$index}}.{{prop.name}}">{{betterMsg(prop.name)}}</label>
+                                    <label class="control-label" for="{{$index}}.{{prop.name}}">{{betterMsg(prop.name, conf.templateName)}}</label>
                                     <div class="controls">
-                                        <input id="{{$index}}.{{prop.name}}" class="input-medium-fluid" type="text" ng-model="prop.value" tooltip="{{tooltipOrBlank(prop.name)}}" tooltip-placement="right" required>
+                                        <input id="{{$index}}.{{prop.name}}" class="input-medium-fluid" type="text" ng-model="prop.value" tooltip="{{tooltipOrBlank(prop.name, conf.templateName)}}" tooltip-placement="right" required>
                                     </div>
                                 </div>
 

@@ -10,7 +10,7 @@
         "outgoing":{
             "msxSmsSize":"160",
             "maxRecipient":"300",
-            "millisecondsBetweenMessages":"1000",
+            "millisecondsBetweenMessages":"1",
             "hasAuthentication":"false",
             "request":{
                 "type":"POST",
@@ -55,7 +55,7 @@
 		],
         "outgoing":{
             "msxSmsSize":"160",
-            "millisecondsBetweenMessages":"6000",
+            "millisecondsBetweenMessages":"20000",
             "maxRecipient":"1",
             "hasAuthentication":"true",
             "request":{
@@ -81,7 +81,7 @@
         }
     },
     {
-        "name":"Nuntium",
+        "name":"Twilio",
 		"requires": [
 			"username",
 			"password"
@@ -91,7 +91,7 @@
             "hasAuthentication":"true",
             "request":{
                 "type":"POST",
-                "urlPath":"http://api.clickatell.com/http/sendmsg",
+                "urlPath":"https://api.twilio.com/2010-04-01",
                 "maxRecipient":"10",
                 "recipientsSeparator":",",
                 "millisecondsBetweenMessages":"1",
