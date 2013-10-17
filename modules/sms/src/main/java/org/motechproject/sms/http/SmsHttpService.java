@@ -71,6 +71,7 @@ public class SmsHttpService {
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
         props.put("message", sms.getMessage());
         props.put("motechId", sms.getMotechId());
+
         for (ConfigProp prop : config.getProps()) {
             props.put(prop.getName(), prop.getValue());
         }

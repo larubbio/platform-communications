@@ -157,12 +157,8 @@
             link: function(scope, element, attrs) {
                 var elem = angular.element(element), filters;
 
-                /*
-                We need to include deprecated delivery status codes in the query below so as to not hide old events
-                marked with these deprecated codes in the SMS log
-                */
                 elem.jqGrid({
-                    url: '../sms/log?smsDeliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,KEEPTRYING,ABORTED,UNKNOWN,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
+                    url: '../sms/log?smsDeliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,FAILURE_CONFIRMED,RETRYING,ABORTED,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false

@@ -36,6 +36,8 @@
                 "extractFailureMessageAndRecipient": "^ERR: (.*) To: ([0-9]+)$"
             }
         },
+        "status":{
+        },
         "incoming":{
             "messageKey": "text",
             "senderKey": "from",
@@ -77,6 +79,8 @@
                 "extractSingleFailureMessage": '^<rsp stat="fail">\\W<err msg="([^\\"]*)"/>\\W</rsp>$'
             }
         },
+        "status":{
+        },
         "incoming":{
         }
     },
@@ -99,7 +103,8 @@
                 "bodyParameters":{
                     "From":"[from]",
                     "To":"[recipients]",
-                    "Body":"[message]"
+                    "Body":"[message]",
+                    "StatusCallBack":"[callback]"
                 }
             },
             "response":{
@@ -109,6 +114,11 @@
                 "extractSingleSuccessMessageId":"<Sid>([a-zA-Z0-9]+)</Sid>.*",
                 "extractGeneralFailureMessage": "<TwilioResponse><RestException><Status>.*</Status><Message>(.*)</Message>.*"
             }
+        },
+        "status":{
+            "messageIdKey": "SmsSid",
+            "statusKey": "SmsStatus",
+            "statusSuccess": "sent"
         },
         "incoming":{
             "messageKey": "$message",

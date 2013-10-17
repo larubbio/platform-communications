@@ -166,7 +166,7 @@ public class SmsServiceImpl implements SmsService {
                     dt = dt.plus(1);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
-                                sms.getMotechId(), null));
+                                sms.getMotechId(), null, null));
                     }
                 }
             }
@@ -176,7 +176,7 @@ public class SmsServiceImpl implements SmsService {
                     logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), chunk);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
-                                sms.getMotechId(), null));
+                                sms.getMotechId(), null, null));
                     }
                 }
             }

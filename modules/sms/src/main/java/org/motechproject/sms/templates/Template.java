@@ -19,6 +19,7 @@ public class Template {
     public static final String RECIPIENTS_PLACEHOLDER = "$recipients";
 
     private Outgoing outgoing;
+    private Status status;
     private Incoming incoming;
     private String name;
     private List<String> requires;
@@ -98,5 +99,24 @@ public class Template {
 
     public void setRequires(List<String> requires) {
         this.requires = requires;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Template{" +
+                "outgoing=" + outgoing +
+                ", status=" + status +
+                ", incoming=" + incoming +
+                ", name='" + name + '\'' +
+                ", requires=" + requires +
+                '}';
     }
 }
