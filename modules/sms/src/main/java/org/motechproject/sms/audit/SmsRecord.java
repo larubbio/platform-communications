@@ -26,17 +26,19 @@ public class SmsRecord extends MotechBaseDataObject {
     private String motechId;
     @JsonProperty
     private String providerId;
+    @JsonProperty
+    private String errorMessage;
 
     public SmsRecord() {
     }
 
-    public SmsRecord(String config, SmsType smsType, String phoneNumber, String messageContent, DateTime timestamp,
-                     SmsDeliveryStatus smsDeliveryStatus, String motechId, String providerId) {
+    public SmsRecord(String config, SmsType smsType, String number, String message, DateTime timestamp,
+                     SmsDeliveryStatus smsDeliveryStatus, String motechId, String providerId, String errorMessage) {
         super("SmsRecord");
         this.config = config;
         this.smsType = smsType;
-        this.phoneNumber = phoneNumber;
-        this.messageContent = messageContent;
+        this.phoneNumber = number;
+        this.messageContent = message;
         this.timestamp = timestamp;
         this.smsDeliveryStatus = smsDeliveryStatus;
         this.motechId = motechId;
@@ -75,8 +77,12 @@ public class SmsRecord extends MotechBaseDataObject {
         return providerId;
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public String toString() {
-        return String.format("config: %s, smsType: %s, number: %s, motechId: %s, providerId: %s, timestamp: %s, deliveryStatus: %s",
-            config, smsType.toString(), phoneNumber, motechId, providerId, timestamp, smsDeliveryStatus);
+        return String.format("config: %s, smsType: %s, number: %s, motechId: %s, providerId: %s, timestamp: %s, deliveryStatus: %s, errorMessage: %s",
+            config, smsType.toString(), phoneNumber, motechId, providerId, timestamp, smsDeliveryStatus, errorMessage);
     }
 }

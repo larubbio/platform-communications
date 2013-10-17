@@ -2,7 +2,7 @@ package org.motechproject.sms.audit;
 
 public enum SmsDeliveryStatus {
     UNKNOWN,
-    KEEPTRYING,
+    RETRYING,
     ABORTED,
     SCHEDULED,
     PENDING,

@@ -102,7 +102,7 @@ public class IncomingController {
                 timestamp));
 
         smsAuditService.log(new SmsRecord(config.getName(), INBOUND, recipient, message, now(), RECEIVED, null,
-            messageId));
+            messageId, null));
 
         return response;
     }

@@ -45,7 +45,7 @@ public class SmsHttpService {
                           HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
                           TemplateReader templateReader, SmsAuditService smsAuditService) {
 
-        //todo: unified module-wide caching strategy
+        //todo: unified module-wide caching & refreshing strategy
         configReader = new ConfigReader(settingsFacade);
         configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
@@ -65,6 +65,7 @@ public class SmsHttpService {
         String httpResponse = null;
         List<String> failedRecipients = new ArrayList<String>();
         Boolean providerResponseParsingError = false;
+        Map<String, String> errorMessages = new HashMap<String, String>();
 
         Map<String, String> props = new HashMap<String, String>();
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
@@ -101,7 +102,11 @@ public class SmsHttpService {
             logger.debug("Thread id {}", Thread.currentThread().getId());
         }
         catch (Exception e) {
-            logger.error("Error while communicating with '{}': {}", config.getName(), e);
+            String errorMessage = String.format("Error while communicating with '%s': %s", config.getName(), e);
+            logger.error(errorMessage);
+            //todo audit log?
+            //todo something like below
+            errorMessages.put("all", errorMessage);
 
             error = true;
         }
@@ -138,7 +143,7 @@ public class SmsHttpService {
                                         messageId, msgForLog, sms.getRecipients().get(0)));
                                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND,
                                     sms.getRecipients().get(0), sms.getMessage(), now(), DISPATCHED, sms.getMotechId(),
-                                    messageId));
+                                    messageId, null));
                                 //todo: post outbound success event
                             }
                             else {
@@ -147,7 +152,7 @@ public class SmsHttpService {
                                 //
                                 error = true;
                                 String failureMessage = resp.extractSingleFailureMessage(responseLine);
-                                logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                         sms.getRecipients().get(0), failureMessage));
                                 failedRecipients.add(sms.getRecipients().get(0));
                                 //todo: post outbound failure event
@@ -163,7 +168,8 @@ public class SmsHttpService {
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                     messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
                                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, messageAndRecipient[1],
-                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0]));
+                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0],
+                                    null));
                                     //todo: post outbound success event
                             }
                             else {
@@ -174,12 +180,12 @@ public class SmsHttpService {
                                 messageAndRecipient = resp.extractFailureMessageAndRecipient(responseLine);
                                 if (messageAndRecipient == null) {
                                     providerResponseParsingError = true;
-                                    logger.info(String.format(
+                                    logger.error(String.format(
                                         "Failed to sent message '%s', likely config or template error: unable to parse provider's response: %s",
                                         msgForLog, responseLine));
                                 }
                                 else {
-                                    logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                    logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                         messageAndRecipient[1], messageAndRecipient[0]));
                                     failedRecipients.add(messageAndRecipient[1]);
                                 }
@@ -192,14 +198,13 @@ public class SmsHttpService {
                 else if (resp.hasSuccessResponse() && !resp.checkSuccessResponse(httpResponse)) {
                     error = true;
 
-                    //todo check all below
                     String failureMessage = resp.extractSingleFailureMessage(httpResponse);
                     if (failureMessage != null) {
-                        logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                        logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                 sms.getRecipients().get(0), failureMessage));
                     }
                     else {
-                        logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                        logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                 sms.getRecipients().get(0), httpResponse));
                     }
                     //todo audit ?
@@ -215,7 +220,7 @@ public class SmsHttpService {
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
                         sms.getMessage(), sms.getMotechId(), providerId, sms.getDeliveryTime(), failureCount));
                     smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
-                            sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId));
+                            sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId, null));
                 }
             }
             else {
@@ -256,7 +261,7 @@ public class SmsHttpService {
                         sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                            now(), KEEPTRYING, sms.getMotechId(), null));
+                            now(), RETRYING, sms.getMotechId(), null, null));
                     }
                 }
                 else {
@@ -266,7 +271,7 @@ public class SmsHttpService {
                             sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                            now(), ABORTED, sms.getMotechId(), null));
+                            now(), ABORTED, sms.getMotechId(), null, null));
                     }
                 }
             }
