@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,6 +91,24 @@ public class SmsServiceImpl implements SmsService {
         return parts;
     }
 
+    private ArrayList<ArrayList<String>> chunkList(List<String> list, Integer chunkSize) {
+        ArrayList<ArrayList<String>> ret = new ArrayList<ArrayList<String>>();
+        Integer i = 0;
+        ArrayList<String> chunk = new ArrayList<String>();
+        for (String val : list) {
+            chunk.add(val);
+            i++;
+            if (i % chunkSize == 0) {
+                ret.add(chunk);
+                chunk = new ArrayList<String>();
+            }
+        }
+        if (chunk.size() > 0) {
+            ret.add(chunk);
+        }
+        return ret;
+    }
+
     @Override
     /**
      * TODO
@@ -124,7 +141,6 @@ public class SmsServiceImpl implements SmsService {
         String footer = config.getSplitFooter();
         Boolean excludeLastFooter = config.getExcludeLastFooter();
         //todo: maximum number of supported recipients : per template/provider and/or per http specs
-        Boolean isMultiRecipientSupported = config.getMultiRecipientSupport();
 
         // -2 to account for the added \n after the header and before the footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
@@ -133,21 +149,22 @@ public class SmsServiceImpl implements SmsService {
         }
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
+        ArrayList<ArrayList<String>> recipientsChunks = chunkList(sms.getRecipients(),
+                template.getOutgoing().getMaxRecipient());
 
         //todo: delivery_time on the sms provider's side if they support it?
-        if (isMultiRecipientSupported) {
+        for (List<String> chunk : recipientsChunks) {
             if (sms.hasDeliveryTime()) {
                 DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
-                    RunOnceSchedulableJob job = new RunOnceSchedulableJob(makeScheduledSendEvent(
-                            config.getName(), sms.getRecipients(), part, sms.getMotechId(), null), dt.toDate());
-                    schedulerService.safeScheduleRunOnceJob(job);
-                    logger.info(String.format("Scheduling message [%s] to recipients %s at %s.",
-                            part.replace("\n", "\\n"), sms.getRecipients(), sms.getDeliveryTime()));
+                    schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(makeScheduledSendEvent(
+                        config.getName(), chunk, part, sms.getMotechId(), null), dt.toDate()));
+                    logger.info(String.format("Scheduling message [%s] to [%s] at %s.",
+                            part.replace("\n", "\\n"), chunk, sms.getDeliveryTime()));
                     //add one millisecond to the next sms part so they will be delivered in order
                     //without that it seems Quartz doesn't fire events in the order they were scheduled
                     dt = dt.plus(1);
-                    for (String recipient : sms.getRecipients()) {
+                    for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
                                 sms.getMotechId(), null));
                     }
@@ -155,36 +172,9 @@ public class SmsServiceImpl implements SmsService {
             }
             else {
                 for (String part : messageParts) {
-                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), sms.getRecipients(), part,
-                            sms.getMotechId(), null));
-                    logger.info("Sending message [{}] to recipients {}.", part.replace("\n", "\\n"),
-                            sms.getRecipients());
-                    for (String recipient : sms.getRecipients()) {
-                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
-                                sms.getMotechId(), null));
-                    }
-                }
-            }
-        } else {
-            for (String recipient : sms.getRecipients()) {
-                DateTime dt = sms.getDeliveryTime();
-                for (String part : messageParts) {
-                    if (sms.hasDeliveryTime()) {
-                        RunOnceSchedulableJob job = new RunOnceSchedulableJob(makeScheduledSendEvent(
-                                config.getName(), Arrays.asList(recipient), part, sms.getMotechId(), null), dt.toDate());
-                        schedulerService.safeScheduleRunOnceJob(job);
-                        logger.info(String.format("Scheduling message [%s] to recipient %s at %s.",
-                                part.replace("\n", "\\n"), recipient, sms.getDeliveryTime()));
-                        //add one millisecond to the next sms part so they will be delivered in order
-                        //without that it seems Quartz doesn't fire events in the order they were scheduled
-                        dt = dt.plus(1);
-                        smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
-                                sms.getMotechId(), null));
-                    }
-                    else {
-                        logger.info("Sending message [{}] to recipient {}.", part.replace("\n", "\\n"), recipient);
-                        eventRelay.sendEventMessage(makeSendEvent(config.getName(), Arrays.asList(recipient),
-                                part, sms.getMotechId(), null));
+                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), chunk, part, sms.getMotechId(), null));
+                    logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), chunk);
+                    for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
                                 sms.getMotechId(), null));
                     }

@@ -12,13 +12,15 @@ public class Response {
     private Boolean multiLineRecipientResponse = false;
     private Boolean singleRecipientResponse = false;
     private String successStatus = null;
-    private String successResponse = null;
+    private String successResponse = null; //todo: compile this guy just like the others below
     private String extractSingleSuccessMessageId = null;
     private String extractSingleFailureMessage = null;
+    private String extractGeneralFailureMessage = null;
     private String extractSuccessMessageIdAndRecipient = null;
     private String extractFailureMessageAndRecipient = null;
     Pattern pExtractSingleSuccessMessageId = null;
     Pattern pExtractSingleFailureMessage = null;
+    Pattern pExtractGeneralFailureMessage = null;
     Pattern pExtractSuccessMessageIdAndRecipient = null;
     Pattern pExtractFailureMessageAndRecipient = null;
 
@@ -62,6 +64,17 @@ public class Response {
             pExtractSingleFailureMessage = Pattern.compile(extractSingleFailureMessage);
         }
         Matcher m = pExtractSingleFailureMessage.matcher(response);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return null;
+    }
+
+    public String extractGeneralFailureMessage(String response) {
+        if (pExtractGeneralFailureMessage == null) {
+            pExtractGeneralFailureMessage = Pattern.compile(extractGeneralFailureMessage);
+        }
+        Matcher m = pExtractGeneralFailureMessage.matcher(response);
         if (m.find()) {
             return m.group(1);
         }

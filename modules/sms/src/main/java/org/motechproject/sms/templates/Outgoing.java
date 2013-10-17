@@ -6,10 +6,11 @@ package org.motechproject.sms.templates;
 public class Outgoing {
     private Request request;
     private Response response;
-    private Boolean multiRecipient;
     private Boolean hasAuthentication;
     private Integer millisecondsBetweenMessages = 1; //at a minimum
-    private Integer maxSmsSize = 140; //todo: is it fine to have this default here?
+    private Integer maxSmsSize = 160; //todo: is it fine to have this default here?
+    private Integer maxRecipient = 1; //todo: and here?
+    private String recipientSeparator = ","; //todo: and here?
 
     public Request getRequest() {
         return request;
@@ -25,14 +26,6 @@ public class Outgoing {
 
     public void setResponse(Response response) {
         this.response = response;
-    }
-
-    public Boolean getMultiRecipient() {
-        return multiRecipient;
-    }
-
-    public void setMultiRecipient(Boolean multiRecipient) {
-        this.multiRecipient = multiRecipient;
     }
 
     public Boolean getHasAuthentication() {
@@ -57,5 +50,21 @@ public class Outgoing {
 
     public void setMaxSmsSize(Integer maxSmsSize) {
         this.maxSmsSize = maxSmsSize;
+    }
+
+    public Integer getMaxRecipient() {
+        return maxRecipient;
+    }
+
+    public void setMaxRecipient(Integer maxRecipient) {
+        this.maxRecipient = maxRecipient;
+    }
+
+    public String getRecipientSeparator() {
+        return recipientSeparator;
+    }
+
+    public void setRecipientSeparator(String recipientSeparator) {
+        this.recipientSeparator = recipientSeparator;
     }
 }

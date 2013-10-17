@@ -9,7 +9,7 @@
 		],
         "outgoing":{
             "msxSmsSize":"160",
-            "maxRecipient":"300",
+            "maxRecipient":"3",
             "millisecondsBetweenMessages":"1",
             "hasAuthentication":"false",
             "request":{
@@ -55,7 +55,7 @@
 		],
         "outgoing":{
             "msxSmsSize":"160",
-            "millisecondsBetweenMessages":"20000",
+            "millisecondsBetweenMessages":"6000",
             "maxRecipient":"1",
             "hasAuthentication":"true",
             "request":{
@@ -89,23 +89,25 @@
         "outgoing":{
             "msxSmsSize":"160",
             "hasAuthentication":"true",
+            "maxRecipientXXX":"1",
             "request":{
                 "type":"POST",
-                "urlPath":"https://api.twilio.com/2010-04-01",
+                "urlPath":"https://api.twilio.com/2010-04-01/Accounts/[username]/Messages",
                 "maxRecipient":"10",
                 "recipientsSeparator":",",
                 "millisecondsBetweenMessages":"1",
-                "queryParameters":{
-                    "user":"",
-                    "password":"",
-                    "api_id":"",
-                    "to":"$recipients",
-                    "text":"$message"
+                "bodyParameters":{
+                    "From":"[from]",
+                    "To":"[recipients]",
+                    "Body":"[message]"
                 }
             },
             "response":{
+                "successStatus": "201",
+                "successResponse": ".*\n<TwilioResponse><Message><Sid>[a-zA-Z0-9]+</Sid>.*",
                 "multiLineRecipientResponse": "false",
-                "successResponse":".*\n.*(success msg=\"accepted\").*\n.*"
+                "extractSingleSuccessMessageId":"<Sid>([a-zA-Z0-9]+)</Sid>.*",
+                "extractGeneralFailureMessage": "<TwilioResponse><RestException><Status>.*</Status><Message>(.*)</Message>.*"
             }
         },
         "incoming":{

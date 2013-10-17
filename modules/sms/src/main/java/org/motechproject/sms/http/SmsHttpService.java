@@ -191,7 +191,18 @@ public class SmsHttpService {
                 }
                 else if (resp.hasSuccessResponse() && !resp.checkSuccessResponse(httpResponse)) {
                     error = true;
-                    //todo audit
+
+                    //todo check all below
+                    String failureMessage = resp.extractSingleFailureMessage(httpResponse);
+                    if (failureMessage != null) {
+                        logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                sms.getRecipients().get(0), failureMessage));
+                    }
+                    else {
+                        logger.info(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
+                                sms.getRecipients().get(0), httpResponse));
+                    }
+                    //todo audit ?
                 }
                 else {
                     //
@@ -209,8 +220,16 @@ public class SmsHttpService {
             }
             else {
                 error = true;
-                logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, httpResponse);
-                //todo audit
+
+                String failureMessage = resp.extractGeneralFailureMessage(httpResponse);
+                if (failureMessage != null) {
+                    logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, failureMessage);
+                }
+                else {
+                    logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, httpResponse);
+                }
+
+                //todo audit?
             }
 
             if (error) {

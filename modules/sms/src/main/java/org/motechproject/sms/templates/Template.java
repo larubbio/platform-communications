@@ -26,11 +26,11 @@ public class Template {
     public HttpMethod generateRequestFor(Map<String, String> props) {
         HttpMethod httpMethod;
         if (HttpMethodType.POST.equals(outgoing.getRequest().getType())) {
-            httpMethod = new PostMethod(outgoing.getRequest().getUrlPath());
+            httpMethod = new PostMethod(outgoing.getRequest().getUrlPath(props));
             httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
             addBodyParameters((PostMethod) httpMethod, props);
         } else {
-            httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
+            httpMethod = new GetMethod(outgoing.getRequest().getUrlPath(props));
         }
         httpMethod.setQueryString(addQueryParameters(props));
         return httpMethod;

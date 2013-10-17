@@ -1,10 +1,9 @@
 {
-    "defaultConfigName" : "Clickatell",
+    "defaultConfigName" : "Twilio",
     "configs" :
         [{
             "name" : "Clickatell",
             "templateName" : "Clickatell",
-            "multiRecipientSupport"  : true,
             "maxRetries" : 3,
             "splitHeader" : "Msg $m...",
             "splitFooter" : "...of $t",
@@ -17,29 +16,30 @@
             ]
         },
         {
-            "name" : "Nuntium HTTP",
-            "templateName" : "Nuntium",
-            "multiRecipientSupport"  : false,
+            "name" : "Twilio",
+            "templateName" : "Twilio",
             "maxRetries" : 3,
             "splitHeader" : "Msg $m of $t",
             "splitFooter" : "End of msg $m or $t",
             "excludeLastFooter" : true,
             "props" : [
                 {name: "username", value: "*****"},
-                {name: "password", value: "*****"}
+                {name: "password", value: "*****"},
+                {name: "from", value: "*****"}
             ]
         },
         {
             "name" : "Voxeo",
             "templateName" : "Voxeo",
-            "multiRecipientSupport"  : false,
             "maxRetries" : 3,
             "splitHeader" : "",
             "splitFooter" : "",
             "excludeLastFooter" : true,
             "props" : [
                 {name: "username", value: "*****"},
-                {name: "password", value: "*****"}
+                {name: "password", value: "*****"},
+                {name: "botkey", value: "*****"},
+                {name: "from", value: "*****"}
             ]
         }]
 }

@@ -9,7 +9,6 @@ public class Config {
     private String name;
     private Integer maxRetries;
     private Boolean excludeLastFooter;
-    private Boolean multiRecipientSupport;
     private String splitHeader;
     private String splitFooter;
     private String templateName;
@@ -38,14 +37,6 @@ public class Config {
 
     public void setExcludeLastFooter(Boolean excludeLastFooter) {
         this.excludeLastFooter = excludeLastFooter;
-    }
-
-    public Boolean getMultiRecipientSupport() {
-        return multiRecipientSupport;
-    }
-
-    public void setMultiRecipientSupport(Boolean multiRecipientSupport) {
-        this.multiRecipientSupport = multiRecipientSupport;
     }
 
     public String getSplitHeader() {
