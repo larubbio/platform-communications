@@ -21,6 +21,7 @@ public class SmsRecordSearchCriteria {
     private Set<SmsDeliveryStatus> smsDeliveryStatuses = new HashSet<>();
     private String motechId;
     private String providerId;
+    private String errorMessage;
     private QueryParam queryParam = new QueryParam();
 
     public SmsRecordSearchCriteria withSmsTypes(Set<SmsType> SmsTypes) {
@@ -50,6 +51,11 @@ public class SmsRecordSearchCriteria {
 
     public SmsRecordSearchCriteria withMessageContent(String messageContent) {
         this.messageContent = messageContent;
+        return this;
+    }
+
+    public SmsRecordSearchCriteria withErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
         return this;
     }
 
@@ -105,6 +111,10 @@ public class SmsRecordSearchCriteria {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     public QueryParam getQueryParam() {

@@ -42,6 +42,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                     "result.add(doc.smsDeliveryStatus, {'field':'smsDeliveryStatus'}); " +
                     "result.add(doc.motechId, {'field':'motechId'}); " +
                     "result.add(doc.providerId, {'field':'providerId'}); " +
+                    "result.add(doc.errorMessage, {'field':'errorMessage'}); " +
                     "return result " +
                     "}"
     )})
@@ -56,6 +57,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                 .withAny("smsDeliveryStatus", criteria.getSmsDeliveryStatuses())
                 .with("motechId", criteria.getMotechId())
                 .with("providerId", criteria.getProviderId())
+                .with("errorMessage", criteria.getErrorMessage())
                 .build();
         return runQuery(query, criteria.getQueryParam());
     }

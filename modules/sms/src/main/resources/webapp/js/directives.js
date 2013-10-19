@@ -197,6 +197,10 @@
                         name: 'messageContent',
                         index: 'messageContent',
                         sortable: false
+                    }, {
+                         name: 'errorMessage',
+                         index: 'errorMessage',
+                         sortable: false
                     }],
                     pager: '#' + attrs.loggingGrid,
                     width: '100%',
@@ -205,7 +209,8 @@
                     sortorder: 'desc',
                     viewrecords: true,
                     gridComplete: function () {
-                        angular.forEach(['config', 'phoneNumber', 'smsDeliveryStatus', 'timestamp', 'smsType', 'motechId', 'providerId', 'messageContent'], function (value) {
+                        angular.forEach(['config', 'phoneNumber', 'smsDeliveryStatus', 'timestamp', 'smsType',
+                            'motechId', 'providerId', 'messageContent', 'errorMessage'], function (value) {
                             elem.jqGrid('setLabel', value, scope.msg('sms.log.' + value));
                         });
 

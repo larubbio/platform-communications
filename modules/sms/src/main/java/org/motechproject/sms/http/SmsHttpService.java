@@ -118,12 +118,9 @@ public class SmsHttpService {
         }
 
         String msgForLog = sms.getMessage().replace("\n", "\\n");
+        Response resp = template.getOutgoing().getResponse();
 
-        if (error) {
-            //todo: do we want to add an error to the sms audit log?
-        }
-        else {
-            Response resp = template.getOutgoing().getResponse();
+        if (!error) {
             if ((resp.hasSuccessStatus() && (resp.checkSuccessStatus(httpStatus))) || httpStatus == 200) {
                 //
                 // analyze sms provider's response
@@ -155,6 +152,7 @@ public class SmsHttpService {
                                 String failureMessage = resp.extractSingleFailureMessage(responseLine);
                                 logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                         sms.getRecipients().get(0), failureMessage));
+                                errorMessages.put(sms.getRecipients().get(0), failureMessage);
                                 failedRecipients.add(sms.getRecipients().get(0));
                                 //todo: post outbound failure event
                             }
@@ -184,14 +182,16 @@ public class SmsHttpService {
                                     logger.error(String.format(
                                         "Failed to sent message '%s', likely config or template error: unable to parse provider's response: %s",
                                         msgForLog, responseLine));
+                                    //todo: do we really want to log that or is the tomcat log (above) sufficient??
+                                    errorMessages.put("all", responseLine);
                                 }
                                 else {
                                     logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                         messageAndRecipient[1], messageAndRecipient[0]));
                                     failedRecipients.add(messageAndRecipient[1]);
+                                    errorMessages.put(messageAndRecipient[1], messageAndRecipient[0]);
                                 }
-                                //todo: post outbound failure event
-                                //todo: audit record
+                                //todo: post outbound failure event?
                             }
                         }
                     }
@@ -226,53 +226,66 @@ public class SmsHttpService {
             }
             else {
                 error = true;
+                String key = sms.getRecipients().size() == 1 ? sms.getRecipients().get(0) : "all";
 
                 String failureMessage = resp.extractGeneralFailureMessage(httpResponse);
                 if (failureMessage != null) {
                     logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, failureMessage);
+                    errorMessages.put(key, failureMessage);
                 }
                 else {
                     logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, httpResponse);
+                    errorMessages.put(key, httpResponse);
                 }
+            }
+        }
 
-                //todo audit?
+        if (error) {
+            failureCount++;
+            List<String> recipients;
+
+            // todo: do we want to add UNKNOWN status log events if we have a provider response parsing error?
+            // Best to assume failure or unknown for all recipients if we can't parse provider's response
+            // But the trade off is we might send an sms more than once.
+            // todo: check we're happy with that
+            //
+            //                                            ********************************
+            //                                            vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            if (resp.supportsMultiLineRecipientResponse() && !providerResponseParsingError) {
+                recipients = failedRecipients;
+            }
+            else {
+                recipients = sms.getRecipients();
             }
 
-            if (error) {
-                failureCount++;
-                List<String> recipients;
-
-                // todo: do we want to add UNKNOWN status log events if we have a provider response parsing error?
-                // Best to assume failure or unknown for all recipients if we can't parse provider's response
-                // But the trade off is we might send an sms more than once.
-                // todo: check we're happy with that
-                //
-                //                                            ********************************
-                //                                            vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-                if (resp.supportsMultiLineRecipientResponse() && !providerResponseParsingError) {
-                    recipients = failedRecipients;
+            if (failureCount < config.getMaxRetries()) {
+                logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
+                eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
+                        sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
+                if (errorMessages.containsKey("all")) {
+                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
+                            sms.getMessage(), now(), RETRYING, sms.getMotechId(), null, errorMessages.get("all")));
                 }
                 else {
-                    recipients = sms.getRecipients();
-                }
-
-                if (failureCount < config.getMaxRetries()) {
-                    logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
-                    eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
-                        sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                            now(), RETRYING, sms.getMotechId(), null, null));
+                                now(), RETRYING, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }
                 }
+            }
+            else {
+                logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
+                        config.getMaxRetries());
+                eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), recipients,
+                        sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
+                if (errorMessages.containsKey("all")) {
+                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
+                            sms.getMessage(), now(), ABORTED, sms.getMotechId(), null, errorMessages.get("all")));
+                }
                 else {
-                    logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
-                            config.getMaxRetries());
-                    eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(sms.getConfig(), recipients,
-                            sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                            now(), ABORTED, sms.getMotechId(), null, null));
+                                now(), ABORTED, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }
                 }
             }

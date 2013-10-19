@@ -43,6 +43,7 @@ public class SmsRecord extends MotechBaseDataObject {
         this.smsDeliveryStatus = smsDeliveryStatus;
         this.motechId = motechId;
         this.providerId = providerId;
+        this.errorMessage = errorMessage;
     }
 
     public String getConfig() {

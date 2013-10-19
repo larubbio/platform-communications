@@ -16,6 +16,7 @@ public class SmsLoggingDto {
     private String messageContent;
     private String motechId;
     private String providerId;
+    private String errorMessage;
 
     public SmsLoggingDto(SmsRecord record) {
         this.config = record.getConfig();
@@ -27,6 +28,7 @@ public class SmsLoggingDto {
         this.messageContent = record.getMessageContent();
         this.motechId = record.getMotechId();
         this.providerId = record.getProviderId();
+        this.errorMessage = record.getErrorMessage();
     }
 
     public String getConfig() {
@@ -91,5 +93,13 @@ public class SmsLoggingDto {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

@@ -1,4 +1,4 @@
-package org.motechproject.sms.http;
+package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
@@ -9,9 +9,6 @@ import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.service.OutgoingSms;
-import org.motechproject.sms.service.SmsAuditService;
-import org.motechproject.sms.service.SmsService;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -32,6 +29,11 @@ import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeScheduledSendEvent;
 import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
 
+//todo: final pass over how we use motechId system-wide
+
+/**
+ * todo
+ */
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
 
@@ -109,6 +111,10 @@ public class SmsServiceImpl implements SmsService {
         return ret;
     }
 
+    private String generateMotechId() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
     @Override
     /**
      * TODO
@@ -128,10 +134,6 @@ public class SmsServiceImpl implements SmsService {
             config = configs.getDefaultConfig();
         }
         template = templates.getTemplate(config.getTemplateName());
-
-        if (!sms.hasMotechId()) {
-            sms.setMotechId(UUID.randomUUID().toString().replace("-", ""));
-        }
 
         //todo: die if things aren't right, right?
         //todo: SMS_SCHEDULE_FUTURE_SMS research if any sms provider provides that, for now assume not.
@@ -157,8 +159,9 @@ public class SmsServiceImpl implements SmsService {
             if (sms.hasDeliveryTime()) {
                 DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
+                    String motechId = generateMotechId();
                     schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(makeScheduledSendEvent(
-                        config.getName(), chunk, part, sms.getMotechId(), null), dt.toDate()));
+                        config.getName(), chunk, part, motechId, null), dt.toDate()));
                     logger.info(String.format("Scheduling message [%s] to [%s] at %s.",
                             part.replace("\n", "\\n"), chunk, sms.getDeliveryTime()));
                     //add one millisecond to the next sms part so they will be delivered in order
@@ -166,17 +169,18 @@ public class SmsServiceImpl implements SmsService {
                     dt = dt.plus(1);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
-                                sms.getMotechId(), null, null));
+                                motechId, null, null));
                     }
                 }
             }
             else {
                 for (String part : messageParts) {
-                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), chunk, part, sms.getMotechId(), null));
+                    String motechId = generateMotechId();
+                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), chunk, part, motechId, null));
                     logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), chunk);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
-                                sms.getMotechId(), null, null));
+                                motechId, null, null));
                     }
                 }
             }
