@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigProp;
@@ -39,6 +40,10 @@ public class SmsHttpService {
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
     private SmsAuditService smsAuditService;
+    @Autowired
+    private PlatformSettingsService settingsService;
+
+    //todo: which @Autowired to use?
 
     @Autowired
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
@@ -71,6 +76,8 @@ public class SmsHttpService {
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
         props.put("message", sms.getMessage());
         props.put("motechId", sms.getMotechId());
+        props.put("callback", settingsService.getPlatformSettings().getServerUrl() + "/module/sms/status/" +
+                config.getName());
 
         for (ConfigProp prop : config.getProps()) {
             props.put(prop.getName(), prop.getValue());
