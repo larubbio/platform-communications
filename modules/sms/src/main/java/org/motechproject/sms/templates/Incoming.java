@@ -9,7 +9,6 @@ public class Incoming {
     private String recipientKey;
     private String timestampKey;
     private String msgIdKey;
-    private String response;
 
     public String getMessageKey() {
         return messageKey;
@@ -49,13 +48,5 @@ public class Incoming {
 
     public void setMsgIdKey(String msgIdKey) {
         this.msgIdKey = msgIdKey;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
     }
 }

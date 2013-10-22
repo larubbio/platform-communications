@@ -4,6 +4,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.http.NameValuePair;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
@@ -60,6 +64,26 @@ public class SmsHttpService {
         this.smsAuditService = smsAuditService;
     }
 
+    static private String printableMethodParams(HttpMethod method) {
+        if (method.getClass().equals(PostMethod.class)) {
+            PostMethod p = (PostMethod)method;
+            StringBuilder sb = new StringBuilder();
+            for(org.apache.commons.httpclient.NameValuePair pair : p.getParameters()) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(String.format("%s: %s", pair.getName(), pair.getValue()));
+            }
+            return "POST Parameters: " + sb.toString();
+        }
+        else if (method.getClass().equals(PostMethod.class)) {
+            GetMethod g = (GetMethod)method;
+            return String.format("GET QueryString: %s", g.getQueryString());
+        }
+
+        return "Eeek!";
+    }
+
     public synchronized void send(OutgoingSms sms) {
         Boolean error = false;
         Config config = configs.getConfigOrDefault(sms.getConfig());
@@ -85,6 +109,7 @@ public class SmsHttpService {
 
         try {
             httpMethod = template.generateRequestFor(props);
+            logger.debug(printableMethodParams(httpMethod));
             if (template.getOutgoing().getHasAuthentication()) {
                 //todo: check if we have a user/pass and log error if not?
                 String u = props.get("username");

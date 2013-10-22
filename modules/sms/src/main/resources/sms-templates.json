@@ -18,6 +18,8 @@
                 "recipientsSeparator":",",
                 "bodyParameters":{
                     "mo":"1",
+                    "deliv_ack":"1",
+                    "callback":"6",
                     "climsgid":"[motechId]",
                     "user":"[username]",
                     "password":"[password]",
@@ -121,9 +123,10 @@
             "statusSuccess": "sent"
         },
         "incoming":{
-            "messageKey": "$message",
-            "senderKey": "$sender",
-            "timestampKey": "$time"
+            "messageKey": "SmsSid",
+            "senderKey": "From",
+            "messageKey": "Body",
+            "recipientKey": "To"
         }
     }
 ]

@@ -86,8 +86,12 @@
                                     "displayName" : "sms.task.trigger.inbound.sender"
                                   },
                                   {
-                                    "eventKey" : "phoneNumber",
-                                    "displayName" : "sms.task.trigger.inbound.phoneNumber"
+                                    "eventKey" : "sender",
+                                    "displayName" : "sms.task.trigger.inbound.sender"
+                                  },
+                                  {
+                                    "eventKey" : "recipient",
+                                    "displayName" : "sms.task.trigger.inbound.recipient"
                                   },
                                   {
                                     "eventKey" : "message",
@@ -121,10 +125,6 @@
                                 {
                                   "key" : "message",
                                   "displayName" : "sms.task.action.send.message"
-                                },
-                                {
-                                  "key" : "message_id",
-                                  "displayName" : "sms.task.action.send.message_id"
                                 },
                                 {
                                   "key" : "delivery_time",

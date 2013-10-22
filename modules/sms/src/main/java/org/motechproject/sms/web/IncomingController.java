@@ -51,16 +51,17 @@ public class IncomingController {
     }
 
 
+    //todo: remember to add some provider-specific UI to explain how implementers must setup their providers' incoming callback
+
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    @RequestMapping(value = "/{configName}", method = RequestMethod.GET)
-    public String handleIncoming(@PathVariable String configName, @RequestParam Map<String, String> params) {
+    @RequestMapping(value = "/{configName}")
+    public void handleIncoming(@PathVariable String configName, @RequestParam Map<String, String> params) {
         String sender = null;
         String recipient = null;
         String message = null;
         String messageId = null;
         DateTime timestamp = null;
-        String response = "OK"; //todo: better default?
 
         logger.info("Received SMS, configName = {}, params = {}", configName, params);
 
@@ -93,17 +94,14 @@ public class IncomingController {
         if (params.containsKey(template.getIncoming().getTimestampKey())) {
             timestamp = DateTime.parse(params.get(template.getIncoming().getTimestampKey()));
         }
-
-        if (template.getIncoming().getResponse() != null && template.getIncoming().getResponse().length() > 0) {
-            response = template.getIncoming().getResponse();
+        else {
+            timestamp = now();
         }
 
         eventRelay.sendEventMessage(makeInboundSmsEvent(config.getName(), sender, recipient, message, messageId,
                 timestamp));
 
-        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, recipient, message, now(), RECEIVED, null,
+        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), RECEIVED, null,
             messageId, null));
-
-        return response;
     }
 }
