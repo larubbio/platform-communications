@@ -29,6 +29,19 @@
             ]
         },
         {
+            "name" : "Rancard",
+            "templateName" : "Rancard",
+            "maxRetries" : 3,
+            "splitHeader" : "Msg $m of $t",
+            "splitFooter" : "End of msg $m or $t",
+            "excludeLastFooter" : true,
+            "props" : [
+                {name: "username", value: "*****"},
+                {name: "password", value: "*****"},
+                {name: "from", value: "*****"}
+            ]
+        },
+        {
             "name" : "Voxeo",
             "templateName" : "Voxeo",
             "maxRetries" : 3,

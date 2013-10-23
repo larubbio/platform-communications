@@ -95,11 +95,10 @@
         "outgoing":{
             "msxSmsSize":"160",
             "hasAuthentication":"true",
-            "maxRecipientXXX":"1",
+            "maxRecipient":"1",
             "request":{
                 "type":"POST",
                 "urlPath":"https://api.twilio.com/2010-04-01/Accounts/[username]/Messages",
-                "maxRecipient":"10",
                 "recipientsSeparator":",",
                 "millisecondsBetweenMessages":"1",
                 "bodyParameters":{
@@ -127,6 +126,40 @@
             "senderKey": "From",
             "messageKey": "Body",
             "recipientKey": "To"
+        }
+    },
+    {
+        "name":"Rancard",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"GET",
+                "urlPath":"https://app.rancardmobility.com/rmcs/sendMessage.jsp",
+                "recipientsSeparator":",",
+                "millisecondsBetweenMessages":"1",
+                "queryParameters":{
+                    "from":"[from]",
+                    "to":"[recipients]",
+                    "text":"[message]",
+                    "username":"[username]",
+                    "password":"[password]"
+                }
+            },
+            "response":{
+                "successResponse": "000",
+                "extractGeneralFailureMessage": "(.*)"
+            }
+        },
+        "status":{
+        },
+        "incoming":{
         }
     }
 ]
