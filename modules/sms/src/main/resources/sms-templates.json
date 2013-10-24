@@ -50,35 +50,70 @@
         }
     },
     {
-        "name":"Voxeo",
+        "name":"Nuntium",
 		"requires": [
 			"username",
 			"password",
-			"botkey",
 			"from"
 		],
         "outgoing":{
             "msxSmsSize":"160",
-            "millisecondsBetweenMessages":"6000",
             "maxRecipient":"1",
+            "millisecondsBetweenMessages":"1",
             "hasAuthentication":"true",
             "request":{
                 "type":"POST",
-                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "urlPath":"http://nuntium.instedd.org/[username]/send_ao",
                 "bodyParameters":{
-                    "user":"[recipients]",
-                    "msg":"[message]",
-                    "botkey":"[botkey]",
-                    "apimethod":"send",
-                    "network":"SMS",
-                    "from":"[from]"
+                    "from":"sms://[motechId]",
+                    "to":"sms://[username]",
+                    "body":"[from]",
+                    "guid":"[motechId]"
                 }
             },
             "response":{
-                "multiLineRecipientResponse": "false",
-                "successResponse":'^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="[0-9a-z]*"/>\\W</rsp>$',
-                "extractSingleSuccessMessageId": '^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="([0-9a-z]*)"/>\\W</rsp>$',
-                "extractSingleFailureMessage": '^<rsp stat="fail">\\W<err msg="([^\\"]*)"/>\\W</rsp>$'
+                "successStatus": "200"
+            }
+        },
+        "status":{
+            "messageIdKey": "guid",
+            "statusKey": "state",
+            "statusSuccess": "(confirmed|delivered)"
+        },
+        "incoming":{
+            "messageKey": "body",
+            "senderKey": "from",
+            "recipientKey": "to",
+            "msgIdKey": "guid"
+        }
+    },
+    {
+        "name":"Rancard",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"GET",
+                "urlPath":"https://app.rancardmobility.com/rmcs/sendMessage.jsp",
+                "recipientsSeparator":",",
+                "millisecondsBetweenMessages":"1",
+                "queryParameters":{
+                    "from":"[from]",
+                    "to":"[recipients]",
+                    "text":"[message]",
+                    "username":"[username]",
+                    "password":"[password]"
+                }
+            },
+            "response":{
+                "successResponse": "000",
+                "extractGeneralFailureMessage": "(.*)"
             }
         },
         "status":{
@@ -129,32 +164,35 @@
         }
     },
     {
-        "name":"Rancard",
+        "name":"Voxeo",
 		"requires": [
 			"username",
 			"password",
+			"botkey",
 			"from"
 		],
         "outgoing":{
             "msxSmsSize":"160",
-            "hasAuthentication":"true",
+            "millisecondsBetweenMessages":"6000",
             "maxRecipient":"1",
+            "hasAuthentication":"true",
             "request":{
-                "type":"GET",
-                "urlPath":"https://app.rancardmobility.com/rmcs/sendMessage.jsp",
-                "recipientsSeparator":",",
-                "millisecondsBetweenMessages":"1",
-                "queryParameters":{
-                    "from":"[from]",
-                    "to":"[recipients]",
-                    "text":"[message]",
-                    "username":"[username]",
-                    "password":"[password]"
+                "type":"POST",
+                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "bodyParameters":{
+                    "user":"[recipients]",
+                    "msg":"[message]",
+                    "botkey":"[botkey]",
+                    "apimethod":"send",
+                    "network":"SMS",
+                    "from":"[from]"
                 }
             },
             "response":{
-                "successResponse": "000",
-                "extractGeneralFailureMessage": "(.*)"
+                "multiLineRecipientResponse": "false",
+                "successResponse":'^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="[0-9a-z]*"/>\\W</rsp>$',
+                "extractSingleSuccessMessageId": '^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="([0-9a-z]*)"/>\\W</rsp>$',
+                "extractSingleFailureMessage": '^<rsp stat="fail">\\W<err msg="([^\\"]*)"/>\\W</rsp>$'
             }
         },
         "status":{

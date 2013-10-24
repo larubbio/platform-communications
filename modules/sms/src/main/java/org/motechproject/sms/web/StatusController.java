@@ -1,6 +1,5 @@
 package org.motechproject.sms.web;
 
-import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.audit.SmsRecord;
@@ -79,7 +78,7 @@ public class StatusController {
                 String statusString = params.get(status.getStatusKey());
 
                 if (statusString != null && statusString.matches(status.getStatusSuccess())) {
-                    //todo: matchup the messageid from the log and fetch the phone number?
+                    //todo: matchup the messageid from the log and fetch the phone number
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
                         now(), null));
                     smsAuditService.log(new SmsRecord(configName, OUTBOUND, null, null, now(), DELIVERY_CONFIRMED, null,

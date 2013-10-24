@@ -76,10 +76,14 @@ public class IncomingController {
         Template template = templates.getTemplate(config.getTemplateName());
 
         if (params.containsKey(template.getIncoming().getSenderKey())) {
+            //todo: extract with regex if there is one, to deal with numbers prefixed with protocols, for example:
+            //todo: from=sms://18885551212
             sender = params.get(template.getIncoming().getSenderKey());
         }
 
         if (params.containsKey(template.getIncoming().getRecipientKey())) {
+            //todo: extract with regex if there is one, to deal with numbers prefixed with protocols, for example:
+            //todo: to=sms://18885551212
             recipient = params.get(template.getIncoming().getRecipientKey());
         }
 
