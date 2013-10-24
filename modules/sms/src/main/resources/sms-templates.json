@@ -83,7 +83,9 @@
         "incoming":{
             "messageKey": "body",
             "senderKey": "from",
+            "senderRegex": "sms://1\\+(\\d+)",
             "recipientKey": "to",
+            "recipientRegex": "sms://1\\+(\\d+)",
             "msgIdKey": "guid"
         }
     },

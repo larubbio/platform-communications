@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.RECEIVED;
@@ -70,21 +71,23 @@ public class IncomingController {
             config = configs.getConfig(configName);
         }
         else {
-            //todo: do we really want to do that?
-            config = configs.getDefaultConfig();
+            logger.error("Invalid config in incoming request: {}, params: {}", configName, params);
+            return;
         }
         Template template = templates.getTemplate(config.getTemplateName());
 
         if (params.containsKey(template.getIncoming().getSenderKey())) {
-            //todo: extract with regex if there is one, to deal with numbers prefixed with protocols, for example:
-            //todo: from=sms://18885551212
             sender = params.get(template.getIncoming().getSenderKey());
+            if (template.getIncoming().hasSenderRegex()) {
+                sender = template.getIncoming().extractSender(sender);
+            }
         }
 
         if (params.containsKey(template.getIncoming().getRecipientKey())) {
-            //todo: extract with regex if there is one, to deal with numbers prefixed with protocols, for example:
-            //todo: to=sms://18885551212
             recipient = params.get(template.getIncoming().getRecipientKey());
+            if (template.getIncoming().hasRecipientRegex()) {
+                recipient = template.getIncoming().extractRecipient(recipient);
+            }
         }
 
         if (params.containsKey(template.getIncoming().getMessageKey())) {

@@ -82,6 +82,14 @@ public class SmsRecord extends MotechBaseDataObject {
         return errorMessage;
     }
 
+    public void setTimestamp(DateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setSmsDeliveryStatus(SmsDeliveryStatus smsDeliveryStatus) {
+        this.smsDeliveryStatus = smsDeliveryStatus;
+    }
+
     public String toString() {
         return String.format("config: %s, smsType: %s, number: %s, motechId: %s, providerId: %s, timestamp: %s, deliveryStatus: %s, errorMessage: %s",
             config, smsType.toString(), phoneNumber, motechId, providerId, timestamp, smsDeliveryStatus, errorMessage);
