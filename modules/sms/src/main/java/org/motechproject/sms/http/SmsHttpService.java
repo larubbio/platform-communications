@@ -103,8 +103,14 @@ public class SmsHttpService {
         props.put("callback", settingsService.getPlatformSettings().getServerUrl() + "/module/sms/status/" +
                 config.getName());
 
-        for (ConfigProp prop : config.getProps()) {
-            props.put(prop.getName(), prop.getValue());
+        for (ConfigProp configProp : config.getProps()) {
+            props.put(configProp.getName(), configProp.getValue());
+        }
+
+        if (logger.isDebugEnabled()) {
+            for (String key : props.keySet()) {
+                logger.debug("PROP {}: {}", key, props.get(key));
+            }
         }
 
         try {
