@@ -100,7 +100,7 @@ public class StatusController {
                 }
                 else {
                     //start with an empty SMS record
-                    smsRecord = new SmsRecord(configName, null, null, null, now(), null, null, providerId, null);
+                    smsRecord = new SmsRecord(configName, OUTBOUND, null, null, now(), null, null, providerId, null);
                 }
 
                 if (statusString != null && statusString.matches(status.getStatusSuccess())) {
@@ -108,16 +108,14 @@ public class StatusController {
                     smsRecord.setSmsDeliveryStatus(DELIVERY_CONFIRMED);
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
                         now(), null));
-                    smsAuditService.log(new SmsRecord(configName, OUTBOUND, null, null, now(), DELIVERY_CONFIRMED, null,
-                        providerId, null));
+                    smsAuditService.log(smsRecord);
                 }
                 else {
                     //todo: FAILURE_CONFIRMED or UNKNOWN???
                     smsRecord.setSmsDeliveryStatus(FAILURE_CONFIRMED);
                     eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(configName, null, null, null, providerId,
                             now(), null));
-                    smsAuditService.log(new SmsRecord(configName, OUTBOUND, null, null, now(), FAILURE_CONFIRMED, null,
-                            providerId, null));
+                    smsAuditService.log(smsRecord);
                 }
 
                 smsAuditService.log(smsRecord);

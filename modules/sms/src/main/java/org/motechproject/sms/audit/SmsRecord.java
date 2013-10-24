@@ -90,8 +90,18 @@ public class SmsRecord extends MotechBaseDataObject {
         this.smsDeliveryStatus = smsDeliveryStatus;
     }
 
+    @Override
     public String toString() {
-        return String.format("config: %s, smsType: %s, number: %s, motechId: %s, providerId: %s, timestamp: %s, deliveryStatus: %s, errorMessage: %s",
-            config, smsType.toString(), phoneNumber, motechId, providerId, timestamp, smsDeliveryStatus, errorMessage);
+        return "SmsRecord{" +
+                "config='" + config + '\'' +
+                ", smsType=" + smsType +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", messageContent='" + messageContent + '\'' +
+                ", timestamp=" + timestamp +
+                ", smsDeliveryStatus=" + smsDeliveryStatus +
+                ", motechId='" + motechId + '\'' +
+                ", providerId='" + providerId + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
     }
 }
