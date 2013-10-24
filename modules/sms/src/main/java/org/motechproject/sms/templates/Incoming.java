@@ -94,4 +94,19 @@ public class Incoming {
     public void setRecipientRegex(String recipientRegex) {
         this.recipientRegex = recipientRegex;
     }
+
+    @Override
+    public String toString() {
+        return "Incoming{" +
+                "messageKey='" + messageKey + '\'' +
+                ", senderKey='" + senderKey + '\'' +
+                ", senderRegex='" + senderRegex + '\'' +
+                ", recipientKey='" + recipientKey + '\'' +
+                ", recipientRegex='" + recipientRegex + '\'' +
+                ", timestampKey='" + timestampKey + '\'' +
+                ", msgIdKey='" + msgIdKey + '\'' +
+                ", pExtractSender=" + pExtractSender +
+                ", pExtractRecipient=" + pExtractRecipient +
+                '}';
+    }
 }

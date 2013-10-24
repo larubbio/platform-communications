@@ -67,4 +67,17 @@ public class Outgoing {
     public void setRecipientSeparator(String recipientSeparator) {
         this.recipientSeparator = recipientSeparator;
     }
+
+    @Override
+    public String toString() {
+        return "Outgoing{" +
+                "request=" + request +
+                ", response=" + response +
+                ", hasAuthentication=" + hasAuthentication +
+                ", millisecondsBetweenMessages=" + millisecondsBetweenMessages +
+                ", maxSmsSize=" + maxSmsSize +
+                ", maxRecipient=" + maxRecipient +
+                ", recipientSeparator='" + recipientSeparator + '\'' +
+                '}';
+    }
 }

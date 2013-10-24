@@ -102,4 +102,24 @@ public class Response {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "multiLineRecipientResponse=" + multiLineRecipientResponse +
+                ", singleRecipientResponse=" + singleRecipientResponse +
+                ", successStatus='" + successStatus + '\'' +
+                ", successResponse='" + successResponse + '\'' +
+                ", extractSingleSuccessMessageId='" + extractSingleSuccessMessageId + '\'' +
+                ", extractSingleFailureMessage='" + extractSingleFailureMessage + '\'' +
+                ", extractGeneralFailureMessage='" + extractGeneralFailureMessage + '\'' +
+                ", extractSuccessMessageIdAndRecipient='" + extractSuccessMessageIdAndRecipient + '\'' +
+                ", extractFailureMessageAndRecipient='" + extractFailureMessageAndRecipient + '\'' +
+                ", pExtractSingleSuccessMessageId=" + pExtractSingleSuccessMessageId +
+                ", pExtractSingleFailureMessage=" + pExtractSingleFailureMessage +
+                ", pExtractGeneralFailureMessage=" + pExtractGeneralFailureMessage +
+                ", pExtractSuccessMessageIdAndRecipient=" + pExtractSuccessMessageIdAndRecipient +
+                ", pExtractFailureMessageAndRecipient=" + pExtractFailureMessageAndRecipient +
+                '}';
+    }
 }

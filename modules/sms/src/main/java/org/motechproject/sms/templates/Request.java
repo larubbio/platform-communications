@@ -73,4 +73,17 @@ public class Request {
     public void setBodyParameters(Map<String, String> bodyParameters) {
         this.bodyParameters = bodyParameters;
     }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "urlPath='" + urlPath + '\'' +
+                ", recipientsSeparator='" + recipientsSeparator + '\'' +
+                ", queryParameters=" + queryParameters +
+                ", bodyParameters=" + bodyParameters +
+                ", type=" + type +
+                ", props=" + props +
+                ", processedUrlPath='" + processedUrlPath + '\'' +
+                '}';
+    }
 }
