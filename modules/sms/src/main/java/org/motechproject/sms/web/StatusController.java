@@ -1,5 +1,6 @@
 package org.motechproject.sms.web;
 
+import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.audit.SmsRecord;
@@ -63,7 +64,7 @@ public class StatusController {
     @ResponseBody
     @RequestMapping(value = "/{configName}")
     public void handle(@PathVariable String configName, @RequestParam Map<String, String> params) {
-        logger.info("Status, configName = {}, params = {}", configName, params);
+        logger.info("configName = {}, params = {}", configName, params);
 
         Config config;
         if (configs.hasConfig(configName)) {
@@ -74,9 +75,7 @@ public class StatusController {
             config = configs.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
-        logger.debug("template = {}", template);
         Status status = template.getStatus();
-        logger.debug("status = {}", status);
 
         if (status.hasMessageIdKey() && params != null && params.containsKey(status.getMessageIdKey())) {
             String providerId = params.get(status.getMessageIdKey());
@@ -85,18 +84,36 @@ public class StatusController {
                 String statusString = params.get(status.getStatusKey());
 
                 SmsRecord smsRecord = null;
+                QueryParam queryParam = new QueryParam();
+                queryParam.setSortBy("timestamp");
+                queryParam.setReverse(true);
+
                 SmsRecords smsRecords = smsAuditService.findAllSmsRecords(new SmsRecordSearchCriteria()
                         .withConfig(configName)
-                        .withProviderId(providerId));
+                        .withProviderId(providerId)
+                        .withQueryParam(queryParam));
                 if (CollectionUtils.isEmpty(smsRecords.getRecords())) {
                     smsRecords = smsAuditService.findAllSmsRecords(new SmsRecordSearchCriteria()
                             .withConfig(configName)
-                            .withMotechId(providerId));
+                            .withMotechId(providerId)
+                            .withQueryParam(queryParam));
+                    if (CollectionUtils.isEmpty(smsRecords.getRecords())) {
+                        logger.debug("Couldn't find a log record with matching providerId or motechId {}", providerId);
+                    }
+                    else {
+                        logger.debug("Found log record with matching motechId {}", providerId);
+                    }
+                }
+                else {
+                    logger.debug("Found log record with matching providerId {}", providerId);
                 }
 
                 if (smsRecords.getCount() > 0) {
-                    smsRecord = smsRecords.getRecords().get(0);
-                    smsRecord.setTimestamp(now());
+                    //results sorted on desc timestamp, so get(0) will be most recent
+                    SmsRecord existingSmsRecord = smsRecords.getRecords().get(0);
+                    smsRecord = new SmsRecord(configName, OUTBOUND, existingSmsRecord.getPhoneNumber(),
+                            existingSmsRecord.getMessageContent(), now(), null, existingSmsRecord.getMotechId(),
+                            providerId, null);
                 }
                 else {
                     //start with an empty SMS record
@@ -108,14 +125,12 @@ public class StatusController {
                     smsRecord.setSmsDeliveryStatus(DELIVERY_CONFIRMED);
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
                         now(), null));
-                    smsAuditService.log(smsRecord);
                 }
                 else {
                     //todo: FAILURE_CONFIRMED or UNKNOWN???
                     smsRecord.setSmsDeliveryStatus(FAILURE_CONFIRMED);
                     eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(configName, null, null, null, providerId,
                             now(), null));
-                    smsAuditService.log(smsRecord);
                 }
 
                 smsAuditService.log(smsRecord);

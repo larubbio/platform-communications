@@ -18,6 +18,7 @@ public class Response {
     private String extractGeneralFailureMessage = null;
     private String extractSuccessMessageIdAndRecipient = null;
     private String extractFailureMessageAndRecipient = null;
+    Pattern pSuccessResponse = null;
     Pattern pExtractSingleSuccessMessageId = null;
     Pattern pExtractSingleFailureMessage = null;
     Pattern pExtractGeneralFailureMessage = null;
@@ -37,7 +38,12 @@ public class Response {
     }
 
     public Boolean checkSuccessResponse(String response) {
-        return response.matches(successResponse);
+        if (pSuccessResponse == null) {
+            pSuccessResponse = Pattern.compile(successResponse, Pattern.DOTALL);
+        }
+        Matcher matcher = pSuccessResponse.matcher(response);
+        Boolean ret = matcher.matches();
+        return ret;
     }
 
     public Boolean supportsMultiLineRecipientResponse() {

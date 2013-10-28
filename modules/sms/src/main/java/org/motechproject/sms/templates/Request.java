@@ -16,6 +16,7 @@ public class Request {
     private HttpMethodType type;
     private Map<String, String> props = null;
     private String processedUrlPath = null;
+    private Boolean jsonContentType = false;
 
     public String getUrlPath(Map<String, String> props) {
         if (!props.equals(this.props)) {
@@ -74,6 +75,14 @@ public class Request {
         this.bodyParameters = bodyParameters;
     }
 
+    public Boolean getJsonContentType() {
+        return jsonContentType;
+    }
+
+    public void setJsonContentType(Boolean jsonContentType) {
+        this.jsonContentType = jsonContentType;
+    }
+
     @Override
     public String toString() {
         return "Request{" +
@@ -84,6 +93,7 @@ public class Request {
                 ", type=" + type +
                 ", props=" + props +
                 ", processedUrlPath='" + processedUrlPath + '\'' +
+                ", jsonContentType=" + jsonContentType +
                 '}';
     }
 }

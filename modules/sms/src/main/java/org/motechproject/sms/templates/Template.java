@@ -1,12 +1,16 @@
 package org.motechproject.sms.templates;
 
+import com.google.gson.Gson;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +32,28 @@ public class Template {
         HttpMethod httpMethod;
         if (HttpMethodType.POST.equals(outgoing.getRequest().getType())) {
             httpMethod = new PostMethod(outgoing.getRequest().getUrlPath(props));
-            httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
-            addBodyParameters((PostMethod) httpMethod, props);
+            if (outgoing.getRequest().getJsonContentType()) {
+                Map<String, String> jsonParams = getJsonParameters(outgoing.getRequest().getBodyParameters(), props);
+                Gson gson = new Gson();
+                String json = gson.toJson(jsonParams);
+                StringRequestEntity requestEntity = null;
+                try {
+                    requestEntity = new StringRequestEntity(json, "application/json", "UTF-8");
+                }
+                catch  (UnsupportedEncodingException e) {
+                    //todo: not sure what....
+                }
+                if (requestEntity != null) {
+                    ((PostMethod)httpMethod).setRequestEntity(requestEntity);
+                }
+                else {
+                    //todo: what???
+                }
+            }
+            else {
+                httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
+                addBodyParameters((PostMethod) httpMethod, props);
+            }
         } else {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath(props));
         }
@@ -45,6 +69,15 @@ public class Template {
             queryStringValues.add(new NameValuePair(entry.getKey(), value));
         }
         return queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
+    }
+
+    private Map<String, String> getJsonParameters(Map<String, String> bodyParameters, Map<String, String> props) {
+        Map<String, String> ret = new HashMap<String, String>();
+        for (Map.Entry<String,String> entry: bodyParameters.entrySet()) {
+            String value = placeHolderOrLiteral(entry.getValue(), props);
+            ret.put(entry.getKey(), value);
+        }
+        return ret;
     }
 
     private void addBodyParameters(PostMethod postMethod, Map<String, String> props) {

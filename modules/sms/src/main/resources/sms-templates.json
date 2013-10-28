@@ -90,6 +90,49 @@
         }
     },
     {
+        "name":"Plivo",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"POST",
+                "jsonContentType":"true",
+                "urlPath":"https://api.plivo.com/v1/Account/[username]/Message/",
+                "millisecondsBetweenMessages":"1",
+                "bodyParameters":{
+                    "src":"[from]",
+                    "dst":"[recipients]",
+                    "text":"[message]",
+                    "url":"[callback]"
+                }
+            },
+            "response":{
+                "successStatus": "202",
+                "successResponse": ".*\\\"message_uuid\\\": \\[\\n\\W*\\\"[a-z0-9-]*\\\"\\W*\\].*",
+                "multiLineRecipientResponse": "false",
+                "extractSingleSuccessMessageId": ".*\\\"message_uuid\\\": \\[\\n\\W*\\\"([a-z0-9-]*)\\\"\\W*\\].*",
+                "extractGeneralFailureMessage": ".*\\\"error\\\": \\\"([^\\\"]*)\\\".*"
+            }
+        },
+        "status":{
+            "messageIdKey": "MessageUUID",
+            "statusKey": "Status",
+            "statusSuccess": "sent"
+        },
+        "incoming":{
+            "messageKey": "SmsSid",
+            "senderKey": "From",
+            "messageKey": "Body",
+            "recipientKey": "To"
+        }
+    },
+    {
         "name":"Rancard",
 		"requires": [
 			"username",
@@ -192,9 +235,9 @@
             },
             "response":{
                 "multiLineRecipientResponse": "false",
-                "successResponse":'^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="[0-9a-z]*"/>\\W</rsp>$',
-                "extractSingleSuccessMessageId": '^<rsp stat="ok">\\W<success msg="[^\\"]*" transactionid="[0-9a-z]*" messageid="([0-9a-z]*)"/>\\W</rsp>$',
-                "extractSingleFailureMessage": '^<rsp stat="fail">\\W<err msg="([^\\"]*)"/>\\W</rsp>$'
+                "successResponse":"^<rsp stat=\"ok\">\\W<success msg=\"[^\\\"]*\" transactionid=\"[0-9a-z]*\" messageid=\"[0-9a-z]*\"/>\\W</rsp>$",
+                "extractSingleSuccessMessageId": "^<rsp stat=\"ok\">\\W<success msg=\"[^\\\"]*\" transactionid=\"[0-9a-z]*\" messageid=\"([0-9a-z]*)\"/>\\W</rsp>$",
+                "extractSingleFailureMessage": "^<rsp stat=\"fail\">\\W<err msg=\"([^\\\"]*)\"/>\\W</rsp>$"
             }
         },
         "status":{
