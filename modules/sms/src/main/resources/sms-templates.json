@@ -65,14 +65,15 @@
                 "type":"POST",
                 "urlPath":"http://nuntium.instedd.org/[username]/send_ao",
                 "bodyParameters":{
-                    "from":"sms://[motechId]",
-                    "to":"sms://[username]",
-                    "body":"[from]",
+                    "from":"sms://[from]",
+                    "to":"sms://[recipients]",
+                    "body":"[message]",
                     "guid":"[motechId]"
                 }
             },
             "response":{
-                "successStatus": "200"
+                "successStatus": "200",
+                "headerMessageId": "X-Nuntium-Guid"
             }
         },
         "status":{

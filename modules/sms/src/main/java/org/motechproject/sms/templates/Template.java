@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * todo
@@ -21,6 +23,7 @@ public class Template {
 
     public static final String MESSAGE_PLACEHOLDER = "$message";
     public static final String RECIPIENTS_PLACEHOLDER = "$recipients";
+    public static final Pattern pFindToken = Pattern.compile("\\[(\\w*)\\]");
 
     private Outgoing outgoing;
     private Status status;
@@ -88,7 +91,26 @@ public class Template {
         }
     }
 
+    // return input string with replaced values of [tokens] if found in props, so if you're passing
+    // "foobar[baz]" and props contains bar:goo, then returns "foobargoo"
     static private String placeHolderOrLiteral(String value, Map<String, String> props) {
+        StringBuffer sb = new StringBuffer();
+        Matcher matcher = pFindToken.matcher(value);
+
+        while (matcher.find())
+        {
+            String repString = props.get(matcher.group(1));
+            if (repString != null) {
+                matcher.appendReplacement(sb, repString);
+            }
+            else {
+                matcher.appendReplacement(sb, "[" + matcher.group(1) + "]");
+            }
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+/*
         if (value.matches("^\\[[\\w]+\\]$")) {
             String key = value.substring(1, value.length()-1);
             if (props.containsKey(key)) {
@@ -96,6 +118,7 @@ public class Template {
             }
         }
         return value;
+*/
     }
 
     public String recipientsAsString(List<String> recipients) {

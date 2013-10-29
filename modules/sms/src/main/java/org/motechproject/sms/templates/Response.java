@@ -18,6 +18,7 @@ public class Response {
     private String extractGeneralFailureMessage = null;
     private String extractSuccessMessageIdAndRecipient = null;
     private String extractFailureMessageAndRecipient = null;
+    private String headerMessageId = null;
     Pattern pSuccessResponse = null;
     Pattern pExtractSingleSuccessMessageId = null;
     Pattern pExtractSingleFailureMessage = null;
@@ -52,6 +53,10 @@ public class Response {
 
     public Boolean supportsSingleRecipientResponse() {
         return singleRecipientResponse;
+    }
+
+    public Boolean hasSingleSuccessMessageId() {
+        return extractSingleSuccessMessageId != null && extractSingleSuccessMessageId.length() > 0;
     }
 
     public String extractSingleSuccessMessageId(String response) {
@@ -109,10 +114,19 @@ public class Response {
         return null;
     }
 
+    public Boolean hasHeaderMessageId() {
+        return headerMessageId != null && !headerMessageId.isEmpty();
+    }
+
+    public String getHeaderMessageId() {
+        return headerMessageId;
+    }
+
     @Override
     public String toString() {
         return "Response{" +
-                "multiLineRecipientResponse=" + multiLineRecipientResponse +
+                "headerMessageId='" + headerMessageId + '\'' +
+                ", multiLineRecipientResponse=" + multiLineRecipientResponse +
                 ", singleRecipientResponse=" + singleRecipientResponse +
                 ", successStatus='" + successStatus + '\'' +
                 ", successResponse='" + successResponse + '\'' +
@@ -121,11 +135,6 @@ public class Response {
                 ", extractGeneralFailureMessage='" + extractGeneralFailureMessage + '\'' +
                 ", extractSuccessMessageIdAndRecipient='" + extractSuccessMessageIdAndRecipient + '\'' +
                 ", extractFailureMessageAndRecipient='" + extractFailureMessageAndRecipient + '\'' +
-                ", pExtractSingleSuccessMessageId=" + pExtractSingleSuccessMessageId +
-                ", pExtractSingleFailureMessage=" + pExtractSingleFailureMessage +
-                ", pExtractGeneralFailureMessage=" + pExtractGeneralFailureMessage +
-                ", pExtractSuccessMessageIdAndRecipient=" + pExtractSuccessMessageIdAndRecipient +
-                ", pExtractFailureMessageAndRecipient=" + pExtractFailureMessageAndRecipient +
                 '}';
     }
 }

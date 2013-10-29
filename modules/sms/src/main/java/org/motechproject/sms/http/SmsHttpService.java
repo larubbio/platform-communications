@@ -1,13 +1,12 @@
 package org.motechproject.sms.http;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.http.NameValuePair;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
@@ -252,14 +251,25 @@ public class SmsHttpService {
                     //
                     // Either straight HTTP 200, or matched successful response
                     //
-                    String providerId = resp.extractSingleSuccessMessageId(httpResponse);
+                    String providerId;
 
-                    logger.info("SMS with message \"{}\" sent successfully to {}", msgForLog,
+                    if (resp.hasHeaderMessageId()) {
+                        Header header = httpMethod.getResponseHeader(resp.getHeaderMessageId());
+                        providerId = header.getValue();
+                    }
+                    else if (resp.hasSingleSuccessMessageId()) {
+                        providerId = resp.extractSingleSuccessMessageId(httpResponse);
+                    }
+                    else {
+                        //todo: think about that
+                        providerId = "UNKNOWN";
+                    }
+                logger.info("SMS with message \"{}\" successfully routed to {}", msgForLog,
                         template.recipientsAsString(sms.getRecipients()));
-                    eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
+                eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
                         sms.getMessage(), sms.getMotechId(), providerId, sms.getDeliveryTime(), failureCount));
-                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
-                            sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId, null));
+                smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
+                        sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId, null));
                 }
             }
             else {
