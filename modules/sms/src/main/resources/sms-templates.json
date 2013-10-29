@@ -185,7 +185,7 @@
                     "From":"[from]",
                     "To":"[recipients]",
                     "Body":"[message]",
-                    "StatusCallBack":"[callback]"
+                    "StatusCallback":"[callback]"
                 }
             },
             "response":{
