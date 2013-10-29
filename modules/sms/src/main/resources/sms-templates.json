@@ -126,9 +126,9 @@
             "statusSuccess": "sent"
         },
         "incoming":{
-            "messageKey": "SmsSid",
+            "messageKey": "MessageUUID",
             "senderKey": "From",
-            "messageKey": "Body",
+            "messageKey": "Text",
             "recipientKey": "To"
         }
     },
