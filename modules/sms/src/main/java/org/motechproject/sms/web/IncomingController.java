@@ -99,7 +99,12 @@ public class IncomingController {
         }
 
         if (params.containsKey(template.getIncoming().getTimestampKey())) {
-            timestamp = DateTime.parse(params.get(template.getIncoming().getTimestampKey()));
+            String dt = params.get(template.getIncoming().getTimestampKey());
+            // replace "yyyy-mm-dd hh:mm:ss" with "yyyy-mm-ddThh:mm:ss" (note the T)
+            if (dt.matches("(\\d\\d\\d\\d|\\d\\d)-\\d\\d?-\\d\\d? \\d\\d?:\\d\\d?:\\d\\d?")) {
+                dt = dt.replace(" ", "T");
+            }
+            timestamp = DateTime.parse(dt);
         }
         else {
             timestamp = now();

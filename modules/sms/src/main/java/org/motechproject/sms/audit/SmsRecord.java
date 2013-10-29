@@ -1,5 +1,7 @@
 package org.motechproject.sms.audit;
 
+//todo: motechTimestanp & providerTimestamp instead of just timestamp?
+//todo: providerDeliveryStatus & motechDeliveryStatus instead of deliveryStatus
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;

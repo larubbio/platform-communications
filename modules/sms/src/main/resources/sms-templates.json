@@ -18,8 +18,7 @@
                 "recipientsSeparator":",",
                 "bodyParameters":{
                     "mo":"1",
-                    "deliv_ack":"1",
-                    "callback":"6",
+                    "callback":"3",
                     "climsgid":"[motechId]",
                     "user":"[username]",
                     "password":"[password]",
@@ -39,14 +38,17 @@
             }
         },
         "status":{
+            "messageIdKey": "apiMsgId",
+            "statusKey": "status",
+            "statusSuccess" : "003|004|008",
+            "statusFailure" : "005|006|007|009|010|012|014"
         },
         "incoming":{
             "messageKey": "text",
             "senderKey": "from",
             "recipientKey": "to",
             "msgIdKey": "moMsgId",
-            "timestampKey": "timestamp",
-            "response": "Thanks"
+            "timestampKey": "timestamp"
         }
     },
     {
@@ -79,7 +81,8 @@
         "status":{
             "messageIdKey": "guid",
             "statusKey": "state",
-            "statusSuccess": "(confirmed|delivered)"
+            "statusFailure": "failed",
+            "statusSuccess": "confirmed"
         },
         "incoming":{
             "messageKey": "body",
@@ -124,6 +127,7 @@
         "status":{
             "messageIdKey": "MessageUUID",
             "statusKey": "Status",
+            "statusFailure": "failed|undelivered|rejected",
             "statusSuccess": "sent"
         },
         "incoming":{

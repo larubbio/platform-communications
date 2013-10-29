@@ -30,6 +30,7 @@ import static ch.lambdaj.Lambda.sort;
 import static java.util.Collections.reverseOrder;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.DELIVERY_CONFIRMED;
+import static org.motechproject.sms.audit.SmsDeliveryStatus.DISPATCHED;
 import static org.motechproject.sms.audit.SmsDeliveryStatus.FAILURE_CONFIRMED;
 import static org.motechproject.sms.audit.SmsType.INBOUND;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
@@ -120,11 +121,18 @@ public class StatusController {
                     smsRecord = new SmsRecord(configName, OUTBOUND, null, null, now(), null, null, providerId, null);
                 }
 
-                if (statusString != null && statusString.matches(status.getStatusSuccess())) {
-                    //todo: should we be more discriminant and log intermediary statuses - when provided?
-                    smsRecord.setSmsDeliveryStatus(DELIVERY_CONFIRMED);
+                if (statusString != null) {
+                    if (statusString.matches(status.getStatusSuccess())) {
+                        smsRecord.setSmsDeliveryStatus(DELIVERY_CONFIRMED);
+                    }
+                    else if (status.hasStatusFailure() && statusString.matches(status.getStatusFailure())) {
+                        smsRecord.setSmsDeliveryStatus(FAILURE_CONFIRMED);
+                    }
+                    else {
+                        smsRecord.setSmsDeliveryStatus(DISPATCHED);
+                    }
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
-                        now(), null));
+                            now(), null));
                 }
                 else {
                     //todo: FAILURE_CONFIRMED or UNKNOWN???

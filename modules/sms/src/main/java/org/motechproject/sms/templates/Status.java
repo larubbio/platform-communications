@@ -10,6 +10,7 @@ public class Status {
     private String messageIdKey;
     private String statusKey;
     private String statusSuccess;
+    private String statusFailure;
 
     public Boolean hasMessageIdKey() {
         return messageIdKey != null && !messageIdKey.isEmpty();
@@ -47,12 +48,25 @@ public class Status {
         this.statusSuccess = statusSuccess;
     }
 
+    public Boolean hasStatusFailure() {
+        return statusFailure != null && !statusFailure.isEmpty();
+    }
+
+    public String getStatusFailure() {
+        return statusFailure;
+    }
+
+    public void setStatusFailure(String statusFailure) {
+        this.statusFailure = statusFailure;
+    }
+
     @Override
     public String toString() {
         return "Status{" +
                 "messageIdKey='" + messageIdKey + '\'' +
                 ", statusKey='" + statusKey + '\'' +
                 ", statusSuccess='" + statusSuccess + '\'' +
+                ", statusFailure='" + statusFailure + '\'' +
                 '}';
     }
 }
