@@ -92,7 +92,7 @@ public class Template {
     }
 
     // return input string with replaced values of [tokens] if found in props, so if you're passing
-    // "foobar[baz]" and props contains bar:goo, then returns "foobargoo"
+    // "foobar[baz][bee]" and props contains bar:goo, then returns "foobargoo[bee]"
     static private String placeHolderOrLiteral(String value, Map<String, String> props) {
         StringBuffer sb = new StringBuffer();
         Matcher matcher = pFindToken.matcher(value);
@@ -110,15 +110,6 @@ public class Template {
         matcher.appendTail(sb);
 
         return sb.toString();
-/*
-        if (value.matches("^\\[[\\w]+\\]$")) {
-            String key = value.substring(1, value.length()-1);
-            if (props.containsKey(key)) {
-                return props.get(key);
-            }
-        }
-        return value;
-*/
     }
 
     public String recipientsAsString(List<String> recipients) {
