@@ -169,6 +169,9 @@
         "status":{
         },
         "incoming":{
+            "messageKey": "msg",
+            "senderKey": "msisdn",
+            "recipientKey": "dest"
         }
     },
     {
