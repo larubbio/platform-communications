@@ -20,10 +20,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.RECEIVED;
+import static org.motechproject.sms.audit.DeliveryStatus.RECEIVED;
 import static org.motechproject.sms.audit.SmsType.INBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
 
@@ -113,7 +112,7 @@ public class IncomingController {
         eventRelay.sendEventMessage(makeInboundSmsEvent(config.getName(), sender, recipient, message, messageId,
                 timestamp));
 
-        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), RECEIVED, null,
+        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), RECEIVED, null, null,
             messageId, null));
     }
 }

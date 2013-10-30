@@ -12,7 +12,8 @@ public class SmsLoggingDto {
     private String phoneNumber;
     private String smsType;
     private String timestamp;
-    private String smsDeliveryStatus;
+    private String deliveryStatus;
+    private String providerStatus;
     private String messageContent;
     private String motechId;
     private String providerId;
@@ -24,7 +25,8 @@ public class SmsLoggingDto {
         this.smsType = record.getSmsType().toString();
         // DateUtil.setTimeZone converts the message time from UTC to local time for display
         this.timestamp = DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(record.getTimestamp()));
-        this.smsDeliveryStatus = record.getSmsDeliveryStatus().toString();
+        this.deliveryStatus = record.getDeliveryStatus().toString();
+        this.providerStatus = record.getProviderStatus();
         this.messageContent = record.getMessageContent();
         this.motechId = record.getMotechId();
         this.providerId = record.getProviderId();
@@ -63,12 +65,20 @@ public class SmsLoggingDto {
         this.timestamp = timestamp;
     }
 
-    public String getSmsDeliveryStatus() {
-        return smsDeliveryStatus;
+    public String getDeliveryStatus() {
+        return deliveryStatus;
     }
 
-    public void setDeliveryStatus(String smsDeliveryStatus) {
-        this.smsDeliveryStatus = smsDeliveryStatus;
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public String getProviderStatus() {
+        return providerStatus;
+    }
+
+    public void setProviderStatus(String providerStatus) {
+        this.providerStatus = providerStatus;
     }
 
     public String getMessageContent() {
@@ -101,5 +111,21 @@ public class SmsLoggingDto {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    @Override
+    public String toString() {
+        return "SmsLoggingDto{" +
+                "config='" + config + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", smsType='" + smsType + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", deliveryStatus='" + deliveryStatus + '\'' +
+                ", providerStatus='" + providerStatus + '\'' +
+                ", messageContent='" + messageContent + '\'' +
+                ", motechId='" + motechId + '\'' +
+                ", providerId='" + providerId + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
     }
 }

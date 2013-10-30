@@ -18,7 +18,8 @@ public class SmsRecordSearchCriteria {
     private String phoneNumber;
     private String messageContent;
     private Range<DateTime> timestampRange;
-    private Set<SmsDeliveryStatus> smsDeliveryStatuses = new HashSet<>();
+    private String providerStatus;
+    private Set<DeliveryStatus> deliveryStatuses = new HashSet<>();
     private String motechId;
     private String providerId;
     private String errorMessage;
@@ -69,8 +70,13 @@ public class SmsRecordSearchCriteria {
         return this;
     }
 
-    public SmsRecordSearchCriteria withSmsDeliveryStatuses(Set<SmsDeliveryStatus> smsDeliveryStatuses) {
-        this.smsDeliveryStatuses.addAll(smsDeliveryStatuses);
+    public SmsRecordSearchCriteria withProviderStatus(String providerStatus) {
+        this.providerStatus = providerStatus;
+        return this;
+    }
+
+    public SmsRecordSearchCriteria withDeliverystatuses(Set<DeliveryStatus> deliveryStatuses) {
+        this.deliveryStatuses.addAll(deliveryStatuses);
         return this;
     }
 
@@ -101,8 +107,8 @@ public class SmsRecordSearchCriteria {
         return timestampRange;
     }
 
-    public Set<String> getSmsDeliveryStatuses() {
-        return toStringSet(smsDeliveryStatuses);
+    public Set<String> getDeliveryStatuses() {
+        return toStringSet(deliveryStatuses);
     }
 
     public String getMotechId() {
@@ -111,6 +117,10 @@ public class SmsRecordSearchCriteria {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String getProviderStatus() {
+        return providerStatus;
     }
 
     public String getErrorMessage() {
@@ -127,5 +137,22 @@ public class SmsRecordSearchCriteria {
             itemStringSet.add(item.name());
         }
         return itemStringSet;
+    }
+
+    @Override
+    public String toString() {
+        return "SmsRecordSearchCriteria{" +
+                "SmsTypes=" + SmsTypes +
+                ", config='" + config + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", messageContent='" + messageContent + '\'' +
+                ", timestampRange=" + timestampRange +
+                ", providerStatus='" + providerStatus + '\'' +
+                ", deliveryStatuses=" + deliveryStatuses +
+                ", motechId='" + motechId + '\'' +
+                ", providerId='" + providerId + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", queryParam=" + queryParam +
+                '}';
     }
 }

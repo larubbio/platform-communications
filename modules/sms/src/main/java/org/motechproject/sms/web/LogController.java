@@ -24,7 +24,7 @@ public class LogController {
     public SmsLoggingRecords getSmsRecords(GridSettings settings) {
         SmsRecords smsRecords = new SmsRecords();
         SmsRecordSearchCriteria criteria = settings.toSmsRecordSearchCriteria();
-        if (!criteria.getSmsTypes().isEmpty() && !criteria.getSmsDeliveryStatuses().isEmpty()) {
+        if (!criteria.getSmsTypes().isEmpty() && !criteria.getDeliveryStatuses().isEmpty()) {
             smsRecords = smsAuditService.findAllSmsRecords(criteria);
         }
         return new SmsLoggingRecords(settings.getPage(), settings.getRows(), smsRecords);

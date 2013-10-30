@@ -53,6 +53,13 @@
                         </div>
                     </fieldset>
                 </div>
+                <div class="span3">
+                    <fieldset class="inside"><legend>{{msg('sms.log.providerStatus')}}</legend>
+                        <div class="control-group form-inline">
+                            <input type="text" class="span12 search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerStatus" jqgrid-search="resourceTable">
+                        </div>
+                    </fieldset>
+                </div>
             </div>
 
             <div class="row-fluid">
@@ -65,15 +72,15 @@
                     </fieldset>
                 </div>
                 <div class="span8">
-                    <fieldset class="inside"><legend>{{msg('sms.log.smsDeliveryStatus')}}</legend>
+                    <fieldset class="inside"><legend>{{msg('sms.log.deliveryStatus')}}</legend>
                         <div data-toggle="buttons-checkbox" class="btn-group control-group">
-                            <button id="DISPATCHED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="DISPATCHED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.dispatched')}}</button>
-                            <button id="DELIVERY_CONFIRMED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="DELIVERY_CONFIRMED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.deliveryConfirmed')}}</button>
-                            <button id="FAILURE_CONFIRMED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="FAILURE_CONFIRMED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.failureConfirmed')}}</button>
-                            <button id="RETRYING" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="RETRYING" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.retrying')}}</button>
-                            <button id="ABORTED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="ABORTED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.aborted')}}</button>
-                            <button id="PENDING" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="PENDING" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.pending')}}</button>
-                            <button id="RECEIVED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="smsDeliveryStatus" data-search-value="RECEIVED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.received')}}</button>
+                            <button id="DISPATCHED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="DISPATCHED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.dispatched')}}</button>
+                            <button id="DELIVERY_CONFIRMED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="DELIVERY_CONFIRMED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.deliveryConfirmed')}}</button>
+                            <button id="FAILURE_CONFIRMED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="FAILURE_CONFIRMED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.failureConfirmed')}}</button>
+                            <button id="RETRYING" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RETRYING" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.retrying')}}</button>
+                            <button id="ABORTED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="ABORTED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.aborted')}}</button>
+                            <button id="PENDING" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="PENDING" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.pending')}}</button>
+                            <button id="RECEIVED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RECEIVED" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('sms.log.deliver.status.received')}}</button>
                         </div>
                     </fieldset>
                 </div>

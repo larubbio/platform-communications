@@ -39,7 +39,8 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                     "result.add(doc.phoneNumber, {'field':'phoneNumber'});" +
                     "result.add(doc.messageContent, {'field':'messageContent'}); " +
                     "result.add(doc.timestamp,{'field':'timestamp', 'type':'date'}); " +
-                    "result.add(doc.smsDeliveryStatus, {'field':'smsDeliveryStatus'}); " +
+                    "result.add(doc.providerStatus, {'field':'providerStatus'}); " +
+                    "result.add(doc.deliveryStatus, {'field':'deliveryStatus'}); " +
                     "result.add(doc.motechId, {'field':'motechId'}); " +
                     "result.add(doc.providerId, {'field':'providerId'}); " +
                     "result.add(doc.errorMessage, {'field':'errorMessage'}); " +
@@ -54,7 +55,8 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                 .with("phoneNumber", criteria.getPhoneNumber())
                 .with("messageContent", criteria.getMessageContent())
                 .withDateRange("timestamp", criteria.getTimestampRange())
-                .withAny("smsDeliveryStatus", criteria.getSmsDeliveryStatuses())
+                .withAny("deliveryStatus", criteria.getDeliveryStatuses())
+                .with("providerStatus", criteria.getProviderStatus())
                 .with("motechId", criteria.getMotechId())
                 .with("providerId", criteria.getProviderId())
                 .with("errorMessage", criteria.getErrorMessage())

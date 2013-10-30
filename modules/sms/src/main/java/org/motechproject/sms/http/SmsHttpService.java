@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.*;
+import static org.motechproject.sms.audit.DeliveryStatus.*;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.*;
 
@@ -159,6 +159,9 @@ public class SmsHttpService {
 
         if (!error) {
             if ((resp.hasSuccessStatus() && (resp.checkSuccessStatus(httpStatus))) || httpStatus == 200) {
+
+                //todo: extract provider status
+
                 //
                 // analyze sms provider's response
                 //
@@ -177,8 +180,8 @@ public class SmsHttpService {
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                         messageId, msgForLog, sms.getRecipients().get(0)));
                                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND,
-                                    sms.getRecipients().get(0), sms.getMessage(), now(), DISPATCHED, sms.getMotechId(),
-                                    messageId, null));
+                                    sms.getRecipients().get(0), sms.getMessage(), now(), DISPATCHED, null,
+                                        sms.getMotechId(), messageId, null));
                                 //todo: post outbound success event
                             }
                             else {
@@ -204,8 +207,8 @@ public class SmsHttpService {
                                 logger.info(String.format("Successfully sent messageId %s '%s' to %s",
                                     messageAndRecipient[0], msgForLog, messageAndRecipient[1]));
                                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, messageAndRecipient[1],
-                                    sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), messageAndRecipient[0],
-                                    null));
+                                        sms.getMessage(), now(), DISPATCHED, null, sms.getMotechId(),
+                                        messageAndRecipient[0],null));
                                     //todo: post outbound success event
                             }
                             else {
@@ -269,7 +272,7 @@ public class SmsHttpService {
                 eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(sms.getConfig(), sms.getRecipients(),
                         sms.getMessage(), sms.getMotechId(), providerId, sms.getDeliveryTime(), failureCount));
                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
-                        sms.getMessage(), now(), DISPATCHED, sms.getMotechId(), providerId, null));
+                        sms.getMessage(), now(), DISPATCHED, null, sms.getMotechId(), providerId, null));
                 }
             }
             else {
@@ -312,12 +315,13 @@ public class SmsHttpService {
                         sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                 if (errorMessages.containsKey("all")) {
                     smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
-                            sms.getMessage(), now(), RETRYING, sms.getMotechId(), null, errorMessages.get("all")));
+                            sms.getMessage(), now(), RETRYING, null, sms.getMotechId(), null,
+                            errorMessages.get("all")));
                 }
                 else {
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                                now(), RETRYING, sms.getMotechId(), null, errorMessages.get(recipient)));
+                                now(), RETRYING, null, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }
                 }
             }
@@ -328,12 +332,12 @@ public class SmsHttpService {
                         sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                 if (errorMessages.containsKey("all")) {
                     smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
-                            sms.getMessage(), now(), ABORTED, sms.getMotechId(), null, errorMessages.get("all")));
+                            sms.getMessage(), now(), ABORTED, null, sms.getMotechId(), null, errorMessages.get("all")));
                 }
                 else {
                     for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
-                                now(), ABORTED, sms.getMotechId(), null, errorMessages.get(recipient)));
+                                now(), ABORTED, null, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }
                 }
             }

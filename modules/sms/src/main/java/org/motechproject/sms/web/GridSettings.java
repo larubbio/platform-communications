@@ -6,7 +6,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.Range;
 import org.motechproject.commons.couchdb.query.QueryParam;
-import org.motechproject.sms.audit.SmsDeliveryStatus;
+import org.motechproject.sms.audit.DeliveryStatus;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;
 import org.motechproject.sms.audit.SmsType;
 
@@ -27,7 +27,8 @@ public class GridSettings {
     private String messageContent;
     private String timeFrom;
     private String timeTo;
-    private String smsDeliveryStatus;
+    private String deliveryStatus;
+    private String providerStatus;
     private String smsType;
     private String motechId;
     private String providerId;
@@ -104,12 +105,20 @@ public class GridSettings {
         this.timeTo = timeTo;
     }
 
-    public String getSmsDeliveryStatus() {
-        return smsDeliveryStatus;
+    public String getDeliveryStatus() {
+        return deliveryStatus;
     }
 
-    public void setSmsDeliveryStatus(String smsDeliveryStatus) {
-        this.smsDeliveryStatus = smsDeliveryStatus;
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public String getProviderStatus() {
+        return providerStatus;
+    }
+
+    public void setProviderStatus(String providerStatus) {
+        this.providerStatus = providerStatus;
     }
 
     public String getSmsType() {
@@ -140,14 +149,14 @@ public class GridSettings {
         boolean reverse = "desc".equalsIgnoreCase(sortDirection);
         QueryParam queryParam = new QueryParam(page - 1, rows, sortColumn, reverse);
         Set<SmsType> types = getSmsTypeFromSettings();
-        Set<SmsDeliveryStatus> deliveryStatusList = getSmsDeliveryStatusFromSettings();
+        Set<DeliveryStatus> deliveryStatusList = getDeliveryStatusFromSettings();
         Range<DateTime> range = createRangeFromSettings();
         SmsRecordSearchCriteria criteria = new SmsRecordSearchCriteria();
         if (!types.isEmpty()) {
             criteria.withSmsTypes(types);
         }
         if (!deliveryStatusList.isEmpty()) {
-            criteria.withSmsDeliveryStatuses(deliveryStatusList);
+            criteria.withDeliverystatuses(deliveryStatusList);
         }
         if (StringUtils.isNotBlank(config)) {
             criteria.withConfig(config + "*");
@@ -163,6 +172,9 @@ public class GridSettings {
         }
         if (StringUtils.isNotBlank(providerId)) {
             criteria.withProviderId(providerId + "*");
+        }
+        if (StringUtils.isNotBlank(providerStatus)) {
+            criteria.withProviderStatus(providerStatus + "*");
         }
         criteria.withTimestampRange(range);
         criteria.withQueryParam(queryParam);
@@ -180,12 +192,12 @@ public class GridSettings {
         return smsTypes;
     }
 
-    private Set<SmsDeliveryStatus> getSmsDeliveryStatusFromSettings() {
-        Set<SmsDeliveryStatus> statusList = new HashSet<>();
-        String[] statuses = smsDeliveryStatus.split(",");
+    private Set<DeliveryStatus> getDeliveryStatusFromSettings() {
+        Set<DeliveryStatus> statusList = new HashSet<>();
+        String[] statuses = deliveryStatus.split(",");
         for (String status : statuses) {
             if (!status.isEmpty()) {
-                statusList.add(SmsDeliveryStatus.valueOf(status));
+                statusList.add(DeliveryStatus.valueOf(status));
             }
         }
         return statusList;
@@ -206,5 +218,25 @@ public class GridSettings {
             to = DateTime.now();
         }
         return new Range<DateTime>(from, to);
+    }
+
+    @Override
+    public String toString() {
+        return "GridSettings{" +
+                "rows=" + rows +
+                ", page=" + page +
+                ", sortColumn='" + sortColumn + '\'' +
+                ", sortDirection='" + sortDirection + '\'' +
+                ", config='" + config + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", messageContent='" + messageContent + '\'' +
+                ", timeFrom='" + timeFrom + '\'' +
+                ", timeTo='" + timeTo + '\'' +
+                ", deliveryStatus='" + deliveryStatus + '\'' +
+                ", providerStatus='" + providerStatus + '\'' +
+                ", smsType='" + smsType + '\'' +
+                ", motechId='" + motechId + '\'' +
+                ", providerId='" + providerId + '\'' +
+                '}';
     }
 }

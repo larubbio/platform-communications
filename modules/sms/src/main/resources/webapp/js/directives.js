@@ -158,7 +158,7 @@
                 var elem = angular.element(element), filters;
 
                 elem.jqGrid({
-                    url: '../sms/log?smsDeliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,FAILURE_CONFIRMED,RETRYING,ABORTED,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
+                    url: '../sms/log?deliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,FAILURE_CONFIRMED,RETRYING,ABORTED,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
@@ -179,8 +179,11 @@
                         name: 'phoneNumber',
                         index: 'phoneNumber'
                     }, {
-                        name: 'smsDeliveryStatus',
-                        index: 'smsDeliveryStatus'
+                        name: 'deliveryStatus',
+                        index: 'deliveryStatus'
+                    }, {
+                        name: 'providerStatus',
+                        index: 'providerStatus'
                     }, {
                         name: 'timestamp',
                         index: 'timestamp'
@@ -209,8 +212,8 @@
                     sortorder: 'desc',
                     viewrecords: true,
                     gridComplete: function () {
-                        angular.forEach(['config', 'phoneNumber', 'smsDeliveryStatus', 'timestamp', 'smsType',
-                            'motechId', 'providerId', 'messageContent', 'errorMessage'], function (value) {
+                        angular.forEach(['config', 'phoneNumber', 'providerStatus', 'deliveryStatus', 'timestamp',
+                            'smsType', 'motechId', 'providerId', 'messageContent', 'errorMessage'], function (value) {
                             elem.jqGrid('setLabel', value, scope.msg('sms.log.' + value));
                         });
 

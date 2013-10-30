@@ -23,7 +23,9 @@ public class SmsRecord extends MotechBaseDataObject {
     @JsonProperty
     private DateTime timestamp;
     @JsonProperty
-    private SmsDeliveryStatus smsDeliveryStatus;
+    private DeliveryStatus deliveryStatus;
+    @JsonProperty
+    private String providerStatus;
     @JsonProperty
     private String motechId;
     @JsonProperty
@@ -35,14 +37,16 @@ public class SmsRecord extends MotechBaseDataObject {
     }
 
     public SmsRecord(String config, SmsType smsType, String number, String message, DateTime timestamp,
-                     SmsDeliveryStatus smsDeliveryStatus, String motechId, String providerId, String errorMessage) {
+                     DeliveryStatus deliveryStatus, String providerStatus, String motechId, String providerId,
+                     String errorMessage) {
         super("SmsRecord");
         this.config = config;
         this.smsType = smsType;
         this.phoneNumber = number;
         this.messageContent = message;
         this.timestamp = timestamp;
-        this.smsDeliveryStatus = smsDeliveryStatus;
+        this.deliveryStatus = deliveryStatus;
+        this.providerStatus = providerStatus;
         this.motechId = motechId;
         this.providerId = providerId;
         this.errorMessage = errorMessage;
@@ -68,8 +72,8 @@ public class SmsRecord extends MotechBaseDataObject {
         return DateUtil.setTimeZoneUTC(timestamp);
     }
 
-    public SmsDeliveryStatus getSmsDeliveryStatus() {
-        return smsDeliveryStatus;
+    public DeliveryStatus getDeliveryStatus() {
+        return deliveryStatus;
     }
 
     public String getMotechId() {
@@ -88,8 +92,16 @@ public class SmsRecord extends MotechBaseDataObject {
         this.timestamp = timestamp;
     }
 
-    public void setSmsDeliveryStatus(SmsDeliveryStatus smsDeliveryStatus) {
-        this.smsDeliveryStatus = smsDeliveryStatus;
+    public void setDeliveryStatus(DeliveryStatus deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public String getProviderStatus() {
+        return providerStatus;
+    }
+
+    public void setProviderStatus(String providerStatus) {
+        this.providerStatus = providerStatus;
     }
 
     @Override
@@ -100,7 +112,8 @@ public class SmsRecord extends MotechBaseDataObject {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", messageContent='" + messageContent + '\'' +
                 ", timestamp=" + timestamp +
-                ", smsDeliveryStatus=" + smsDeliveryStatus +
+                ", deliveryStatus=" + deliveryStatus +
+                ", providerStatus='" + providerStatus + '\'' +
                 ", motechId='" + motechId + '\'' +
                 ", providerId='" + providerId + '\'' +
                 ", errorMessage='" + errorMessage + '\'' +

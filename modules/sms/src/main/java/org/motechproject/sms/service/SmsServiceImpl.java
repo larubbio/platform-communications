@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.PENDING;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.SCHEDULED;
+import static org.motechproject.sms.audit.DeliveryStatus.PENDING;
+import static org.motechproject.sms.audit.DeliveryStatus.SCHEDULED;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeScheduledSendEvent;
 import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
@@ -169,7 +169,7 @@ public class SmsServiceImpl implements SmsService {
                     dt = dt.plus(1);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
-                                motechId, null, null));
+                                null, motechId, null, null));
                     }
                 }
             }
@@ -180,7 +180,7 @@ public class SmsServiceImpl implements SmsService {
                     logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), chunk);
                     for (String recipient : chunk) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
-                                motechId, null, null));
+                                null, motechId, null, null));
                     }
                 }
             }

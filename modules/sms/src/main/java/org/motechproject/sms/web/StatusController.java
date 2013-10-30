@@ -25,14 +25,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
 import static java.util.Collections.reverseOrder;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.DELIVERY_CONFIRMED;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.DISPATCHED;
-import static org.motechproject.sms.audit.SmsDeliveryStatus.FAILURE_CONFIRMED;
-import static org.motechproject.sms.audit.SmsType.INBOUND;
+import static org.motechproject.sms.audit.DeliveryStatus.DELIVERY_CONFIRMED;
+import static org.motechproject.sms.audit.DeliveryStatus.DISPATCHED;
+import static org.motechproject.sms.audit.DeliveryStatus.FAILURE_CONFIRMED;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsFailureEvent;
 import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsSuccessEvent;
@@ -113,30 +111,31 @@ public class StatusController {
                     //results sorted on desc timestamp, so get(0) will be most recent
                     SmsRecord existingSmsRecord = smsRecords.getRecords().get(0);
                     smsRecord = new SmsRecord(configName, OUTBOUND, existingSmsRecord.getPhoneNumber(),
-                            existingSmsRecord.getMessageContent(), now(), null, existingSmsRecord.getMotechId(),
-                            providerId, null);
+                            existingSmsRecord.getMessageContent(), now(), null, statusString,
+                            existingSmsRecord.getMotechId(), providerId, null);
                 }
                 else {
                     //start with an empty SMS record
-                    smsRecord = new SmsRecord(configName, OUTBOUND, null, null, now(), null, null, providerId, null);
+                    smsRecord = new SmsRecord(configName, OUTBOUND, null, null, now(), null, statusString, null,
+                            providerId, null);
                 }
 
                 if (statusString != null) {
                     if (statusString.matches(status.getStatusSuccess())) {
-                        smsRecord.setSmsDeliveryStatus(DELIVERY_CONFIRMED);
+                        smsRecord.setDeliveryStatus(DELIVERY_CONFIRMED);
                     }
                     else if (status.hasStatusFailure() && statusString.matches(status.getStatusFailure())) {
-                        smsRecord.setSmsDeliveryStatus(FAILURE_CONFIRMED);
+                        smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
                     }
                     else {
-                        smsRecord.setSmsDeliveryStatus(DISPATCHED);
+                        smsRecord.setDeliveryStatus(DISPATCHED);
                     }
                     eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
                             now(), null));
                 }
                 else {
                     //todo: FAILURE_CONFIRMED or UNKNOWN???
-                    smsRecord.setSmsDeliveryStatus(FAILURE_CONFIRMED);
+                    smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
                     eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(configName, null, null, null, providerId,
                             now(), null));
                 }
