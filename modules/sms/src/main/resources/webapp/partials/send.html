@@ -40,7 +40,8 @@
                 <div class="control-group">
                     <label class="control-label" for="message">{{msg('sms.web.send.message')}}</label>
                     <div class="controls">
-                        <textarea id="message" class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" ng-model="sms.message"></textarea>
+                        <textarea name="message" id="message" class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5" required ng-model="sms.message"></textarea>
+                        <span ng-show="form.message.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.send.required_field', msg('sms.web.send.message_field'))}}</span>
                     </div>
                 </div>
 

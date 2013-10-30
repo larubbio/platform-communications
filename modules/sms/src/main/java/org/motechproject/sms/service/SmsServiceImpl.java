@@ -130,7 +130,7 @@ public class SmsServiceImpl implements SmsService {
             config = configs.getConfig(sms.getConfig());
         }
         else {
-            logger.info("No config specified, using default config.");
+            logger.debug("No config specified, using default config.");
             config = configs.getDefaultConfig();
         }
         template = templates.getTemplate(config.getTemplateName());
