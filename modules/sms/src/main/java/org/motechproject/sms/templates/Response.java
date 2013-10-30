@@ -71,12 +71,14 @@ public class Response {
     }
 
     public String extractSingleFailureMessage(String response) {
-        if (pExtractSingleFailureMessage == null) {
-            pExtractSingleFailureMessage = Pattern.compile(extractSingleFailureMessage);
-        }
-        Matcher m = pExtractSingleFailureMessage.matcher(response);
-        if (m.find()) {
-            return m.group(1);
+        if (extractSingleFailureMessage != null && extractSingleFailureMessage.length() > 0) {
+            if (pExtractSingleFailureMessage == null) {
+                pExtractSingleFailureMessage = Pattern.compile(extractSingleFailureMessage);
+            }
+            Matcher m = pExtractSingleFailureMessage.matcher(response);
+            if (m.find()) {
+                return m.group(1);
+            }
         }
         return null;
     }

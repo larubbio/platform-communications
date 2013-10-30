@@ -75,7 +75,7 @@ public class SmsHttpService {
             }
             return "POST Parameters: " + sb.toString();
         }
-        else if (method.getClass().equals(PostMethod.class)) {
+        else if (method.getClass().equals(GetMethod.class)) {
             GetMethod g = (GetMethod)method;
             return String.format("GET QueryString: %s", g.getQueryString());
         }
@@ -105,7 +105,7 @@ public class SmsHttpService {
         for (ConfigProp configProp : config.getProps()) {
             props.put(configProp.getName(), configProp.getValue());
         }
-
+        //todo: remove that, it displays username & passwords...
         if (logger.isDebugEnabled()) {
             for (String key : props.keySet()) {
                 logger.debug("PROP {}: {}", key, props.get(key));

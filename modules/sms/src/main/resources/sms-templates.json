@@ -162,8 +162,8 @@
                 }
             },
             "response":{
-                "successResponse": "000",
-                "extractGeneralFailureMessage": "(.*)"
+                "successResponse": "000\\s*",
+                "extractSingleFailureMessage": "(\\d*)\\s*"
             }
         },
         "status":{
