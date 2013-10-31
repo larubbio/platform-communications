@@ -107,7 +107,11 @@ public class SmsHttpService {
         for (ConfigProp configProp : config.getProps()) {
             props.put(configProp.getName(), configProp.getValue());
         }
-        //todo: remove that, it displays username & passwords...
+
+        // ***** WARNING *****
+        // This displays usernames & passwords in the server log
+        // But then again, so does the settings UI...
+        // ***** WARNING *****
         if (logger.isDebugEnabled()) {
             for (String key : props.keySet()) {
                 logger.debug("PROP {}: {}", key, props.get(key));
@@ -144,10 +148,7 @@ public class SmsHttpService {
         catch (Exception e) {
             String errorMessage = String.format("Error while communicating with '%s': %s", config.getName(), e);
             logger.error(errorMessage);
-            //todo audit log?
-            //todo something like below
             errorMessages.put("all", errorMessage);
-
             error = true;
         }
         finally {
@@ -161,16 +162,13 @@ public class SmsHttpService {
 
         if (!error) {
             if ((resp.hasSuccessStatus() && (resp.checkSuccessStatus(httpStatus))) || httpStatus == 200) {
-
-                //todo: extract provider status
-
                 //
                 // analyze sms provider's response
                 //
                 if (resp.supportsMultiLineRecipientResponse()) {
                     for (String responseLine : httpResponse.split("\\r?\\n")) {
                         // todo: as of now, assume all providers return one msgid & recipient per line
-                        // todo: but if we discover a provider that doesn't, then we'll add code here...
+                        // todo: but if we discover a provider doesn't, we'll add code here...
 
                         // Some multi-line response providers have a special case for single recipients
                         if (sms.getRecipients().size() == 1 && resp.supportsSingleRecipientResponse()) {

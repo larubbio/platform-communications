@@ -4,7 +4,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.util.DateUtil;
 
 /**
- * Represents one SMS record in the logging UI
+ * Represents one record in the logging UI
  */
 public class SmsLoggingRecord {
 
@@ -25,8 +25,7 @@ public class SmsLoggingRecord {
         this.smsType = record.getSmsType().toString();
         // DateUtil.setTimeZone converts the message time from UTC to local time for display
         this.timestamp = DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(
-                record.getTimestamp()));                                //todo: providerDeliveryStatus & motechDeliveryStatus instead of deliveryStatus
-
+                record.getTimestamp()));
         this.deliveryStatus = record.getDeliveryStatus().toString();
         this.providerStatus = record.getProviderStatus();
         this.messageContent = record.getMessageContent();

@@ -38,9 +38,6 @@ public class ConfigReader {
     }
 
     public void setConfigs(Configs configs) {
-
-        //todo: validate ?
-
         Gson gson = new Gson();
         String jsonText = gson.toJson(configs, Configs.class);
         ByteArrayResource resource = new ByteArrayResource(jsonText.getBytes());
