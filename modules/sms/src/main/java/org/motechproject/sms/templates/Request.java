@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * todo
+ * How to generate the http request for a specific provider
  */
 public class Request {
     private String urlPath;

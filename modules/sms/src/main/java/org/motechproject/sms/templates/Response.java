@@ -1,18 +1,18 @@
 package org.motechproject.sms.templates;
 
-//todo: handle malformed template files (ie: resulting in exceptions in the regex parsing) in a useful way for implementers
+//todo: handle malformed template files (ie: resulting in exceptions in the regex parsing) in a useful way for implementers?
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * todo
+ * How to to deal with provider-specific http responses
  */
 public class Response {
     private Boolean multiLineRecipientResponse = false;
     private Boolean singleRecipientResponse = false;
     private String successStatus = null;
-    private String successResponse = null; //todo: compile this guy just like the others below
+    private String successResponse = null;
     private String extractSingleSuccessMessageId = null;
     private String extractSingleFailureMessage = null;
     private String extractGeneralFailureMessage = null;

@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-import static ch.lambdaj.Lambda.sort;
-import static java.util.Collections.reverseOrder;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.DeliveryStatus.DELIVERY_CONFIRMED;
 import static org.motechproject.sms.audit.DeliveryStatus.DISPATCHED;
@@ -36,7 +34,8 @@ import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsFailureEvent;
 import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsSuccessEvent;
 
 /**
- * todo
+ * Handles message delivery status updates sent by sms providers to
+ * {motechserver}/motech-platform-server/module/sms/status{Config}
  */
 @Controller
 @RequestMapping(value = "/status")

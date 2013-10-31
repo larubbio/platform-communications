@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * todo
+ * How providers deal with incoming messages
  */
 public class Incoming {
     private String messageKey;

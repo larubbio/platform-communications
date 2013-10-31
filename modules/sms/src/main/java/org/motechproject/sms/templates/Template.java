@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * todo
+ * Models how we can talk to a specific SMS provider
  */
 public class Template {
 

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+/**
+ * handles requests to {server}/motech-platform-server/module/sms/send: how the Send SMS dialog sends a message
+ */
 @Controller
 public class SendController {
     private SmsService smsService;
@@ -23,7 +26,8 @@ public class SendController {
     @ResponseBody
     public String sendSms(@RequestBody OutgoingSms outgoingSms) {
         smsService.send(outgoingSms);
-        return String.format("The SMS to %s via the %s SMS provider was added to the message queue.", outgoingSms.getRecipients().toString(), outgoingSms.getConfig());
+        return String.format("SMS to %s using the %s config was added to the message queue.",
+                outgoingSms.getRecipients().toString(), outgoingSms.getConfig());
     }
 
     @ExceptionHandler(Exception.class)

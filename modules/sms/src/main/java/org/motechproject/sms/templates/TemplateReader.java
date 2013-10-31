@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * todo
+ * Reads template info from sms-templates.json into a list of Template objects
  */
 @Component
 public class TemplateReader {

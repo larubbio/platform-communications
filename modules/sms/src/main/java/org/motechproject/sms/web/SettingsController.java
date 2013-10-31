@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
 
-//todo: find a way to report useful information to implementers who drop in malformed templates
+//todo: find a way to report useful information if encountering malformed templates?
 
+/**
+ * Sends templates to the UI, sends & received configs to/from the UI.
+ */
 @Controller
 public class SettingsController {
     private SettingsFacade settingsFacade;

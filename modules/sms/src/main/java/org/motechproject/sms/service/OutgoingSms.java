@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
+/**
+ * An outgoing SMS
+ */
 public class OutgoingSms {
     private List<String> recipients;
     private String message;
@@ -156,8 +158,14 @@ public class OutgoingSms {
 
     @Override
     public String toString() {
-        return String.format(
-            "Sms{config='%s', recipients='%s', message='%s', motechId='%s', providerId='%s', deliveryTime='%s', failureCount='%d'}",
-            config, recipients, message.replace("\n", "\\n"), motechId, providerId, deliveryTime, failureCount);
+        return "OutgoingSms{" +
+                "recipients=" + recipients +
+                ", message='" + message + '\'' +
+                ", config='" + config + '\'' +
+                ", deliveryTime=" + deliveryTime +
+                ", failureCount=" + failureCount +
+                ", motechId='" + motechId + '\'' +
+                ", providerId='" + providerId + '\'' +
+                '}';
     }
 }

@@ -3,7 +3,7 @@ package org.motechproject.sms.templates;
 import java.util.List;
 
 /**
- * todo
+ * A simplified form of the template class used in the web settings UI
  */
 public class TemplateForWeb {
     private String name;

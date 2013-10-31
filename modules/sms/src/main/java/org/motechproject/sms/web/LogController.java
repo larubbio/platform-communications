@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * todo
+ * Returns a list of sms audit records to the UI (which queried the server @
+ * {server}/motech-platform-server/module/sms/log
  */
 @Controller
 public class LogController {

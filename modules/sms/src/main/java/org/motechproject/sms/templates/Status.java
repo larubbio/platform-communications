@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * todo
+ * How to interpret provider-specific response statuses
  */
 public class Status {
     private String messageIdKey;

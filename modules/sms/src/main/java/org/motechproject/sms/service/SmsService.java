@@ -1,8 +1,11 @@
 package org.motechproject.sms.service;
 
-//todo: implement per-message locale?
-//todo: using configs for now, but that's not elegant, right?
+//todo: Implement per-message locale
+//todo: You can use configs for now, but that's not elegant. Right?
 
+/**
+ * Send an SMS
+ */
 public interface SmsService {
     void send(final OutgoingSms message);
 }

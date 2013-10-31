@@ -3,7 +3,7 @@ package org.motechproject.sms.templates;
 import java.util.*;
 
 /**
- * todo
+ * Helper template collection
  */
 public class Templates {
     private Map<String, Template> templates = new HashMap<String, Template>();

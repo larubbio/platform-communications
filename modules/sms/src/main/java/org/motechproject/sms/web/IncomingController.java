@@ -27,7 +27,8 @@ import static org.motechproject.sms.audit.SmsType.INBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
 
 /**
- * todo
+ * Handles http requests to {motechserver}/motech-platform-server/module/sms/incoming{Config} sent by sms providers
+ * when they receive an SMS
  */
 @Controller
 @RequestMapping(value = "/incoming")

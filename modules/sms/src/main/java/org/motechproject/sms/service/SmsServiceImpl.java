@@ -32,7 +32,7 @@ import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
 //todo: final pass over how we use motechId system-wide
 
 /**
- * todo
+ * Send an SMS
  */
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {

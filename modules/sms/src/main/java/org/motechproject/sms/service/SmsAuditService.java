@@ -6,6 +6,9 @@ import org.motechproject.sms.audit.SmsRecords;
 
 import java.util.List;
 
+/**
+ * Reading and writing to the SMS audit log
+ */
 public interface SmsAuditService {
 
     void log(SmsRecord smsRecord);

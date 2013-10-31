@@ -1,7 +1,7 @@
 package org.motechproject.sms.templates;
 
 /**
- * todo
+ * How providers deal with outgoing messages
  */
 public class Outgoing {
     private Request request;
