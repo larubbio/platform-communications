@@ -4,9 +4,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.date.util.DateUtil;
 
 /**
- * todo
+ * Represents one SMS record in the logging UI
  */
-public class SmsLoggingDto {
+public class SmsLoggingRecord {
 
     private String config;
     private String phoneNumber;
@@ -19,12 +19,14 @@ public class SmsLoggingDto {
     private String providerId;
     private String errorMessage;
 
-    public SmsLoggingDto(SmsRecord record) {
+    public SmsLoggingRecord(SmsRecord record) {
         this.config = record.getConfig();
         this.phoneNumber = record.getPhoneNumber();
         this.smsType = record.getSmsType().toString();
         // DateUtil.setTimeZone converts the message time from UTC to local time for display
-        this.timestamp = DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(record.getTimestamp()));
+        this.timestamp = DateTimeFormat.forPattern("Y-MM-dd hh:mm:ss").print(DateUtil.setTimeZone(
+                record.getTimestamp()));                                //todo: providerDeliveryStatus & motechDeliveryStatus instead of deliveryStatus
+
         this.deliveryStatus = record.getDeliveryStatus().toString();
         this.providerStatus = record.getProviderStatus();
         this.messageContent = record.getMessageContent();
@@ -115,7 +117,7 @@ public class SmsLoggingDto {
 
     @Override
     public String toString() {
-        return "SmsLoggingDto{" +
+        return "SmsLoggingRecord{" +
                 "config='" + config + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", smsType='" + smsType + '\'' +

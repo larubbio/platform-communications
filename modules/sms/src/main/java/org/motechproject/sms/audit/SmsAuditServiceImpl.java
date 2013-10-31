@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * SMS audit (logging) records - reading & writing from the database
+ */
 @Service
 public class SmsAuditServiceImpl implements SmsAuditService {
 

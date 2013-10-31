@@ -3,7 +3,8 @@ package org.motechproject.sms.configs;
 import java.util.List;
 
 /**
- * todo
+ * A connection to a particular SMS provider, there may be more than one config for a given provider and/or multiple
+ * connections to multiple providers. But realistically, most implementations will have one config.
  */
 public class Config {
     private String name;

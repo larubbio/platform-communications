@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 /**
- * todo
+ * Helper used to generate lucene query from log filter UI
  */
 public class SmsRecordSearchCriteria {
 

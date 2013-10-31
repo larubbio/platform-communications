@@ -1,7 +1,7 @@
 package org.motechproject.sms.configs;
 
 /**
- * todo
+ * Provider-specific properties. ie: Clickatell api_key, most will have at least username & password
  */
 public class ConfigProp {
     private String name;

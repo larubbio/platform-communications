@@ -14,6 +14,8 @@
         $scope.messages = [];
         $scope.error = "";
 
+
+//todo: remove that testing code, please
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,9 +104,16 @@
 
         $http.get('../sms/configs')
             .success(function(response){
+                var i;
                 $scope.config = response;
                 $scope.originalConfig = angular.copy($scope.config);
                 setAccordions($scope.config.configs);
+                for (i=0 ; i< response.configs.length ; i = i + 1) {
+                    if (response.defaultConfigName === response.configs[i].name) {
+                        $scope.defaultConfigIndex = i;
+                        break;
+                    }
+                }
             })
             .error(function(response) {
                 $scope.errors.push($scope.msg('sms.settings.validate.no_config', response));
@@ -117,8 +126,7 @@
             }
         };
 
-        /* TODO: FIX!
-
+        /*  TODO
             This replaces the configuration's properties with the ones from the selected template.
             Do we want to 'remember' the old template properties in case the user chooses to select the old template
             back from the dropdown?
@@ -140,7 +148,17 @@
             }
             if ($scope.config.configs.length > 0) {
                 $scope.config.defaultConfig = $scope.config.configs[0].name;
+                $scope.defaultConfigIndex = 0;
             }
+        };
+
+        $scope.setDefaultConfig = function(name, index) {
+            $scope.config.defaultConfigName = name;
+            $scope.defaultConfigIndex = index;
+        };
+
+        $scope.keepDefaultConfig = function() {
+            $scope.config.defaultConfigName = $scope.config.configs[$scope.defaultConfigIndex].name;
         };
 
         $scope.deleteConfig = function(index) {

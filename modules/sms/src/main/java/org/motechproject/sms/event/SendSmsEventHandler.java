@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * When another module sends an SMS, it calls SmsService.send, which in turn sends one or more SEND_SMS events which
+ * are handled here and passed straight through to to SmsHttpService.send
+ */
 @Service
 public class SendSmsEventHandler {
 

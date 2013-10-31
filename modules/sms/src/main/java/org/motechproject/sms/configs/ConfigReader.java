@@ -8,6 +8,11 @@ import org.springframework.core.io.ByteArrayResource;
 
 import java.io.InputStream;
 
+//todo: switch to the new config services.
+
+/**
+ * Reading & writing configurations from the sms-configs.json file
+ */
 public class ConfigReader {
     public static final String SMS_CONFIGS_FILE_NAME = "sms-configs.json";
     private SettingsFacade settingsFacade;
@@ -25,10 +30,8 @@ public class ConfigReader {
         try {
             String jsonText = IOUtils.toString(is);
             Gson gson = new Gson();
-            //Type type = new TypeToken<Map<String, Config>>() {}.getType();
             configs = gson.fromJson(jsonText, Configs.class);
         } catch (Exception e) {
-            //todo: what do we do with these? (might be coming from malformed .json config file)
             throw new JsonIOException("Might you have a malformed " + SMS_CONFIGS_FILE_NAME + " file? " + e.toString());
         }
         return configs;
@@ -36,10 +39,9 @@ public class ConfigReader {
 
     public void setConfigs(Configs configs) {
 
-        //todo: validate settingsDto here ?
+        //todo: validate ?
 
         Gson gson = new Gson();
-        //Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
         String jsonText = gson.toJson(configs, Configs.class);
         ByteArrayResource resource = new ByteArrayResource(jsonText.getBytes());
         settingsFacade.saveRawConfig(SMS_CONFIGS_FILE_NAME, resource);

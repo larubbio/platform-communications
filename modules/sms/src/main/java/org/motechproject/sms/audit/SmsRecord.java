@@ -1,7 +1,6 @@
 package org.motechproject.sms.audit;
 
 //todo: motechTimestanp & providerTimestamp instead of just timestamp?
-//todo: providerDeliveryStatus & motechDeliveryStatus instead of deliveryStatus
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -9,6 +8,9 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
 
+/**
+ * SMS audit record for the database
+ */
 @TypeDiscriminator("doc.type === 'SmsRecord'")
 public class SmsRecord extends MotechBaseDataObject {
 

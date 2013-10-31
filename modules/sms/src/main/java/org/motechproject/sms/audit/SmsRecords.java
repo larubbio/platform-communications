@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * SMS audit records from the database
+ */
 public class SmsRecords implements Serializable {
 
     private static final long serialVersionUID = -1584588569625856505L;

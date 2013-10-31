@@ -25,6 +25,9 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Used to query the audit records in the database
+ */
 @Repository
 public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord> {
 
@@ -105,13 +108,6 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
             count = result.getTotalRows();
         }
         return new SmsRecords(count, smsRecords);
-    }
-
-    //TODO: Create Base class and move it to there.
-    public void removeAll() {
-        for (SmsRecord smsRecord : getAll()) {
-            remove(smsRecord);
-        }
     }
 
     @Autowired

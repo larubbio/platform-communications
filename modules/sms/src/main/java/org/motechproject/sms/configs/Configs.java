@@ -5,11 +5,11 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.util.List;
 
 //
-//todo: expose list of configs as task action parameter values to send_sms
+//todo: expose list of configs as task action parameter values to send_sms?
 //
 
 /**
- * todo
+ * Represents all configs as well as the default config, ie: sms-config.json
  */
 public class Configs {
     private String defaultConfigName;

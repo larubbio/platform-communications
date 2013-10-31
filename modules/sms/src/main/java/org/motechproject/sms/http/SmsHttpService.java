@@ -32,6 +32,9 @@ import static org.motechproject.sms.audit.DeliveryStatus.*;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.*;
 
+/**
+ * This is the main meat - here we talk to the providers using HTTP
+ */
 @Service
 public class SmsHttpService {
 
@@ -43,15 +46,13 @@ public class SmsHttpService {
     private HttpClient commonsHttpClient;
     private MotechSchedulerService schedulerService;
     private SmsAuditService smsAuditService;
-    @Autowired
     private PlatformSettingsService settingsService;
-
-    //todo: which @Autowired to use?
 
     @Autowired
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
                           HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
-                          TemplateReader templateReader, SmsAuditService smsAuditService) {
+                          TemplateReader templateReader, SmsAuditService smsAuditService,
+                          PlatformSettingsService settingsService) {
 
         //todo: unified module-wide caching & refreshing strategy
         configReader = new ConfigReader(settingsFacade);
@@ -61,6 +62,7 @@ public class SmsHttpService {
         this.commonsHttpClient = commonsHttpClient;
         this.schedulerService = schedulerService;
         this.smsAuditService = smsAuditService;
+        this.settingsService = settingsService;
     }
 
     static private String printableMethodParams(HttpMethod method) {
