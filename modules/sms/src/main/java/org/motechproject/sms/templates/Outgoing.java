@@ -28,7 +28,7 @@ public class Outgoing {
         this.response = response;
     }
 
-    public Boolean getHasAuthentication() {
+    public Boolean hasAuthentication() {
         return hasAuthentication;
     }
 

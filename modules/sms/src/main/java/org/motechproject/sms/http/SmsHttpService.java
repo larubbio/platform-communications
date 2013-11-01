@@ -7,10 +7,10 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigProp;
@@ -18,14 +18,20 @@ import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.service.OutgoingSms;
 import org.motechproject.sms.service.SmsAuditService;
-import org.motechproject.sms.templates.*;
+import org.motechproject.sms.templates.Response;
+import org.motechproject.sms.templates.Template;
+import org.motechproject.sms.templates.TemplateReader;
+import org.motechproject.sms.templates.Templates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.DeliveryStatus.*;
@@ -42,27 +48,24 @@ public class SmsHttpService {
     private ConfigReader configReader;
     private Configs configs;
     private Templates templates;
+    @Autowired
     private EventRelay eventRelay;
+    @Autowired
     private HttpClient commonsHttpClient;
+    @Autowired
     private MotechSchedulerService schedulerService;
+    @Autowired
     private SmsAuditService smsAuditService;
-    private PlatformSettingsService settingsService;
+    @Autowired
+    ConfigurationService configurationService;
 
     @Autowired
-    public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, EventRelay eventRelay,
-                          HttpClient commonsHttpClient, MotechSchedulerService schedulerService,
-                          TemplateReader templateReader, SmsAuditService smsAuditService,
-                          PlatformSettingsService settingsService) {
+    public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, TemplateReader templateReader) {
 
         //todo: unified module-wide caching & refreshing strategy
         configReader = new ConfigReader(settingsFacade);
         configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
-        this.eventRelay = eventRelay;
-        this.commonsHttpClient = commonsHttpClient;
-        this.schedulerService = schedulerService;
-        this.smsAuditService = smsAuditService;
-        this.settingsService = settingsService;
     }
 
     static private String printableMethodParams(HttpMethod method) {
@@ -101,7 +104,7 @@ public class SmsHttpService {
         props.put("recipients", template.recipientsAsString(sms.getRecipients()));
         props.put("message", sms.getMessage());
         props.put("motechId", sms.getMotechId());
-        props.put("callback", settingsService.getPlatformSettings().getServerUrl() + "/module/sms/status/" +
+        props.put("callback", configurationService.getPlatformSettings().getServerUrl() + "/module/sms/status/" +
                 config.getName());
 
         for (ConfigProp configProp : config.getProps()) {
@@ -109,8 +112,7 @@ public class SmsHttpService {
         }
 
         // ***** WARNING *****
-        // This displays usernames & passwords in the server log
-        // But then again, so does the settings UI...
+        // This displays usernames & passwords in the server log! But then again, so does the settings UI...
         // ***** WARNING *****
         if (logger.isDebugEnabled()) {
             for (String key : props.keySet()) {
@@ -121,12 +123,27 @@ public class SmsHttpService {
         try {
             httpMethod = template.generateRequestFor(props);
             logger.debug(printableMethodParams(httpMethod));
-            if (template.getOutgoing().getHasAuthentication()) {
-                //todo: check if we have a user/pass and log error if not?
-                String u = props.get("username");
-                String p = props.get("password");
-                commonsHttpClient.getParams().setAuthenticationPreemptive(true);
-                commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(u, p));
+            if (template.getOutgoing().hasAuthentication()) {
+                if (props.containsKey("username") && props.containsKey("password")) {
+                    String u = props.get("username");
+                    String p = props.get("password");
+                    commonsHttpClient.getParams().setAuthenticationPreemptive(true);
+                    commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(u, p));
+                }
+                else {
+                    if (props.containsKey("username")) {
+                        throw new IllegalStateException(String.format("Config %s: missing password",
+                                config.getName()));
+                    }
+                    else if (props.containsKey("password")) {
+                        throw new IllegalStateException(String.format("Config %s: missing username",
+                                config.getName()));
+                    }
+                    else {
+                        throw new IllegalStateException(String.format("Config %s: missing username and password",
+                                config.getName()));
+                    }
+                }
             }
 
             httpStatus = commonsHttpClient.executeMethod(httpMethod);
