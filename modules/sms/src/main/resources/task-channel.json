@@ -1,0 +1,138 @@
+{
+    "displayName": "sms.task.name",
+    "moduleName": "${project.artifactId}",
+    "moduleVersion": "${parsedVersion.osgiVersion}",
+    "triggerTaskEvents" : [
+                              {
+                                "displayName" : "sms.task.trigger.outbound-success.name",
+                                "subject" : "outbound_sms_success",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "config",
+                                    "displayName" : "sms.task.trigger.outbound-success.config"
+                                  },
+                                  {
+                                    "eventKey" : "recipients",
+                                    "displayName" : "sms.task.trigger.outbound-success.recipients"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.task.trigger.outbound-success.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.task.trigger.outbound-success.message-id"
+                                  },
+                                  {
+                                    "eventKey" : "reference_id",
+                                    "displayName" : "sms.task.trigger.outbound-success.reference-id"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "type" : "DATE",
+                                    "displayName" : "sms.task.trigger.outbound-success.timestamp"
+                                  }
+                                ]
+                              },
+                              {
+                                "displayName" : "sms.task.trigger.outbound-failure.name",
+                                "subject" : "outbound_sms_failure",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "config",
+                                    "displayName" : "sms.task.trigger.outbound-failure.config"
+                                  },
+                                  {
+                                    "eventKey" : "recipients",
+                                    "displayName" : "sms.task.trigger.outbound-failure.recipients"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.task.trigger.outbound-failure.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.task.trigger.outbound-failure.message-id"
+                                  },
+                                  {
+                                    "eventKey" : "status",
+                                    "displayName" : "sms.task.trigger.outbound-failure.status"
+                                  },
+                                  {
+                                    "eventKey" : "error_message",
+                                    "displayName" : "sms.task.trigger.outbound-failure.error-message"
+                                  },
+                                  {
+                                    "eventKey" : "reference_id",
+                                    "displayName" : "sms.task.trigger.outbound-failure.reference-id"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "type" : "DATE",
+                                    "displayName" : "sms.task.trigger.outbound-failure.timestamp"
+                                  }
+                                ]
+                              },
+                              {
+                                "displayName" : "sms.task.trigger.inbound.name",
+                                "subject" : "inbound_sms",
+                                "eventParameters" : [
+                                  {
+                                    "eventKey" : "config",
+                                    "displayName" : "sms.task.trigger.inbound.config"
+                                  },
+                                  {
+                                    "eventKey" : "sender",
+                                    "displayName" : "sms.task.trigger.inbound.sender"
+                                  },
+                                  {
+                                    "eventKey" : "sender",
+                                    "displayName" : "sms.task.trigger.inbound.sender"
+                                  },
+                                  {
+                                    "eventKey" : "recipient",
+                                    "displayName" : "sms.task.trigger.inbound.recipient"
+                                  },
+                                  {
+                                    "eventKey" : "message",
+                                    "displayName" : "sms.task.trigger.inbound.message"
+                                  },
+                                  {
+                                    "eventKey" : "message_id",
+                                    "displayName" : "sms.task.trigger.inbound.message-id"
+                                  },
+                                  {
+                                    "eventKey" : "timestamp",
+                                    "displayName" : "sms.task.trigger.inbound.timestamp"
+                                  }
+                                ]
+                              }
+                            ],
+    "actionTaskEvents": [
+                            {
+                              "displayName" : "sms.task.action.send",
+                              "subject" : "send_sms",
+                              "actionParameters" : [
+                                {
+                                  "key" : "config",
+                                  "displayName" : "sms.task.action.send.config"
+                                },
+                                {
+                                  "key" : "recipients",
+                                  "type" : "LIST",
+                                  "displayName" : "sms.task.action.send.recipients"
+                                },
+                                {
+                                  "key" : "message",
+                                  "displayName" : "sms.task.action.send.message"
+                                },
+                                {
+                                  "key" : "delivery_time",
+                                  "type" : "DATE",
+                                  "displayName" : "sms.task.action.send.delivery-time",
+                                  "required": false
+                                }
+                              ]
+                            }
+                          ]
+}

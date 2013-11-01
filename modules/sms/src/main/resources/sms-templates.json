@@ -1,0 +1,256 @@
+[
+    {
+        "name":"Clickatell",
+		"requires": [
+			"username",
+			"password",
+			"clickatell_api_id",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "maxRecipient":"3",
+            "millisecondsBetweenMessages":"1",
+            "hasAuthentication":"false",
+            "request":{
+                "type":"POST",
+                "urlPath":"http://api.clickatell.com/http/sendmsg",
+                "recipientsSeparator":",",
+                "bodyParameters":{
+                    "mo":"1",
+                    "callback":"3",
+                    "climsgid":"[motechId]",
+                    "user":"[username]",
+                    "password":"[password]",
+                    "api_id":"[api_id]",
+                    "from":"[from]",
+                    "to":"[recipients]",
+                    "text":"[message]"
+                }
+            },
+            "response":{
+                "multiLineRecipientResponse": "true",
+                "singleRecipientResponse": "true",
+                "extractSingleSuccessMessageId":  "^ID: ([0-9a-zA-Z]+)$",
+                "extractSingleFailureMessage":  "^ERR: (.*)$",
+                "extractSuccessMessageIdAndRecipient": "^ID: ([0-9a-zA-Z]+) To: ([0-9]+)$",
+                "extractFailureMessageAndRecipient": "^ERR: (.*) To: ([0-9]+)$"
+            }
+        },
+        "status":{
+            "messageIdKey": "apiMsgId",
+            "statusKey": "status",
+            "statusSuccess" : "003|004|008",
+            "statusFailure" : "005|006|007|009|010|012|014"
+        },
+        "incoming":{
+            "messageKey": "text",
+            "senderKey": "from",
+            "recipientKey": "to",
+            "msgIdKey": "moMsgId",
+            "timestampKey": "timestamp"
+        }
+    },
+    {
+        "name":"Nuntium",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "maxRecipient":"1",
+            "millisecondsBetweenMessages":"1",
+            "hasAuthentication":"true",
+            "request":{
+                "type":"POST",
+                "urlPath":"http://nuntium.instedd.org/[username]/send_ao",
+                "bodyParameters":{
+                    "from":"sms://[from]",
+                    "to":"sms://[recipients]",
+                    "body":"[message]",
+                    "guid":"[motechId]"
+                }
+            },
+            "response":{
+                "successStatus": "200",
+                "headerMessageId": "X-Nuntium-Guid"
+            }
+        },
+        "status":{
+            "messageIdKey": "guid",
+            "statusKey": "state",
+            "statusFailure": "failed",
+            "statusSuccess": "confirmed"
+        },
+        "incoming":{
+            "messageKey": "body",
+            "senderKey": "from",
+            "senderRegex": "sms://1\\+(\\d+)",
+            "recipientKey": "to",
+            "recipientRegex": "sms://1\\+(\\d+)",
+            "msgIdKey": "guid"
+        }
+    },
+    {
+        "name":"Plivo",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"POST",
+                "jsonContentType":"true",
+                "urlPath":"https://api.plivo.com/v1/Account/[username]/Message/",
+                "millisecondsBetweenMessages":"1",
+                "bodyParameters":{
+                    "src":"[from]",
+                    "dst":"[recipients]",
+                    "text":"[message]",
+                    "url":"[callback]"
+                }
+            },
+            "response":{
+                "successStatus": "202",
+                "successResponse": ".*\\\"message_uuid\\\": \\[\\n\\W*\\\"[a-z0-9-]*\\\"\\W*\\].*",
+                "multiLineRecipientResponse": "false",
+                "extractSingleSuccessMessageId": ".*\\\"message_uuid\\\": \\[\\n\\W*\\\"([a-z0-9-]*)\\\"\\W*\\].*",
+                "extractGeneralFailureMessage": ".*\\\"error\\\": \\\"([^\\\"]*)\\\".*"
+            }
+        },
+        "status":{
+            "messageIdKey": "MessageUUID",
+            "statusKey": "Status",
+            "statusFailure": "failed|undelivered|rejected",
+            "statusSuccess": "sent"
+        },
+        "incoming":{
+            "messageKey": "MessageUUID",
+            "senderKey": "From",
+            "messageKey": "Text",
+            "recipientKey": "To"
+        }
+    },
+    {
+        "name":"Rancard",
+		"requires": [
+			"username",
+			"password",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"GET",
+                "urlPath":"https://app.rancardmobility.com/rmcs/sendMessage.jsp",
+                "recipientsSeparator":",",
+                "millisecondsBetweenMessages":"1",
+                "queryParameters":{
+                    "from":"[from]",
+                    "to":"[recipients]",
+                    "text":"[message]",
+                    "username":"[username]",
+                    "password":"[password]"
+                }
+            },
+            "response":{
+                "successResponse": "000\\s*",
+                "extractSingleFailureMessage": "(\\d*)\\s*"
+            }
+        },
+        "status":{
+        },
+        "incoming":{
+            "messageKey": "msg",
+            "senderKey": "msisdn",
+            "recipientKey": "dest"
+        }
+    },
+    {
+        "name":"Twilio",
+		"requires": [
+			"username",
+			"password"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "hasAuthentication":"true",
+            "maxRecipient":"1",
+            "request":{
+                "type":"POST",
+                "urlPath":"https://api.twilio.com/2010-04-01/Accounts/[username]/Messages",
+                "recipientsSeparator":",",
+                "millisecondsBetweenMessages":"1",
+                "bodyParameters":{
+                    "From":"[from]",
+                    "To":"[recipients]",
+                    "Body":"[message]",
+                    "StatusCallback":"[callback]"
+                }
+            },
+            "response":{
+                "successStatus": "201",
+                "successResponse": ".*\n<TwilioResponse><Message><Sid>[a-zA-Z0-9]+</Sid>.*",
+                "multiLineRecipientResponse": "false",
+                "extractSingleSuccessMessageId":"<Sid>([a-zA-Z0-9]+)</Sid>.*",
+                "extractGeneralFailureMessage": "<TwilioResponse><RestException><Status>.*</Status><Message>(.*)</Message>.*"
+            }
+        },
+        "status":{
+            "messageIdKey": "SmsSid",
+            "statusKey": "SmsStatus",
+            "statusSuccess": "sent"
+        },
+        "incoming":{
+            "messageKey": "SmsSid",
+            "senderKey": "From",
+            "messageKey": "Body",
+            "recipientKey": "To"
+        }
+    },
+    {
+        "name":"Voxeo",
+		"requires": [
+			"username",
+			"password",
+			"botkey",
+			"from"
+		],
+        "outgoing":{
+            "msxSmsSize":"160",
+            "millisecondsBetweenMessages":"6000",
+            "maxRecipient":"1",
+            "hasAuthentication":"true",
+            "request":{
+                "type":"POST",
+                "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+                "bodyParameters":{
+                    "user":"[recipients]",
+                    "msg":"[message]",
+                    "botkey":"[botkey]",
+                    "apimethod":"send",
+                    "network":"SMS",
+                    "from":"[from]"
+                }
+            },
+            "response":{
+                "multiLineRecipientResponse": "false",
+                "successResponse":"^<rsp stat=\"ok\">\\W<success msg=\"[^\\\"]*\" transactionid=\"[0-9a-z]*\" messageid=\"[0-9a-z]*\"/>\\W</rsp>$",
+                "extractSingleSuccessMessageId": "^<rsp stat=\"ok\">\\W<success msg=\"[^\\\"]*\" transactionid=\"[0-9a-z]*\" messageid=\"([0-9a-z]*)\"/>\\W</rsp>$",
+                "extractSingleFailureMessage": "^<rsp stat=\"fail\">\\W<err msg=\"([^\\\"]*)\"/>\\W</rsp>$"
+            }
+        },
+        "status":{
+        },
+        "incoming":{
+        }
+    }
+]
