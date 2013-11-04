@@ -3,6 +3,7 @@ package org.motechproject.sms.web;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.audit.DeliveryStatus;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.DeliveryStatus.RECEIVED;
 import static org.motechproject.sms.audit.SmsType.INBOUND;
 import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
 
@@ -113,7 +113,7 @@ public class IncomingController {
         eventRelay.sendEventMessage(makeInboundSmsEvent(config.getName(), sender, recipient, message, messageId,
                 timestamp));
 
-        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), RECEIVED, null, null,
-            messageId, null));
+        smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), DeliveryStatus.RECEIVED,
+                null, null, messageId, null));
     }
 }

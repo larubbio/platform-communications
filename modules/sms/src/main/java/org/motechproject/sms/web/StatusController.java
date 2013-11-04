@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
@@ -30,8 +31,7 @@ import static org.motechproject.sms.audit.DeliveryStatus.DELIVERY_CONFIRMED;
 import static org.motechproject.sms.audit.DeliveryStatus.DISPATCHED;
 import static org.motechproject.sms.audit.DeliveryStatus.FAILURE_CONFIRMED;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
-import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsFailureEvent;
-import static org.motechproject.sms.event.SmsEvents.makeOutboundSmsSuccessEvent;
+import static org.motechproject.sms.event.SmsEvents.*;
 
 /**
  * Handles message delivery status updates sent by sms providers to
@@ -120,28 +120,37 @@ public class StatusController {
                 }
 
                 if (statusString != null) {
+                    String eventSubject;
                     if (statusString.matches(status.getStatusSuccess())) {
                         smsRecord.setDeliveryStatus(DELIVERY_CONFIRMED);
+                        eventSubject = OUTBOUND_SMS_DELIVERY_CONFIRMED;
                     }
                     else if (status.hasStatusFailure() && statusString.matches(status.getStatusFailure())) {
                         smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
+                        eventSubject = OUTBOUND_SMS_FAILURE_CONFIRMED;
                     }
                     else {
                         smsRecord.setDeliveryStatus(DISPATCHED);
+                        eventSubject = OUTBOUND_SMS_DISPATCHED;
                     }
-                    eventRelay.sendEventMessage(makeOutboundSmsSuccessEvent(configName, null, null, null, providerId,
-                            now(), null));
+                    eventRelay.sendEventMessage(makeOutboundSmsEvent(eventSubject, configName,
+                            Arrays.asList(new String[]{smsRecord.getPhoneNumber()}), smsRecord.getMessageContent(),
+                            smsRecord.getMotechId(), providerId, now(), null, statusString));
                 }
                 else {
-                    //todo: FAILURE_CONFIRMED or UNKNOWN???
+                    logger.error("Likely template error, unable to extract status string. Config: {}, Parameters: {}",
+                            configName, params);
                     smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
-                    eventRelay.sendEventMessage(makeOutboundSmsFailureEvent(configName, null, null, null, providerId,
-                            now(), null));
+                    eventRelay.sendEventMessage(makeOutboundSmsEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName,
+                            Arrays.asList(new String[]{smsRecord.getPhoneNumber()}), smsRecord.getMessageContent(),
+                            smsRecord.getMotechId(), providerId, now(), null));
                 }
 
                 smsAuditService.log(smsRecord);
             }
             else {
+                logger.error("We have a message id, but don't know how to extract message status, this is most likely a template error. Config: {}, Parameters: {}",
+                        configName, params);
                 //todo: we have a message but no way to know about its status, what do we do???
             }
         }
