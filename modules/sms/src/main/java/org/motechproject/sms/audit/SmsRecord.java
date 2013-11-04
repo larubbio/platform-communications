@@ -1,6 +1,7 @@
 package org.motechproject.sms.audit;
 
 //todo: motechTimestanp & providerTimestamp instead of just timestamp?
+//todo: 'senderNumber' & 'recipientNumber' instead of 'phoneNumber'?
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
