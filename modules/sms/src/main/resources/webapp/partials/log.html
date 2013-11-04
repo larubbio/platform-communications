@@ -14,7 +14,14 @@
         <div class="inside">
 
             <div class="row-fluid">
-                <div class="span3">
+                <div class="span2">
+                    <fieldset class="inside"><legend>{{msg('sms.log.config')}}</legend>
+                        <div class="control-group form-inline">
+                            <input type="text" class="input-medium search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="config" jqgrid-search="resourceTable">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="span2">
                     <fieldset class="inside"><legend>{{msg('sms.log.phoneNumber')}}</legend>
                         <div class="control-group form-inline">
                             <input type="text" class="input-medium search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="phoneNumber" jqgrid-search="resourceTable">
@@ -24,15 +31,15 @@
                 <div class="span3">
                     <fieldset class="inside"><legend>{{msg('sms.log.message')}}</legend>
                         <div class="control-group form-inline">
-                            <input type="text" class="span12 search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="messageContent" jqgrid-search="resourceTable">
+                            <input type="text" class="input-large search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="messageContent" jqgrid-search="resourceTable">
                         </div>
                     </fieldset>
                 </div>
-                <div class="span6">
+                <div class="span4">
                     <fieldset class="inside"><legend>{{msg('sms.log.timestamp')}}</legend>
                         <div class="control-group form-inline">
-                            <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="span6 search-query" placeholder="{{msg('sms.log.from')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="resourceTable">
-                            <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="span6 search-query" placeholder="{{msg('sms.log.to')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="resourceTable">
+                            <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="input-medium search-query" placeholder="{{msg('sms.log.from')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="resourceTable">
+                            <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="input-medium search-query" placeholder="{{msg('sms.log.to')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="resourceTable">
                         </div>
                     </fieldset>
                 </div>
@@ -42,21 +49,21 @@
                 <div class="span3">
                     <fieldset class="inside"><legend>{{msg('sms.log.motechId')}}</legend>
                         <div class="control-group form-inline">
-                            <input type="text" class="input-medium search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="motechId" jqgrid-search="resourceTable">
+                            <input type="text" class="input-large search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="motechId" jqgrid-search="resourceTable">
                         </div>
                     </fieldset>
                 </div>
                 <div class="span3">
                     <fieldset class="inside"><legend>{{msg('sms.log.providerId')}}</legend>
                         <div class="control-group form-inline">
-                            <input type="text" class="span12 search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerId" jqgrid-search="resourceTable">
+                            <input type="text" class="input-large search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerId" jqgrid-search="resourceTable">
                         </div>
                     </fieldset>
                 </div>
                 <div class="span3">
                     <fieldset class="inside"><legend>{{msg('sms.log.providerStatus')}}</legend>
                         <div class="control-group form-inline">
-                            <input type="text" class="span12 search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerStatus" jqgrid-search="resourceTable">
+                            <input type="text" class="input-large search-query" placeholder="{{msg('sms.log.search')}}" data-event-type="keyup" data-search-field="providerStatus" jqgrid-search="resourceTable">
                         </div>
                     </fieldset>
                 </div>

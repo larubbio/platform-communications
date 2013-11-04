@@ -105,3 +105,23 @@ input.ng-invalid:focus {
     background-image: none;
     background-color: #8ECEFE;
 }
+
+.sms legend {
+    border: medium none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.sms legend + .control-group {
+    margin-top: 2px;
+}
+
+.sms .btn-group > .btn.active {
+    z-index: 1;
+}
