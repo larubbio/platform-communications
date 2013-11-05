@@ -1,4 +1,4 @@
-package org.motechproject.sms.service;
+package org.motechproject.sms.audit;
 
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;

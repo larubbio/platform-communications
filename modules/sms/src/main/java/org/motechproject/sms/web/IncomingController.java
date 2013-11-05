@@ -8,7 +8,7 @@ import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.service.SmsAuditService;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;

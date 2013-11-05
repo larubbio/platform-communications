@@ -170,7 +170,7 @@
                 'maxRetries':parseInt($scope.msg('sms.settings.max_retries.default'), 10),
                 'splitHeader':$scope.msg('sms.settings.split_header.default'),
                 'splitFooter':$scope.msg('sms.settings.split_footer.default'),
-                'splitExcludeLastFooter':$scope.msg('sms.settings.split_exclude.default')
+                'excludeLastFooter':$scope.msg('sms.settings.split_exclude.default')
                 };
             newLength = $scope.config.configs.push(newConfig);
             $scope.accordions.push(true);
@@ -227,7 +227,7 @@
                 })
                 .error (function (response) {
                     //todo: better than that!
-                    handleWithStackTrace('sms.header.error', 'server.error', response);
+                    handleWithStackTrace('sms.error.header', 'sms.error.body', response);
                 });
         };
     });

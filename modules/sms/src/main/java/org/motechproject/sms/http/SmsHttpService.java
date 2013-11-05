@@ -17,7 +17,7 @@ import org.motechproject.sms.configs.ConfigProp;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
 import org.motechproject.sms.service.OutgoingSms;
-import org.motechproject.sms.service.SmsAuditService;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.templates.Response;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
@@ -172,21 +172,22 @@ public class SmsHttpService {
         }
 
         String msgForLog = sms.getMessage().replace("\n", "\\n");
-        Response resp = template.getOutgoing().getResponse();
+        Response templateResponse = template.getOutgoing().getResponse();
 
         if (!error) {
-            if ((resp.hasSuccessStatus() && (resp.checkSuccessStatus(httpStatus))) || httpStatus == 200) {
+            if ((templateResponse.hasSuccessStatus() && (templateResponse.checkSuccessStatus(httpStatus))) || //does this template know what success is & do we have success?
+                    (!templateResponse.hasSuccessStatus() && httpStatus == 200)) { //or do we just have generic success?
                 //
                 // analyze sms provider's response
                 //
-                if (resp.supportsMultiLineRecipientResponse()) {
+                if (templateResponse.supportsMultiLineRecipientResponse()) {
                     for (String responseLine : httpResponse.split("\\r?\\n")) {
                         // todo: as of now, assume all providers return one msgid & recipient per line
                         // todo: but if we discover a provider doesn't, we'll add code here...
 
                         // Some multi-line response providers have a special case for single recipients
-                        if (sms.getRecipients().size() == 1 && resp.supportsSingleRecipientResponse()) {
-                            String messageId = resp.extractSingleSuccessMessageId(responseLine);
+                        if (sms.getRecipients().size() == 1 && templateResponse.supportsSingleRecipientResponse()) {
+                            String messageId = templateResponse.extractSingleSuccessMessageId(responseLine);
                             if (messageId != null) {
                                 //
                                 // success
@@ -205,7 +206,7 @@ public class SmsHttpService {
                                 // failure
                                 //
                                 error = true;
-                                String failureMessage = resp.extractSingleFailureMessage(responseLine);
+                                String failureMessage = templateResponse.extractSingleFailureMessage(responseLine);
                                 logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                         sms.getRecipients().get(0), failureMessage));
                                 errorMessages.put(sms.getRecipients().get(0), failureMessage);
@@ -216,7 +217,7 @@ public class SmsHttpService {
                             }
                         }
                         else {
-                            String[] messageAndRecipient = resp.extractSuccessMessageIdAndRecipient(responseLine);
+                            String[] messageAndRecipient = templateResponse.extractSuccessMessageIdAndRecipient(responseLine);
 
                             if (messageAndRecipient != null) {
                                 //
@@ -236,13 +237,13 @@ public class SmsHttpService {
                                 // failure
                                 //
                                 error = true;
-                                messageAndRecipient = resp.extractFailureMessageAndRecipient(responseLine);
+                                messageAndRecipient = templateResponse.extractFailureMessageAndRecipient(responseLine);
                                 if (messageAndRecipient == null) {
                                     providerResponseParsingError = true;
                                     logger.error(String.format(
                                         "Failed to sent message '%s', likely config or template error: unable to parse provider's response: %s",
                                         msgForLog, responseLine));
-                                    //todo: do we really want to log that or is the tomcat log (above) sufficient??
+                                    //todo: do we really want to log that or is the tomcat log (above) sufficient?? YES LOG IT ALSO
                                     errorMessages.put("all", responseLine);
                                 }
                                 else {
@@ -255,10 +256,11 @@ public class SmsHttpService {
                         }
                     }
                 }
-                else if (resp.hasSuccessResponse() && !resp.checkSuccessResponse(httpResponse)) {
+                else if (templateResponse.hasSuccessResponse() &&
+                        !templateResponse.checkSuccessResponse(httpResponse)) {
                     error = true;
 
-                    String failureMessage = resp.extractSingleFailureMessage(httpResponse);
+                    String failureMessage = templateResponse.extractSingleFailureMessage(httpResponse);
                     if (failureMessage != null) {
                         logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                 sms.getRecipients().get(0), failureMessage));
@@ -267,39 +269,38 @@ public class SmsHttpService {
                         logger.error(String.format("Failed to sent message '%s' to %s: %s", msgForLog,
                                 sms.getRecipients().get(0), httpResponse));
                     }
-                    //todo audit ?
                 }
                 else {
                     //
                     // Either straight HTTP 200, or matched successful response
                     //
-                    String providerId;
+                    String providerMessageId;
 
-                    if (resp.hasHeaderMessageId()) {
-                        Header header = httpMethod.getResponseHeader(resp.getHeaderMessageId());
-                        providerId = header.getValue();
+                    if (templateResponse.hasHeaderMessageId()) {
+                        Header header = httpMethod.getResponseHeader(templateResponse.getHeaderMessageId());
+                        providerMessageId = header.getValue();
                     }
-                    else if (resp.hasSingleSuccessMessageId()) {
-                        providerId = resp.extractSingleSuccessMessageId(httpResponse);
+                    else if (templateResponse.hasSingleSuccessMessageId()) {
+                        providerMessageId = templateResponse.extractSingleSuccessMessageId(httpResponse);
                     }
                     else {
-                        //todo: think about that
-                        providerId = "UNKNOWN";
+                        //weird provider who responds but has no message id
+                        providerMessageId = "";
                     }
                 logger.info("SMS with message \"{}\" successfully routed to {}", msgForLog,
                         template.recipientsAsString(sms.getRecipients()));
                 eventRelay.sendEventMessage(makeOutboundSmsEvent(OUTBOUND_SMS_DISPATCHED, sms.getConfig(),
-                        sms.getRecipients(), sms.getMessage(), sms.getMotechId(), providerId, sms.getDeliveryTime(),
-                        failureCount));
+                        sms.getRecipients(), sms.getMessage(), sms.getMotechId(), providerMessageId,
+                        sms.getDeliveryTime(), failureCount));
                 smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().get(0),
-                        sms.getMessage(), now(), DISPATCHED, null, sms.getMotechId(), providerId, null));
+                        sms.getMessage(), now(), DISPATCHED, null, sms.getMotechId(), providerMessageId, null));
                 }
             }
             else {
                 error = true;
                 String key = sms.getRecipients().size() == 1 ? sms.getRecipients().get(0) : "all";
 
-                String failureMessage = resp.extractGeneralFailureMessage(httpResponse);
+                String failureMessage = templateResponse.extractGeneralFailureMessage(httpResponse);
                 if (failureMessage != null) {
                     logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, failureMessage);
                     errorMessages.put(key, failureMessage);
@@ -313,33 +314,18 @@ public class SmsHttpService {
 
         if (error) {
             failureCount++;
-            List<String> recipients;
-
-            // todo: do we want to add UNKNOWN status log events if we have a provider response parsing error?
-            // Best to assume failure or unknown for all recipients if we can't parse provider's response
-            // But the trade off is we might send an sms more than once.
-            // todo: check we're happy with that
-            //
-            //                                            ********************************
-            //                                            vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            if (resp.supportsMultiLineRecipientResponse() && !providerResponseParsingError) {
-                recipients = failedRecipients;
-            }
-            else {
-                recipients = sms.getRecipients();
-            }
 
             if (failureCount < config.getMaxRetries()) {
                 logger.error("SMS delivery retry {} of {}", failureCount, config.getMaxRetries());
-                eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), recipients, sms.getMessage(),
+                eventRelay.sendEventMessage(makeSendEvent(sms.getConfig(), failedRecipients, sms.getMessage(),
                         sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                 if (errorMessages.containsKey("all")) {
-                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
+                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, failedRecipients.toString(),
                             sms.getMessage(), now(), RETRYING, null, sms.getMotechId(), null,
                             errorMessages.get("all")));
                 }
                 else {
-                    for (String recipient : recipients) {
+                    for (String recipient : failedRecipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
                                 now(), RETRYING, null, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }
@@ -348,14 +334,14 @@ public class SmsHttpService {
             else {
                 logger.error("SMS delivery retry {} of {}, maximum reached, abandoning", failureCount,
                         config.getMaxRetries());
-                eventRelay.sendEventMessage(makeOutboundSmsEvent(OUTBOUND_SMS_ABORTED, sms.getConfig(), recipients,
+                eventRelay.sendEventMessage(makeOutboundSmsEvent(OUTBOUND_SMS_ABORTED, sms.getConfig(), failedRecipients,
                         sms.getMessage(), sms.getMotechId(), null, sms.getDeliveryTime(), failureCount));
                 if (errorMessages.containsKey("all")) {
-                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipients.toString(),
+                    smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, failedRecipients.toString(),
                             sms.getMessage(), now(), ABORTED, null, sms.getMotechId(), null, errorMessages.get("all")));
                 }
                 else {
-                    for (String recipient : recipients) {
+                    for (String recipient : failedRecipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(),
                                 now(), ABORTED, null, sms.getMotechId(), null, errorMessages.get(recipient)));
                     }

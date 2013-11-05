@@ -5,6 +5,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
@@ -32,7 +33,7 @@ import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
 //todo: final pass over how we use motechId system-wide
 
 /**
- * Send an SMS
+ * Send an SMS, we really don't send here, but rather pass it on to the SmsHttpService which does
  */
 @Service("smsService")
 public class SmsServiceImpl implements SmsService {
@@ -93,14 +94,14 @@ public class SmsServiceImpl implements SmsService {
         return parts;
     }
 
-    private ArrayList<ArrayList<String>> chunkList(List<String> list, Integer chunkSize) {
+    private ArrayList<ArrayList<String>> splitRecipientList(List<String> list, Integer maxSize) {
         ArrayList<ArrayList<String>> ret = new ArrayList<ArrayList<String>>();
         Integer i = 0;
         ArrayList<String> chunk = new ArrayList<String>();
         for (String val : list) {
             chunk.add(val);
             i++;
-            if (i % chunkSize == 0) {
+            if (i % maxSize == 0) {
                 ret.add(chunk);
                 chunk = new ArrayList<String>();
             }
@@ -121,7 +122,7 @@ public class SmsServiceImpl implements SmsService {
      */
     public void send(OutgoingSms sms){
 
-        //todo: cache that!
+        //todo: cache that?
         Configs configs = new ConfigReader(settingsFacade).getConfigs();
         Config config;
         Template template;
@@ -144,6 +145,7 @@ public class SmsServiceImpl implements SmsService {
         Boolean excludeLastFooter = config.getExcludeLastFooter();
         //todo: maximum number of supported recipients : per template/provider and/or per http specs
 
+        //todo - cr - move that to the Config object so calculated only once.
         // -2 to account for the added \n after the header and before the footer
         if ((maxSize - header.length() - footer.length() - 2) <= 0) {
             throw new IllegalArgumentException(
@@ -151,7 +153,7 @@ public class SmsServiceImpl implements SmsService {
         }
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
-        ArrayList<ArrayList<String>> recipientsChunks = chunkList(sms.getRecipients(),
+        ArrayList<ArrayList<String>> recipientsChunks = splitRecipientList(sms.getRecipients(),
                 template.getOutgoing().getMaxRecipient());
 
         //todo: delivery_time on the sms provider's side if they support it?

@@ -3,7 +3,7 @@ package org.motechproject.sms.web;
 import org.motechproject.sms.audit.SmsLoggingRecords;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;
 import org.motechproject.sms.audit.SmsRecords;
-import org.motechproject.sms.service.SmsAuditService;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

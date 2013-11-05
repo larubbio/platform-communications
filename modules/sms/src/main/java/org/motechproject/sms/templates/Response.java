@@ -94,6 +94,7 @@ public class Response {
         return null;
     }
 
+    //todo: what if bad or wrong number of regex groups ? ie (only one extract)
     public String[] extractSuccessMessageIdAndRecipient(String response) {
         if (pExtractSuccessMessageIdAndRecipient == null) {
             pExtractSuccessMessageIdAndRecipient = Pattern.compile(extractSuccessMessageIdAndRecipient);
