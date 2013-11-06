@@ -3,13 +3,13 @@ package org.motechproject.sms.web;
 import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;
 import org.motechproject.sms.audit.SmsRecords;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.templates.Status;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
@@ -24,12 +24,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.sms.audit.DeliveryStatus.DELIVERY_CONFIRMED;
-import static org.motechproject.sms.audit.DeliveryStatus.DISPATCHED;
-import static org.motechproject.sms.audit.DeliveryStatus.FAILURE_CONFIRMED;
+import static org.motechproject.sms.audit.DeliveryStatus.*;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
 import static org.motechproject.sms.event.SmsEvents.*;
 
@@ -62,14 +61,15 @@ public class StatusController {
     @ResponseBody
     @RequestMapping(value = "/{configName}")
     public void handle(@PathVariable String configName, @RequestParam Map<String, String> params) {
-        logger.info("configName = {}, params = {}", configName, params);
+        logger.info("SMS Status - configName = {}, params = {}", configName, params);
 
         Config config;
         if (configs.hasConfig(configName)) {
             config = configs.getConfig(configName);
         }
         else {
-            //todo: do we really want to do that?
+            //todo: send motech alert everywhere we have logger.error
+            logger.error("Received SMS Status for '{}' config but no matching", configName);
             config = configs.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
@@ -119,6 +119,8 @@ public class StatusController {
                             providerId, null);
                 }
 
+                List<String> recipients = Arrays.asList(new String[]{smsRecord.getPhoneNumber()});
+
                 if (statusString != null) {
                     String eventSubject;
                     if (statusString.matches(status.getStatusSuccess())) {
@@ -133,17 +135,17 @@ public class StatusController {
                         smsRecord.setDeliveryStatus(DISPATCHED);
                         eventSubject = OUTBOUND_SMS_DISPATCHED;
                     }
-                    eventRelay.sendEventMessage(makeOutboundSmsEvent(eventSubject, configName,
-                            Arrays.asList(new String[]{smsRecord.getPhoneNumber()}), smsRecord.getMessageContent(),
-                            smsRecord.getMotechId(), providerId, now(), null, statusString));
+                    eventRelay.sendEventMessage(outboundEvent(eventSubject, configName, recipients,
+                            smsRecord.getMessageContent(), smsRecord.getMotechId(), providerId, null, statusString,
+                            now()));
                 }
                 else {
                     logger.error("Likely template error, unable to extract status string. Config: {}, Parameters: {}",
                             configName, params);
                     smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
-                    eventRelay.sendEventMessage(makeOutboundSmsEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName,
-                            Arrays.asList(new String[]{smsRecord.getPhoneNumber()}), smsRecord.getMessageContent(),
-                            smsRecord.getMotechId(), providerId, now(), null));
+                    eventRelay.sendEventMessage(outboundEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName,
+                            recipients, smsRecord.getMessageContent(), smsRecord.getMotechId(), providerId, null, null,
+                            now()));
                 }
 
                 smsAuditService.log(smsRecord);

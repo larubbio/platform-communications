@@ -33,7 +33,7 @@ public class OutgoingSms {
             failureCount = (Integer) params.get(SmsEvents.FAILURE_COUNT);
         }
         motechId = (String) params.get(SmsEvents.MOTECH_ID);
-        providerId = (String) params.get(SmsEvents.PROVIDER_ID);
+        providerId = (String) params.get(SmsEvents.PROVIDER_MESSAGE_ID);
     }
 
     public OutgoingSms(String config, List<String> recipients, String message, DateTime deliveryTime) {

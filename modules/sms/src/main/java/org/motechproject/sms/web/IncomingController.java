@@ -4,11 +4,11 @@ import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.audit.DeliveryStatus;
+import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
-import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.SmsType.INBOUND;
-import static org.motechproject.sms.event.SmsEvents.makeInboundSmsEvent;
+import static org.motechproject.sms.event.SmsEvents.inboundEvent;
 
 /**
  * Handles http requests to {motechserver}/motech-platform-server/module/sms/incoming{Config} sent by sms providers
@@ -64,7 +64,7 @@ public class IncomingController {
         String messageId = null;
         DateTime timestamp = null;
 
-        logger.info("Received SMS, configName = {}, params = {}", configName, params);
+        logger.info("Incoming SMS - configName = {}, params = {}", configName, params);
 
         Config config;
         if (configs.hasConfig(configName)) {
@@ -100,6 +100,7 @@ public class IncomingController {
 
         if (params.containsKey(template.getIncoming().getTimestampKey())) {
             String dt = params.get(template.getIncoming().getTimestampKey());
+            //todo: some providers may send timestamps in a different way, deal it it if/when we see that
             // replace "yyyy-mm-dd hh:mm:ss" with "yyyy-mm-ddThh:mm:ss" (note the T)
             if (dt.matches("(\\d\\d\\d\\d|\\d\\d)-\\d\\d?-\\d\\d? \\d\\d?:\\d\\d?:\\d\\d?")) {
                 dt = dt.replace(" ", "T");
@@ -110,9 +111,7 @@ public class IncomingController {
             timestamp = now();
         }
 
-        eventRelay.sendEventMessage(makeInboundSmsEvent(config.getName(), sender, recipient, message, messageId,
-                timestamp));
-
+        eventRelay.sendEventMessage(inboundEvent(config.getName(), sender, recipient, message, messageId, timestamp));
         smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), DeliveryStatus.RECEIVED,
                 null, null, messageId, null));
     }

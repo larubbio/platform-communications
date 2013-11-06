@@ -1,6 +1,7 @@
 package org.motechproject.sms.service;
 
 import org.joda.time.DateTime;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
@@ -10,6 +11,7 @@ import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.configs.ConfigReader;
 import org.motechproject.sms.configs.Configs;
+import org.motechproject.sms.event.SmsEvents;
 import org.motechproject.sms.templates.Template;
 import org.motechproject.sms.templates.TemplateReader;
 import org.motechproject.sms.templates.Templates;
@@ -27,8 +29,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.DeliveryStatus.PENDING;
 import static org.motechproject.sms.audit.DeliveryStatus.SCHEDULED;
 import static org.motechproject.sms.audit.SmsType.OUTBOUND;
-import static org.motechproject.sms.event.SmsEvents.makeScheduledSendEvent;
-import static org.motechproject.sms.event.SmsEvents.makeSendEvent;
+import static org.motechproject.sms.event.SmsEvents.*;
 
 //todo: final pass over how we use motechId system-wide
 
@@ -153,23 +154,27 @@ public class SmsServiceImpl implements SmsService {
         }
 
         List<String> messageParts = splitMessage(sms.getMessage(), maxSize, header, footer, excludeLastFooter);
-        ArrayList<ArrayList<String>> recipientsChunks = splitRecipientList(sms.getRecipients(),
+        ArrayList<ArrayList<String>> recipientsList = splitRecipientList(sms.getRecipients(),
                 template.getOutgoing().getMaxRecipient());
 
         //todo: delivery_time on the sms provider's side if they support it?
-        for (List<String> chunk : recipientsChunks) {
+        for (List<String> recipients : recipientsList) {
             if (sms.hasDeliveryTime()) {
                 DateTime dt = sms.getDeliveryTime();
                 for (String part : messageParts) {
                     String motechId = generateMotechId();
-                    schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(makeScheduledSendEvent(
-                        config.getName(), chunk, part, motechId, null), dt.toDate()));
+                    MotechEvent event = outboundEvent(OUTBOUND_SMS_SCHEDULED, config.getName(), recipients, part,
+                            motechId, null, null, null, null);
+                    //MOTECH scheduler needs unique job ids, so adding motechId as job_id_key will do that
+                    event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, motechId);
+                    event.getParameters().put(SmsEvents.DELIVERY_TIME, dt);
+                    schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, dt.toDate()));
                     logger.info(String.format("Scheduling message [%s] to [%s] at %s.",
-                            part.replace("\n", "\\n"), chunk, sms.getDeliveryTime()));
+                            part.replace("\n", "\\n"), recipients, sms.getDeliveryTime()));
                     //add one millisecond to the next sms part so they will be delivered in order
                     //without that it seems Quartz doesn't fire events in the order they were scheduled
                     dt = dt.plus(1);
-                    for (String recipient : chunk) {
+                    for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), SCHEDULED,
                                 null, motechId, null, null));
                     }
@@ -178,9 +183,10 @@ public class SmsServiceImpl implements SmsService {
             else {
                 for (String part : messageParts) {
                     String motechId = generateMotechId();
-                    eventRelay.sendEventMessage(makeSendEvent(config.getName(), chunk, part, motechId, null));
-                    logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), chunk);
-                    for (String recipient : chunk) {
+                    eventRelay.sendEventMessage(outboundEvent(OUTBOUND_SMS_PENDING, config.getName(), recipients, part,
+                            motechId, null, null, null, null));
+                    logger.info("Sending message [{}] to [{}].", part.replace("\n", "\\n"), recipients);
+                    for (String recipient : recipients) {
                         smsAuditService.log(new SmsRecord(config.getName(), OUTBOUND, recipient, part, now(), PENDING,
                                 null, motechId, null, null));
                     }

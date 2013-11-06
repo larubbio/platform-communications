@@ -26,11 +26,15 @@ public class Response {
     Pattern pExtractSuccessMessageIdAndRecipient = null;
     Pattern pExtractFailureMessageAndRecipient = null;
 
-    public Boolean hasSuccessStatus() {
-        return successStatus != null && !successStatus.isEmpty();
-    }
-
-    public Boolean checkSuccessStatus(Integer status) {
+    public Boolean isSuccessStatus(Integer status) {
+        if (successStatus == null || successStatus.isEmpty()) {
+            if (status >= 200 && status < 300) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
         return status.toString().matches(successStatus);
     }
 

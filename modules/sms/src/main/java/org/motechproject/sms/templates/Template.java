@@ -44,13 +44,14 @@ public class Template {
                     requestEntity = new StringRequestEntity(json, "application/json", "UTF-8");
                 }
                 catch  (UnsupportedEncodingException e) {
-                    //todo: not sure what....
+                    throw new IllegalStateException(String.format("Template error: {}: invalid json: {}", name,
+                            e.toString()));
                 }
                 if (requestEntity != null) {
                     ((PostMethod)httpMethod).setRequestEntity(requestEntity);
                 }
                 else {
-                    //todo: what???
+                    throw new IllegalStateException(String.format("Template error: {}: null request entity", name));
                 }
             }
             else {
@@ -61,6 +62,7 @@ public class Template {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath(props));
         }
         httpMethod.setQueryString(addQueryParameters(props));
+
         return httpMethod;
     }
 

@@ -24,7 +24,8 @@ public class SendSmsEventHandler {
         this.sender = sender;
     }
 
-    @MotechListener (subjects = { SmsEvents.SEND_SMS })
+    @MotechListener (subjects = { SmsEvents.OUTBOUND_SMS_PENDING, SmsEvents.OUTBOUND_SMS_SCHEDULED,
+            SmsEvents.OUTBOUND_SMS_RETRYING })
     public void handle(MotechEvent event) {
         logger.info("Handling {}: {}", event.getSubject(),
             event.getParameters().get("message").toString().replace("\n", "\\n"));

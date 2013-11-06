@@ -1,6 +1,13 @@
 package org.motechproject.sms.configs;
 
+import org.motechproject.sms.audit.DeliveryStatus;
+
 import java.util.List;
+
+import static org.motechproject.sms.audit.DeliveryStatus.ABORTED;
+import static org.motechproject.sms.audit.DeliveryStatus.RETRYING;
+import static org.motechproject.sms.event.SmsEvents.OUTBOUND_SMS_ABORTED;
+import static org.motechproject.sms.event.SmsEvents.OUTBOUND_SMS_RETRYING;
 
 /**
  * A connection to a particular SMS provider, there may be more than one config for a given provider and/or multiple
@@ -70,5 +77,19 @@ public class Config {
 
     public void setProps(List<ConfigProp> props) {
         this.props = props;
+    }
+
+    public DeliveryStatus RetryOrAbortStatus(Integer failureCount) {
+        if (failureCount < maxRetries) {
+            return RETRYING;
+        }
+        return ABORTED;
+    }
+
+    public String RetryOrAbortSubject(Integer failureCount) {
+        if (failureCount < maxRetries) {
+            return OUTBOUND_SMS_RETRYING;
+        }
+        return OUTBOUND_SMS_ABORTED;
     }
 }
