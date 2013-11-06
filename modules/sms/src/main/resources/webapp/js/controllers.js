@@ -74,6 +74,7 @@
     smsModule.controller('SettingsController', function ($scope, $http, ConfigService, TemplateService) {
 
         $scope.errors = [];
+        $scope.dupeNames = [];
 
         $http.get('../sms/templates')
             .success(function(response){
@@ -86,10 +87,33 @@
         function setAccordions(configs) {
                 var i;
                 $scope.accordions = [];
-                for (i=0 ; i< configs.length ; i = i + 1) {
+                $scope.dupeNames = [];
+                for (i=0 ; i<configs.length ; i = i + 1) {
                     $scope.accordions.push(false);
+                    $scope.dupeNames.push(false);
                 }
         }
+
+        $scope.checkForDuplicateNames = function(index) {
+            var i;
+            for (i=0 ; i<$scope.config.configs.length ; i=i+1) {
+                if (i!==index && $scope.config.configs[i].name === $scope.config.configs[index].name) {
+                    $scope.dupeNames[index] = true;
+                    return;
+                }
+            }
+            $scope.dupeNames[index] = false;
+        };
+
+        $scope.anyDuplicateNames = function() {
+            var i;
+            for (i=0 ; i<$scope.dupeNames.length ; i=i+1) {
+                if ($scope.dupeNames[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
 
         $http.get('../sms/configs')
             .success(function(response){
@@ -153,6 +177,7 @@
         $scope.deleteConfig = function(index) {
             $scope.config.configs.splice(index, 1);
             $scope.accordions.splice(index, 1);
+            $scope.dupeNames.splice(index, 1);
             $scope.setNewDefaultConfig();
         };
 
@@ -174,6 +199,7 @@
                 };
             newLength = $scope.config.configs.push(newConfig);
             $scope.accordions.push(true);
+            $scope.dupeNames.push(false);
             if ($scope.config.configs.length === 1) {
                 $scope.config.defaultConfig = $scope.config.configs[0].name;
             }
