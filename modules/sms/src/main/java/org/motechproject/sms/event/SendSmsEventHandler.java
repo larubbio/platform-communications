@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class SendSmsEventHandler {
 
-    private SmsHttpService sender;
+    private SmsHttpService smsHttpService;
     private Logger logger = LoggerFactory.getLogger(SendSmsEventHandler.class);
 
     @Autowired
-    public SendSmsEventHandler(SmsHttpService sender) {
-        this.sender = sender;
+    public SendSmsEventHandler(SmsHttpService smsHttpService) {
+        this.smsHttpService = smsHttpService;
     }
 
     @MotechListener (subjects = { SmsEvents.OUTBOUND_SMS_PENDING, SmsEvents.OUTBOUND_SMS_SCHEDULED,
@@ -29,7 +29,7 @@ public class SendSmsEventHandler {
     public void handle(MotechEvent event) {
         logger.info("Handling {}: {}", event.getSubject(),
             event.getParameters().get("message").toString().replace("\n", "\\n"));
-        sender.send(new OutgoingSms(event));
+        smsHttpService.send(new OutgoingSms(event));
     }
 }
 

@@ -106,6 +106,7 @@ public class Template {
                 matcher.appendReplacement(sb, repString);
             }
             else {
+                //todo: log template error here
                 matcher.appendReplacement(sb, "[" + matcher.group(1) + "]");
             }
         }

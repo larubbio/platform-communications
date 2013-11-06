@@ -36,7 +36,7 @@ public abstract class ResponseHandler {
     protected String messageForLog(OutgoingSms sms) {
         return sms.getMessage().replace("\n", "\\n");
     }
-    public abstract  void handle(OutgoingSms sms, String response, Header[] headers);
+    public abstract void handle(OutgoingSms sms, String response, Header[] headers);
 
     public List<MotechEvent> getEvents() {
         return events;
