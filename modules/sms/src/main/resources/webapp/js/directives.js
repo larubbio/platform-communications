@@ -158,7 +158,7 @@
                 var elem = angular.element(element), filters;
 
                 elem.jqGrid({
-                    url: '../sms/log?deliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,FAILURE_CONFIRMED,RETRYING,ABORTED,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
+                    url: '../sms/log?deliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,FAILURE_CONFIRMED,RETRYING,ABORTED,PENDING,RECEIVED,SCHEDULED&smsType=INBOUND,OUTBOUND',
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
