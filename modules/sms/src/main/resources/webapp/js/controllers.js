@@ -84,14 +84,21 @@
                  $scope.errors.push($scope.msg('sms.settings.validate.no_templates', response));
              });
 
+        function autoExpandSingleAccordion() {
+            if ($scope.accordions.length === 1) {
+                $scope.accordions[0] = true;
+            }
+        }
+
         function setAccordions(configs) {
-                var i;
-                $scope.accordions = [];
-                $scope.dupeNames = [];
-                for (i=0 ; i<configs.length ; i = i + 1) {
-                    $scope.accordions.push(false);
-                    $scope.dupeNames.push(false);
-                }
+            var i;
+            $scope.accordions = [];
+            $scope.dupeNames = [];
+            for (i=0 ; i<configs.length ; i = i + 1) {
+                $scope.accordions.push(false);
+                $scope.dupeNames.push(false);
+            }
+            autoExpandSingleAccordion();
         }
 
         $scope.checkForDuplicateNames = function(index) {
@@ -137,6 +144,7 @@
             for (key in $scope.accordions) {
                 $scope.accordions[key] = false;
             }
+            autoExpandSingleAccordion();
         };
 
         /*  TODO
@@ -154,13 +162,13 @@
 
         $scope.setNewDefaultConfig = function() {
             var i;
-            for (i in $scope.config.configs) {
+            for (i=0 ; i<$scope.config.configs.length ; i=i+1) {
                 if ($scope.config.configs[i].name === $scope.config.defaultConfig) {
                     return;
                 }
             }
             if ($scope.config.configs.length > 0) {
-                $scope.config.defaultConfig = $scope.config.configs[0].name;
+                $scope.config.defaultConfigName = $scope.config.configs[0].name;
                 $scope.defaultConfigIndex = 0;
             }
         };
@@ -179,6 +187,7 @@
             $scope.accordions.splice(index, 1);
             $scope.dupeNames.splice(index, 1);
             $scope.setNewDefaultConfig();
+            autoExpandSingleAccordion();
         };
 
         $scope.reset = function () {
@@ -199,6 +208,7 @@
                 };
             newLength = $scope.config.configs.push(newConfig);
             $scope.accordions.push(true);
+            autoExpandSingleAccordion();
             $scope.dupeNames.push(false);
             if ($scope.config.configs.length === 1) {
                 $scope.config.defaultConfig = $scope.config.configs[0].name;
