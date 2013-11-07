@@ -31,15 +31,16 @@
                         {{msg('sms.web.send.recipients')}}
                     </label>
                     <div class="controls">
-                        <input name="recipients" id="recipients" class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-pattern="/^([+]?[0-9 ]+)(,[+]?[0-9 ]+)*$/" ng-list required ng-focus="true"  tooltip="{{msg('sms.web.send.recipients.tooltip')}}">
+                        <input name="recipients" id="recipients" class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-pattern="/^[+]?[0-9]+(,[+]?[0-9]+)*$/" ng-list required ng-focus="true" tooltip="{{msg('sms.web.send.recipients.tooltip')}}">
                         <span ng-show="form.recipients.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.send.required_field', msg('sms.web.send.recipients_field'))}}</span>
                         <span ng-show="form.recipients.$error.pattern && !form.$pristine" class="form-hint">{{msg('sms.web.send.bad-number_format', msg('sms.web.send.recipients_field'))}}</span>
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label class="control-label" for="message">{{msg('sms.web.send.message')}}</label>
+                    <label class="control-label" for="message">{{msg('sms.web.send.message')}}<br/><span class="char-counter">{{sms.message.length}}</span></label>
                     <div class="controls">
+
                         <textarea name="message" id="message" class="textarea input-xlarge-fluid" rows="5" required ng-model="sms.message"></textarea>
                         <span ng-show="form.message.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.send.required_field', msg('sms.web.send.message_field'))}}</span>
                     </div>
