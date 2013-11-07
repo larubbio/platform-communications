@@ -8,6 +8,7 @@ public class Outgoing {
     private Response response;
     private Boolean hasAuthentication;
     private Integer millisecondsBetweenMessages = 1; //at a minimum
+    private Boolean exponentialBackoffRetries;
     private Integer maxSmsSize = 160; //todo: is it fine to have this default here?
     private Integer maxRecipient = 1; //todo: and here?
     private String recipientSeparator = ","; //todo: and here?
@@ -44,6 +45,14 @@ public class Outgoing {
         this.millisecondsBetweenMessages = millisecondsBetweenMessages;
     }
 
+    public Boolean getExponentialBackoffRetries() {
+        return exponentialBackoffRetries;
+    }
+
+    public void setExponentialBackoffRetries(Boolean exponentialBackoffRetries) {
+        this.exponentialBackoffRetries = exponentialBackoffRetries;
+    }
+
     public Integer getMaxSmsSize() {
         return maxSmsSize;
     }
@@ -75,6 +84,7 @@ public class Outgoing {
                 ", response=" + response +
                 ", hasAuthentication=" + hasAuthentication +
                 ", millisecondsBetweenMessages=" + millisecondsBetweenMessages +
+                ", exponentialBackoffRetries=" + exponentialBackoffRetries +
                 ", maxSmsSize=" + maxSmsSize +
                 ", maxRecipient=" + maxRecipient +
                 ", recipientSeparator='" + recipientSeparator + '\'' +

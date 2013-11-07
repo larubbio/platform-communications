@@ -3,7 +3,7 @@ package org.motechproject.sms.web;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.alert.MotechAlert;
+import org.motechproject.sms.alert.MotechStatusMessage;
 import org.motechproject.sms.audit.DeliveryStatus;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
@@ -36,7 +36,7 @@ import static org.motechproject.sms.event.SmsEvents.inboundEvent;
 public class IncomingController {
 
     @Autowired
-    MotechAlert motechAlert;
+    MotechStatusMessage motechStatusMessage;
     private Logger logger = LoggerFactory.getLogger(IncomingController.class);
     private ConfigReader configReader;
     private Configs configs;
@@ -49,6 +49,8 @@ public class IncomingController {
                               TemplateReader templateReader, SmsAuditService smsAuditService) {
         this.eventRelay = eventRelay;
         configReader = new ConfigReader(settingsFacade);
+        //todo: this means we'll crash/error out when a new config is created and we get an incoming call before
+        //todo: restarting the module but going to the new config system (with change notification) will fix that
         configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
         this.smsAuditService = smsAuditService;
@@ -76,7 +78,7 @@ public class IncomingController {
         else {
             String msg = String.format("Invalid config in incoming request: %s, params: %s", configName, params);
             logger.error(msg);
-            motechAlert.alert(msg);
+            motechStatusMessage.alert(msg);
             return;
         }
         Template template = templates.getTemplate(config.getTemplateName());

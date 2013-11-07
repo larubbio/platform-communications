@@ -54,7 +54,6 @@ public class SettingsController {
         return configReader.getConfigs();
     }
 
-    //todo: since configs are validated client-side, do we need that?
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody

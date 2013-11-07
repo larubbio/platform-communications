@@ -1,7 +1,7 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.Header;
-import org.motechproject.sms.alert.MotechAlert;
+import org.motechproject.sms.alert.MotechStatusMessage;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.service.OutgoingSms;
@@ -20,7 +20,7 @@ import static org.motechproject.sms.event.SmsEvents.outboundEvent;
 public class GenericResponseHandler extends ResponseHandler {
 
     @Autowired
-    MotechAlert motechAlert;
+    MotechStatusMessage motechStatusMessage;
 
     GenericResponseHandler(Template template, Config config) {
         super(template, config);
@@ -41,7 +41,7 @@ public class GenericResponseHandler extends ResponseHandler {
                 if (providerMessageId == null) {
                     String message = String.format("Unable to find provider message id in '%s' header",
                             templateOutgoingResponse.getHeaderMessageId());
-                    motechAlert.alert(message);
+                    motechStatusMessage.alert(message);
                     logger.error(message);
                 }
             }

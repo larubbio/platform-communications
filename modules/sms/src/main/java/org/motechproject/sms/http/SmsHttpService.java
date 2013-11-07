@@ -11,7 +11,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.alert.MotechAlert;
+import org.motechproject.sms.alert.MotechStatusMessage;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
@@ -60,7 +60,7 @@ public class SmsHttpService {
     @Autowired
     ConfigurationService configurationService;
     @Autowired
-    MotechAlert motechAlert;
+    MotechStatusMessage motechStatusMessage;
 
 
     @Autowired
@@ -68,7 +68,6 @@ public class SmsHttpService {
 
         //todo: unified module-wide caching & refreshing strategy
         configReader = new ConfigReader(settingsFacade);
-        configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
     }
 
@@ -110,7 +109,7 @@ public class SmsHttpService {
             else {
                 message = String.format("Config %s: missing username and password", config.getName());
             }
-            motechAlert.alert(message);
+            motechStatusMessage.alert(message);
             throw new IllegalStateException(message);
         }
     }
@@ -153,6 +152,11 @@ public class SmsHttpService {
     }
 
     public synchronized void send(OutgoingSms sms) {
+
+        //todo: right now we reload the configs for every call, but when we switch to the new config system we should
+        //todo: be able to cache that and only reload when the config system detects a change.
+        configs = configReader.getConfigs();
+
         Config config = configs.getConfigOrDefault(sms.getConfig());
         Template template = templates.getTemplate(config.getTemplateName());
         HttpMethod httpMethod = null;
@@ -196,12 +200,12 @@ public class SmsHttpService {
             if (httpStatus == null) {
                 String msg = String.format("Delivery to SMS provider failed: %s", errorMessage);
                 logger.error(msg);
-                motechAlert.alert(msg);
+                motechStatusMessage.alert(msg);
             }
             else {
                 errorMessage = templateResponse.extractGeneralFailureMessage(httpResponse);
                 if (errorMessage == null) {
-                    motechAlert.alert(String.format("Unable to extract failure message for '%s' config: %s",
+                    motechStatusMessage.alert(String.format("Unable to extract failure message for '%s' config: %s",
                             config.getName(), httpResponse));
                     errorMessage = httpResponse;
                 }

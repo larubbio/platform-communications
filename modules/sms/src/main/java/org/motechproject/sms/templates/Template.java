@@ -29,7 +29,7 @@ public class Template {
     private Status status;
     private Incoming incoming;
     private String name;
-    private List<String> requires;
+    private List<String> configurables;
 
     public HttpMethod generateRequestFor(Map<String, String> props) {
         HttpMethod httpMethod;
@@ -143,12 +143,12 @@ public class Template {
         this.name = name;
     }
 
-    public List<String> getRequires() {
-        return requires;
+    public List<String> getConfigurables() {
+        return configurables;
     }
 
-    public void setRequires(List<String> requires) {
-        this.requires = requires;
+    public void setConfigurables(List<String> configurables) {
+        this.configurables = configurables;
     }
 
     public Status getStatus() {
@@ -166,7 +166,7 @@ public class Template {
                 ", status=" + status +
                 ", incoming=" + incoming +
                 ", name='" + name + '\'' +
-                ", requires=" + requires +
+                ", configurables=" + configurables +
                 '}';
     }
 }

@@ -3,7 +3,7 @@ package org.motechproject.sms.web;
 import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.sms.alert.MotechAlert;
+import org.motechproject.sms.alert.MotechStatusMessage;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;
@@ -42,7 +42,7 @@ import static org.motechproject.sms.event.SmsEvents.*;
 public class StatusController {
 
     @Autowired
-    MotechAlert motechAlert;
+    MotechStatusMessage motechStatusMessage;
     private Logger logger = LoggerFactory.getLogger(StatusController.class);
     private ConfigReader configReader;
     private Configs configs;
@@ -55,6 +55,9 @@ public class StatusController {
                             TemplateReader templateReader, SmsAuditService smsAuditService) {
         this.eventRelay = eventRelay;
         configReader = new ConfigReader(settingsFacade);
+        //todo: this means we'll crash/error out when a new config is created and we get a status update callback before
+        //todo: restarting the module  -  but going to the new config system (with change notification) will fix that
+        configs = configReader.getConfigs();
         configs = configReader.getConfigs();
         templates = templateReader.getTemplates();
         this.smsAuditService = smsAuditService;
@@ -74,7 +77,7 @@ public class StatusController {
             String msg = String.format("Received SMS Status for '%s' config but no matching config: %s", configName,
                     params);
             logger.error(msg);
-            motechAlert.alert(msg);
+            motechStatusMessage.alert(msg);
             config = configs.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
@@ -104,7 +107,7 @@ public class StatusController {
                         String msg = String.format("Received status update but couldn't find a log record with matching providerMessageId or motechId: %s",
                                 providerMessageId);
                         logger.error(msg);
-                        motechAlert.alert(msg);
+                        motechStatusMessage.alert(msg);
                     }
                     else {
                         logger.debug("Found log record with matching motechId {}", providerMessageId);
@@ -151,7 +154,7 @@ public class StatusController {
                     String msg = String.format("Likely template error, unable to extract status string. Config: %s, Parameters: %s",
                             configName, params);
                     logger.error(msg);
-                    motechAlert.alert(msg);
+                    motechStatusMessage.alert(msg);
                     smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
                     eventRelay.sendEventMessage(outboundEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName, recipients,
                             smsRecord.getMessageContent(), smsRecord.getMotechId(), providerMessageId, null, null,
@@ -164,14 +167,14 @@ public class StatusController {
                 String msg = String.format("We have a message id, but don't know how to extract message status, this is most likely a template error. Config: %s, Parameters: %s",
                         configName, params);
                 logger.error(msg);
-                motechAlert.alert(msg);
+                motechStatusMessage.alert(msg);
             }
         }
         else {
             String msg = String.format("Status message received from provider, but no template support! Config: %s, Parameters: %s",
                     configName, params);
             logger.error(msg);
-            motechAlert.alert(msg);
+            motechStatusMessage.alert(msg);
         }
     }
 }

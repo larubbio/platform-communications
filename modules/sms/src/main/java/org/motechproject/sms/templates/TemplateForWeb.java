@@ -7,11 +7,11 @@ import java.util.List;
  */
 public class TemplateForWeb {
     private String name;
-    private List<String> requires;
+    private List<String> configurables;
 
     public TemplateForWeb(Template template) {
         setName(template.getName());
-        setRequires(template.getRequires());
+        setConfigurables(template.getConfigurables());
     }
 
     public String getName() {
@@ -22,11 +22,11 @@ public class TemplateForWeb {
         this.name = name;
     }
 
-    public List<String> getRequires() {
-        return requires;
+    public List<String> getConfigurables() {
+        return configurables;
     }
 
-    public void setRequires(List<String> requires) {
-        this.requires = requires;
+    public void setConfigurables(List<String> configurables) {
+        this.configurables = configurables;
     }
 }

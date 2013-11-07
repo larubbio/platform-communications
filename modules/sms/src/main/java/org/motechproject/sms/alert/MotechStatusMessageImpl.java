@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
  * Helper class - Uses StatusMessageService to send system Alerts
  */
 @Service
-public class MotechAlertImpl implements  MotechAlert {
+public class MotechStatusMessageImpl implements MotechStatusMessage {
     private StatusMessageService statusMessageService;
 
     @Autowired
-    public MotechAlertImpl(StatusMessageService statusMessageService) {
+    public MotechStatusMessageImpl(StatusMessageService statusMessageService) {
         this.statusMessageService = statusMessageService;
     }
 

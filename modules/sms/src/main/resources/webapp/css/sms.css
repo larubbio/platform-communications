@@ -125,3 +125,8 @@ input.ng-invalid:focus {
 .sms .btn-group > .btn.active {
     z-index: 1;
 }
+
+.char-counter {
+    color: silver;
+    font-size: 8pt;
+}

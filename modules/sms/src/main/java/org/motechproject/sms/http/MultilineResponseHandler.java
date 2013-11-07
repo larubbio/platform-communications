@@ -1,7 +1,7 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.Header;
-import org.motechproject.sms.alert.MotechAlert;
+import org.motechproject.sms.alert.MotechStatusMessage;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.service.OutgoingSms;
@@ -23,7 +23,7 @@ import static org.motechproject.sms.event.SmsEvents.outboundEvent;
 public class MultilineResponseHandler extends ResponseHandler {
 
     @Autowired
-    MotechAlert motechAlert;
+    MotechStatusMessage motechStatusMessage;
 
     MultilineResponseHandler(Template template, Config config) {
         super(template, config);
@@ -47,7 +47,7 @@ public class MultilineResponseHandler extends ResponseHandler {
                     String errorMessage = String.format(
                             "Failed to sent SMS. Template error. Can't parse response: %s", responseLine);
                     logger.error(errorMessage);
-                    motechAlert.alert(errorMessage);
+                    motechStatusMessage.alert(errorMessage);
 
                     auditRecords.add(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().toString(),
                             sms.getMessage(), now(), config.RetryOrAbortStatus(failureCount), null, sms.getMotechId(),

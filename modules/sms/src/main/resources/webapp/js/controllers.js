@@ -153,10 +153,10 @@
             back from the dropdown?
         */
         $scope.changeTemplateProperties = function (config) {
-            var i, requires = $scope.templates[config.templateName].requires;
+            var i, configurables = $scope.templates[config.templateName].configurables;
             config.props = [];
-            for (i=0 ; i<requires.length ; i=i+1) {
-                config.props.push({"name": requires[i], "value": ""});
+            for (i=0 ; i<configurables.length ; i=i+1) {
+                config.props.push({"name": configurables[i], "value": ""});
             }
         };
 
