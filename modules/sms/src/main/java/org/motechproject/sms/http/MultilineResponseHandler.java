@@ -1,10 +1,12 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.Header;
+import org.motechproject.sms.alert.MotechAlert;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.service.OutgoingSms;
 import org.motechproject.sms.templates.Template;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +21,9 @@ import static org.motechproject.sms.event.SmsEvents.outboundEvent;
  * Deals with multi-line responses, like the ones sent by Clickatell
  */
 public class MultilineResponseHandler extends ResponseHandler {
+
+    @Autowired
+    MotechAlert motechAlert;
 
     MultilineResponseHandler(Template template, Config config) {
         super(template, config);
@@ -38,7 +43,12 @@ public class MultilineResponseHandler extends ResponseHandler {
                 if (messageAndRecipient == null) {
                     events.add(outboundEvent(config.RetryOrAbortSubject(failureCount), config.getName(),
                             sms.getRecipients(), sms.getMessage(), sms.getMotechId(), null, failureCount, null, null));
-                    logger.error("Failed to sent SMS. ***Template error*** Can't parse response: {}", responseLine);
+
+                    String errorMessage = String.format(
+                            "Failed to sent SMS. Template error. Can't parse response: %s", responseLine);
+                    logger.error(errorMessage);
+                    motechAlert.alert(errorMessage);
+
                     auditRecords.add(new SmsRecord(config.getName(), OUTBOUND, sms.getRecipients().toString(),
                             sms.getMessage(), now(), config.RetryOrAbortStatus(failureCount), null, sms.getMotechId(),
                             null, null));
@@ -49,7 +59,7 @@ public class MultilineResponseHandler extends ResponseHandler {
                     List<String> recipients = Arrays.asList(new String[]{recipient});
                     events.add(outboundEvent(config.RetryOrAbortSubject(failureCount), config.getName(), recipients,
                             sms.getMessage(), sms.getMotechId(), null, failureCount, null, null));
-                    logger.error("Failed to sent SMS: {}", failureMessage);
+                    logger.info("Failed to sent SMS: {}", failureMessage);
                     auditRecords.add(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(), now(),
                             config.RetryOrAbortStatus(failureCount), null, sms.getMotechId(), null, failureMessage));
                 }

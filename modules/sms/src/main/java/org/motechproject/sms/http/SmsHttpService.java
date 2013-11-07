@@ -11,6 +11,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.alert.MotechAlert;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
@@ -58,6 +59,9 @@ public class SmsHttpService {
     private SmsAuditService smsAuditService;
     @Autowired
     ConfigurationService configurationService;
+    @Autowired
+    MotechAlert motechAlert;
+
 
     @Autowired
     public SmsHttpService(@Qualifier("smsSettings") SettingsFacade settingsFacade, TemplateReader templateReader) {
@@ -96,18 +100,18 @@ public class SmsHttpService {
             commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(u, p));
         }
         else {
+            String message;
             if (props.containsKey("username")) {
-                throw new IllegalStateException(String.format("Config %s: missing password",
-                        config.getName()));
+                message = String.format("Config %s: missing password", config.getName());
             }
             else if (props.containsKey("password")) {
-                throw new IllegalStateException(String.format("Config %s: missing username",
-                        config.getName()));
+                message = String.format("Config %s: missing username", config.getName());
             }
             else {
-                throw new IllegalStateException(String.format("Config %s: missing username and password",
-                        config.getName()));
+                message = String.format("Config %s: missing username and password", config.getName());
             }
+            motechAlert.alert(message);
+            throw new IllegalStateException(message);
         }
     }
 
@@ -190,12 +194,15 @@ public class SmsHttpService {
         if (httpStatus == null || !templateResponse.isSuccessStatus(httpStatus)) {
             failureCount = failureCount + 1;
             if (httpStatus == null) {
-                //todo: MOTECH AlertService on all logger.error...
-                logger.error("Delivery to SMS provider failed: {}", errorMessage);
+                String msg = String.format("Delivery to SMS provider failed: %s", errorMessage);
+                logger.error(msg);
+                motechAlert.alert(msg);
             }
             else {
                 errorMessage = templateResponse.extractGeneralFailureMessage(httpResponse);
                 if (errorMessage == null) {
+                    motechAlert.alert(String.format("Unable to extract failure message for '%s' config: %s",
+                            config.getName(), httpResponse));
                     errorMessage = httpResponse;
                 }
                 logger.error("Delivery to SMS provider failed with HTTP {}: {}", httpStatus, errorMessage);

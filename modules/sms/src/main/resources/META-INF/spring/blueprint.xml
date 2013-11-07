@@ -69,6 +69,8 @@
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
+    <osgi:reference id="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService"/>
+
     <bean id="smsDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-sms-audit"/>
     </bean>

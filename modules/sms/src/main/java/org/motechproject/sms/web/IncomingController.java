@@ -3,6 +3,7 @@ package org.motechproject.sms.web;
 import org.joda.time.DateTime;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.alert.MotechAlert;
 import org.motechproject.sms.audit.DeliveryStatus;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
@@ -34,6 +35,8 @@ import static org.motechproject.sms.event.SmsEvents.inboundEvent;
 @RequestMapping(value = "/incoming")
 public class IncomingController {
 
+    @Autowired
+    MotechAlert motechAlert;
     private Logger logger = LoggerFactory.getLogger(IncomingController.class);
     private ConfigReader configReader;
     private Configs configs;
@@ -52,7 +55,7 @@ public class IncomingController {
     }
 
 
-    //todo: remember to add some provider-specific UI to explain how implementers must setup their providers' incoming callback
+    //todo: add provider-specific UI to explain how implementers must setup their providers' incoming callback
 
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -71,7 +74,9 @@ public class IncomingController {
             config = configs.getConfig(configName);
         }
         else {
-            logger.error("Invalid config in incoming request: {}, params: {}", configName, params);
+            String msg = String.format("Invalid config in incoming request: %s, params: %s", configName, params);
+            logger.error(msg);
+            motechAlert.alert(msg);
             return;
         }
         Template template = templates.getTemplate(config.getTemplateName());

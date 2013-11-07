@@ -3,6 +3,7 @@ package org.motechproject.sms.web;
 import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.alert.MotechAlert;
 import org.motechproject.sms.audit.SmsAuditService;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.audit.SmsRecordSearchCriteria;
@@ -40,6 +41,8 @@ import static org.motechproject.sms.event.SmsEvents.*;
 @RequestMapping(value = "/status")
 public class StatusController {
 
+    @Autowired
+    MotechAlert motechAlert;
     private Logger logger = LoggerFactory.getLogger(StatusController.class);
     private ConfigReader configReader;
     private Configs configs;
@@ -68,15 +71,17 @@ public class StatusController {
             config = configs.getConfig(configName);
         }
         else {
-            //todo: send motech alert everywhere we have logger.error
-            logger.error("Received SMS Status for '{}' config but no matching", configName);
+            String msg = String.format("Received SMS Status for '%s' config but no matching config: %s", configName,
+                    params);
+            logger.error(msg);
+            motechAlert.alert(msg);
             config = configs.getDefaultConfig();
         }
         Template template = templates.getTemplate(config.getTemplateName());
         Status status = template.getStatus();
 
         if (status.hasMessageIdKey() && params != null && params.containsKey(status.getMessageIdKey())) {
-            String providerId = params.get(status.getMessageIdKey());
+            String providerMessageId = params.get(status.getMessageIdKey());
 
             if (status.hasStatusKey() && status.hasStatusSuccess()) {
                 String statusString = params.get(status.getStatusKey());
@@ -88,22 +93,25 @@ public class StatusController {
 
                 SmsRecords smsRecords = smsAuditService.findAllSmsRecords(new SmsRecordSearchCriteria()
                         .withConfig(configName)
-                        .withProviderId(providerId)
+                        .withProviderId(providerMessageId)
                         .withQueryParam(queryParam));
                 if (CollectionUtils.isEmpty(smsRecords.getRecords())) {
                     smsRecords = smsAuditService.findAllSmsRecords(new SmsRecordSearchCriteria()
                             .withConfig(configName)
-                            .withMotechId(providerId)
+                            .withMotechId(providerMessageId)
                             .withQueryParam(queryParam));
                     if (CollectionUtils.isEmpty(smsRecords.getRecords())) {
-                        logger.debug("Couldn't find a log record with matching providerId or motechId {}", providerId);
+                        String msg = String.format("Received status update but couldn't find a log record with matching providerMessageId or motechId: %s",
+                                providerMessageId);
+                        logger.error(msg);
+                        motechAlert.alert(msg);
                     }
                     else {
-                        logger.debug("Found log record with matching motechId {}", providerId);
+                        logger.debug("Found log record with matching motechId {}", providerMessageId);
                     }
                 }
                 else {
-                    logger.debug("Found log record with matching providerId {}", providerId);
+                    logger.debug("Found log record with matching providerId {}", providerMessageId);
                 }
 
                 if (smsRecords.getCount() > 0) {
@@ -111,12 +119,12 @@ public class StatusController {
                     SmsRecord existingSmsRecord = smsRecords.getRecords().get(0);
                     smsRecord = new SmsRecord(configName, OUTBOUND, existingSmsRecord.getPhoneNumber(),
                             existingSmsRecord.getMessageContent(), now(), null, statusString,
-                            existingSmsRecord.getMotechId(), providerId, null);
+                            existingSmsRecord.getMotechId(), providerMessageId, null);
                 }
                 else {
                     //start with an empty SMS record
                     smsRecord = new SmsRecord(configName, OUTBOUND, null, null, now(), null, statusString, null,
-                            providerId, null);
+                            providerMessageId, null);
                 }
 
                 List<String> recipients = Arrays.asList(new String[]{smsRecord.getPhoneNumber()});
@@ -136,29 +144,34 @@ public class StatusController {
                         eventSubject = OUTBOUND_SMS_DISPATCHED;
                     }
                     eventRelay.sendEventMessage(outboundEvent(eventSubject, configName, recipients,
-                            smsRecord.getMessageContent(), smsRecord.getMotechId(), providerId, null, statusString,
+                            smsRecord.getMessageContent(), smsRecord.getMotechId(), providerMessageId, null, statusString,
                             now()));
                 }
                 else {
-                    logger.error("Likely template error, unable to extract status string. Config: {}, Parameters: {}",
+                    String msg = String.format("Likely template error, unable to extract status string. Config: %s, Parameters: %s",
                             configName, params);
+                    logger.error(msg);
+                    motechAlert.alert(msg);
                     smsRecord.setDeliveryStatus(FAILURE_CONFIRMED);
-                    eventRelay.sendEventMessage(outboundEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName,
-                            recipients, smsRecord.getMessageContent(), smsRecord.getMotechId(), providerId, null, null,
+                    eventRelay.sendEventMessage(outboundEvent(OUTBOUND_SMS_FAILURE_CONFIRMED, configName, recipients,
+                            smsRecord.getMessageContent(), smsRecord.getMotechId(), providerMessageId, null, null,
                             now()));
                 }
 
                 smsAuditService.log(smsRecord);
             }
             else {
-                logger.error("We have a message id, but don't know how to extract message status, this is most likely a template error. Config: {}, Parameters: {}",
+                String msg = String.format("We have a message id, but don't know how to extract message status, this is most likely a template error. Config: %s, Parameters: %s",
                         configName, params);
-                //todo: we have a message but no way to know about its status, what do we do???
+                logger.error(msg);
+                motechAlert.alert(msg);
             }
         }
         else {
-            logger.error("Status message received from provider, but no template support! Config: {}, Parameters: {}",
+            String msg = String.format("Status message received from provider, but no template support! Config: %s, Parameters: %s",
                     configName, params);
+            logger.error(msg);
+            motechAlert.alert(msg);
         }
     }
 }

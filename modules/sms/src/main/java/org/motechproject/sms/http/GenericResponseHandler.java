@@ -1,10 +1,12 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.Header;
+import org.motechproject.sms.alert.MotechAlert;
 import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.sms.configs.Config;
 import org.motechproject.sms.service.OutgoingSms;
 import org.motechproject.sms.templates.Template;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.sms.audit.DeliveryStatus.DISPATCHED;
@@ -16,6 +18,9 @@ import static org.motechproject.sms.event.SmsEvents.outboundEvent;
  * Deals with providers who return a generic response in the body or header
  */
 public class GenericResponseHandler extends ResponseHandler {
+
+    @Autowired
+    MotechAlert motechAlert;
 
     GenericResponseHandler(Template template, Config config) {
         super(template, config);
@@ -34,8 +39,10 @@ public class GenericResponseHandler extends ResponseHandler {
                     }
                 }
                 if (providerMessageId == null) {
-                    logger.error("Unable to find provider message id in '{}' header",
+                    String message = String.format("Unable to find provider message id in '%s' header",
                             templateOutgoingResponse.getHeaderMessageId());
+                    motechAlert.alert(message);
+                    logger.error(message);
                 }
             }
             else if (templateOutgoingResponse.hasSingleSuccessMessageId()) {
@@ -62,7 +69,7 @@ public class GenericResponseHandler extends ResponseHandler {
             }
             events.add(outboundEvent(config.RetryOrAbortSubject(failureCount), config.getName(), sms.getRecipients(),
                     sms.getMessage(), sms.getMotechId(), null, failureCount, null, null));
-            logger.error("Failed to sent SMS: %s", failureMessage);
+            logger.debug("Failed to sent SMS: {}", failureMessage);
             for (String recipient : sms.getRecipients()) {
                 auditRecords.add(new SmsRecord(config.getName(), OUTBOUND, recipient, sms.getMessage(), now(),
                         config.RetryOrAbortStatus(failureCount), null, sms.getMotechId(), null, failureMessage));

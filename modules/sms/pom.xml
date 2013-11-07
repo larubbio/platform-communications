@@ -120,6 +120,11 @@
             <version>0.22-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-admin</artifactId>
+            <version>0.22-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.ldriscoll</groupId>
             <artifactId>org.motechproject.ektorplucene</artifactId>
             <version>0.1.5-${external.dependency.release.tag}</version>
