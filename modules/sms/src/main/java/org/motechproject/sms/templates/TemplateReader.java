@@ -46,6 +46,6 @@ public class TemplateReader {
             throw new JsonIOException("Might you have a malformed " + FILE_NAME + " file? " + e.toString());
         }
 
-        return new Templates(templates);
+        return new Templates(settingsFacade, templates);
     }
 }

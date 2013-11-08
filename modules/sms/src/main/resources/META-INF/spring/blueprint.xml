@@ -22,6 +22,11 @@
                 <value>classpath:sms-templates.json</value>
             </list>
         </property>
+        <property name="configFiles">
+            <list>
+                <value>classpath:sms-defaults.properties</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">

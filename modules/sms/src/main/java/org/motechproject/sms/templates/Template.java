@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -157,6 +158,10 @@ public class Template {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void readDefaults(SettingsFacade settingsFacade) {
+        outgoing.readDefaults(settingsFacade);
     }
 
     @Override

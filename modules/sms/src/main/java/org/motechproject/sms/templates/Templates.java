@@ -1,6 +1,11 @@
 package org.motechproject.sms.templates;
 
-import java.util.*;
+import org.motechproject.server.config.SettingsFacade;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Helper template collection
@@ -8,8 +13,9 @@ import java.util.*;
 public class Templates {
     private Map<String, Template> templates = new HashMap<String, Template>();
 
-    public Templates(List<Template> templates) {
+    public Templates(SettingsFacade settingFacade, List<Template> templates) {
         for(Template template : templates) {
+            template.readDefaults(settingFacade);
             this.templates.put(template.getName(), template);
         }
     }

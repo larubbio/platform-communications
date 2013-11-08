@@ -1,17 +1,36 @@
 package org.motechproject.sms.templates;
 
+import org.motechproject.server.config.SettingsFacade;
+
 /**
  * How providers deal with outgoing messages
  */
 public class Outgoing {
+    private static final String SMS_DEFAULT_MILLISECONDS_BETWEEN_MESSAGES = "sms.default.millisecond_between_messages";
+    private static final String SMS_DEFAULT_MAX_SMS_SIZE = "sms.default.max_sms_size";
+    private static final String SMS_DEFAULT_MAX_RECIPIENT = "sms.default.max_recipient";
+    private static final String SMS_DEFAULT_RECIPIENT_SEPARATOR = "sms.default.recipient_separator";
+
     private Request request;
     private Response response;
     private Boolean hasAuthentication;
-    private Integer millisecondsBetweenMessages = 1; //at a minimum
-    private Boolean exponentialBackoffRetries;
-    private Integer maxSmsSize = 160; //todo: is it fine to have this default here?
-    private Integer maxRecipient = 1; //todo: and here?
-    private String recipientSeparator = ","; //todo: and here?
+    private Boolean exponentialBackOffRetries;
+    private Integer millisecondsBetweenMessages;
+    private Integer maxSmsSize;
+    private Integer maxRecipient;
+    private String recipientSeparator;
+    private Integer defaultMillisecondsBetweenMessages;
+    private Integer defaultMaxSmsSize;
+    private Integer defaultMaxRecipient;
+    private String defaultRecipientSeparator;
+
+    public void readDefaults(SettingsFacade settingsFacade) {
+        defaultMillisecondsBetweenMessages = Integer.valueOf(settingsFacade.getProperty(
+                SMS_DEFAULT_MILLISECONDS_BETWEEN_MESSAGES));
+        defaultMaxSmsSize = Integer.valueOf(settingsFacade.getProperty(SMS_DEFAULT_MAX_SMS_SIZE));
+        defaultMaxRecipient = Integer.valueOf(settingsFacade.getProperty(SMS_DEFAULT_MAX_RECIPIENT));
+        defaultRecipientSeparator = settingsFacade.getProperty(SMS_DEFAULT_RECIPIENT_SEPARATOR);
+    }
 
     public Request getRequest() {
         return request;
@@ -38,6 +57,9 @@ public class Outgoing {
     }
 
     public Integer getMillisecondsBetweenMessages() {
+        if (millisecondsBetweenMessages == null) {
+            millisecondsBetweenMessages = defaultMillisecondsBetweenMessages;
+        }
         return millisecondsBetweenMessages;
     }
 
@@ -45,15 +67,18 @@ public class Outgoing {
         this.millisecondsBetweenMessages = millisecondsBetweenMessages;
     }
 
-    public Boolean getExponentialBackoffRetries() {
-        return exponentialBackoffRetries;
+    public Boolean getExponentialBackOffRetries() {
+        return exponentialBackOffRetries;
     }
 
-    public void setExponentialBackoffRetries(Boolean exponentialBackoffRetries) {
-        this.exponentialBackoffRetries = exponentialBackoffRetries;
+    public void setExponentialBackOffRetries(Boolean exponentialBackOffRetries) {
+        this.exponentialBackOffRetries = exponentialBackOffRetries;
     }
 
     public Integer getMaxSmsSize() {
+        if (maxSmsSize == null) {
+            maxSmsSize = defaultMaxSmsSize;
+        }
         return maxSmsSize;
     }
 
@@ -62,6 +87,9 @@ public class Outgoing {
     }
 
     public Integer getMaxRecipient() {
+        if (maxRecipient == null) {
+            maxRecipient = defaultMaxRecipient;
+        }
         return maxRecipient;
     }
 
@@ -70,6 +98,9 @@ public class Outgoing {
     }
 
     public String getRecipientSeparator() {
+        if (recipientSeparator == null) {
+            recipientSeparator = defaultRecipientSeparator;
+        }
         return recipientSeparator;
     }
 
@@ -84,7 +115,7 @@ public class Outgoing {
                 ", response=" + response +
                 ", hasAuthentication=" + hasAuthentication +
                 ", millisecondsBetweenMessages=" + millisecondsBetweenMessages +
-                ", exponentialBackoffRetries=" + exponentialBackoffRetries +
+                ", exponentialBackOffRetries=" + exponentialBackOffRetries +
                 ", maxSmsSize=" + maxSmsSize +
                 ", maxRecipient=" + maxRecipient +
                 ", recipientSeparator='" + recipientSeparator + '\'' +

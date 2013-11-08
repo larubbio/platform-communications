@@ -66,7 +66,7 @@ public class IncomingController {
         String sender = null;
         String recipient = null;
         String message = null;
-        String messageId = null;
+        String providerMessageId = null;
         DateTime timestamp = null;
 
         logger.info("Incoming SMS - configName = {}, params = {}", configName, params);
@@ -102,7 +102,7 @@ public class IncomingController {
         }
 
         if (params.containsKey(template.getIncoming().getMsgIdKey())) {
-            messageId = params.get(template.getIncoming().getMsgIdKey());
+            providerMessageId = params.get(template.getIncoming().getMsgIdKey());
         }
 
         if (params.containsKey(template.getIncoming().getTimestampKey())) {
@@ -118,8 +118,9 @@ public class IncomingController {
             timestamp = now();
         }
 
-        eventRelay.sendEventMessage(inboundEvent(config.getName(), sender, recipient, message, messageId, timestamp));
+        eventRelay.sendEventMessage(inboundEvent(config.getName(), sender, recipient, message, providerMessageId,
+                timestamp));
         smsAuditService.log(new SmsRecord(config.getName(), INBOUND, sender, message, now(), DeliveryStatus.RECEIVED,
-                null, null, messageId, null));
+                null, null, providerMessageId, null));
     }
 }

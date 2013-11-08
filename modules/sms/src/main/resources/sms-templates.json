@@ -1,17 +1,17 @@
 [
     {
         "name":"Clickatell",
-		"configurables": [
-			"username",
-			"password",
-			"clickatell_api_id",
-			"from"
-		],
+        "configurables": [
+            "username",
+            "password",
+            "clickatell_api_id",
+            "from"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "maxRecipient":"3",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "hasAuthentication":"false",
             "request":{
                 "type":"POST",
@@ -54,13 +54,13 @@
     },
     {
         "name":"KooKoo",
-		"configurables": [
-			"api_key"
-		],
+        "configurables": [
+            "api_key"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"false",
+            "exponentialBackOffRetries":"false",
             "maxRecipient":"1",
             "hasAuthentication":"false",
             "request":{
@@ -74,6 +74,7 @@
             },
             "response":{
                 "successResponse": "<response><status>success</status><message>.*</message></response>",
+                "extractSingleSuccessMessageId": "<response><status>success</status><message>(.*)</message></response>",
                 "extractGeneralFailureMessage": "<response><status>error</status><message>(.*)</message></response>"
             }
         },
@@ -84,16 +85,16 @@
     },
     {
         "name":"Nuntium",
-		"configurables": [
-			"username",
-			"password",
-			"from"
-		],
+        "configurables": [
+            "username",
+            "password",
+            "from"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "maxRecipient":"1",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "hasAuthentication":"true",
             "request":{
                 "type":"POST",
@@ -127,16 +128,16 @@
     },
     {
         "name":"Plivo",
-		"configurables": [
-			"username",
-			"password",
-			"from"
-		],
+        "configurables": [
+            "username",
+            "password",
+            "from"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "hasAuthentication":"true",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "maxRecipient":"1",
             "request":{
                 "type":"POST",
@@ -173,16 +174,16 @@
     },
     {
         "name":"Rancard",
-		"configurables": [
-			"username",
-			"password",
-			"from"
-		],
+        "configurables": [
+            "username",
+            "password",
+            "from"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "hasAuthentication":"true",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "maxRecipient":"1",
             "request":{
                 "type":"GET",
@@ -212,15 +213,15 @@
     },
     {
         "name":"Twilio",
-		"configurables": [
-			"username",
-			"password"
-		],
+        "configurables": [
+            "username",
+            "password"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "hasAuthentication":"true",
             "millisecondsBetweenMessages":"1",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "maxRecipient":"1",
             "request":{
                 "type":"POST",
@@ -256,16 +257,16 @@
     },
     {
         "name":"Voxeo",
-		"configurables": [
-			"username",
-			"password",
-			"botkey",
-			"from"
-		],
+        "configurables": [
+            "username",
+            "password",
+            "botkey",
+            "from"
+        ],
         "outgoing":{
             "msxSmsSize":"160",
             "millisecondsBetweenMessages":"6000",
-            "exponentialBackoffRetries":"true",
+            "exponentialBackOffRetries":"true",
             "maxRecipient":"1",
             "hasAuthentication":"true",
             "request":{

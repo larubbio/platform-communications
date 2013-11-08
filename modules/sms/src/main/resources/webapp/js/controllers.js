@@ -87,6 +87,8 @@
         function autoExpandSingleAccordion() {
             if ($scope.accordions.length === 1) {
                 $scope.accordions[0] = true;
+                $scope.config.defaultConfigName = $scope.config.configs[0].name;
+                $scope.defaultConfigIndex = 0;
             }
         }
 

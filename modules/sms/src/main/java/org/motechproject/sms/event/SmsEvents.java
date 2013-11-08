@@ -36,13 +36,13 @@ public class SmsEvents {
     public static final String PROVIDER_STATUS = "provider_status";
 
     public static MotechEvent inboundEvent(String config, String sender, String recipient, String message,
-                                           String providerId, DateTime timestamp) {
+                                           String providerMessageId, DateTime timestamp) {
         Map<String, Object> params = new HashMap<>();
         params.put(CONFIG, config);
         params.put(SENDER, sender);
         params.put(RECIPIENT, recipient);
         params.put(MESSAGE, message);
-        params.put(PROVIDER_MESSAGE_ID, providerId);
+        params.put(PROVIDER_MESSAGE_ID, providerMessageId);
         params.put(TIMESTAMP, timestamp);
         return new MotechEvent(INBOUND_SMS, params);
     }

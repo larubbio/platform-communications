@@ -226,27 +226,27 @@
                                 "eventParameters" : [
                                   {
                                     "eventKey" : "config",
-                                    "displayName" : "sms.task.trigger.inbound.config"
+                                    "displayName" : "sms.task.trigger.config"
                                   },
                                   {
                                     "eventKey" : "sender",
-                                    "displayName" : "sms.task.trigger.inbound.sender"
+                                    "displayName" : "sms.task.trigger.sender"
                                   },
                                   {
                                     "eventKey" : "recipient",
-                                    "displayName" : "sms.task.trigger.inbound.recipient"
+                                    "displayName" : "sms.task.trigger.recipient"
                                   },
                                   {
                                     "eventKey" : "message",
-                                    "displayName" : "sms.task.trigger.inbound.message"
+                                    "displayName" : "sms.task.trigger.message"
                                   },
                                   {
-                                    "eventKey" : "message_id",
-                                    "displayName" : "sms.task.trigger.inbound.message_id"
+                                    "eventKey" : "provider_message_id",
+                                    "displayName" : "sms.task.trigger.provider_message_id"
                                   },
                                   {
                                     "eventKey" : "timestamp",
-                                    "displayName" : "sms.task.trigger.inbound.timestamp"
+                                    "displayName" : "sms.task.trigger.timestamp"
                                   }
                                 ]
                               }
