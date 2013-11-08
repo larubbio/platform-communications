@@ -1,0 +1,85 @@
+<div class="row-fluid tab-frame">
+
+    <div class="clearfix">
+        <h4 class="frame-title">{{msg('sms.web.send.title')}}</h4>
+        <div class="inside">
+
+            <div class="alert alert-error alert-block" ng-show="config.configs.length == 0">
+                You have not created any configurations, you will not be able to send of receive messages without one.<br/>
+                Manage your SMS configurations in the <a href="#/settings">Settings</a> tab.
+            </div>
+            <div ng-repeat="message in messages" class="alert alert-success alert-block animate-repeat">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{message}}
+            </div>
+            <div ng-show="error.length > 0" class="alert alert-error alert-block" ng-bind="error"></div>
+
+            <form name="form" class="form-horizontal inside" ng-submit="sendSms()" ng-hide="!config || config.configs.length == 0" novalidate>
+
+                <div class="control-group">
+                    <label class="control-label">{{msg('sms.web.send.config')}}</label>
+                    <div class="controls">
+                        <label class="radio inline" ng-repeat="conf in config.configs">
+                            <input type="radio" value="{{conf.name}}" ng-model="sms.config">
+                            {{conf.name}}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="recipients" tooltip="{{msg('sms.web.send.recipients.tooltip')}}">
+                        {{msg('sms.web.send.recipients')}}
+                    </label>
+                    <div class="controls">
+                        <input name="recipients" id="recipients" class="input-xlarge-fluid" type="text" ng-model="sms.recipients" ng-pattern="/^[+]?[0-9]+(,[+]?[0-9]+)*$/" ng-list required ng-focus="true" tooltip="{{msg('sms.web.send.recipients.tooltip')}}">
+                        <span ng-show="form.recipients.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.send.required_field', msg('sms.web.send.recipients_field'))}}</span>
+                        <span ng-show="form.recipients.$error.pattern && !form.$pristine" class="form-hint">{{msg('sms.web.send.bad-number_format', msg('sms.web.send.recipients_field'))}}</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="message">{{msg('sms.web.send.message')}}<br/><span class="char-counter">{{sms.message.length}}</span></label>
+                    <div class="controls">
+
+                        <textarea name="message" id="message" class="textarea input-xlarge-fluid" rows="5" required ng-model="sms.message"></textarea>
+                        <span ng-show="form.message.$error.required && !form.$pristine" class="form-hint">{{msg('sms.web.send.required_field', msg('sms.web.send.message_field'))}}</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        {{msg('sms.web.send.delivery_time')}}
+                    </label>
+                    <div class="controls">
+                        <label class="radio inline">
+                            <input type="radio" value="now" ng-model="dt">
+                            {{msg('sms.web.send.immediately')}}
+                        </label>
+                        <label class="radio inline">
+                            <input type="radio" value="10sec" ng-model="dt">
+                            {{msg('sms.web.send.in10sec')}}
+                        </label>
+                        <label class="radio inline">
+                            <input type="radio" value="1min" ng-model="dt">
+                            {{msg('sms.web.send.in1min')}}
+                        </label>
+                        <label class="radio inline">
+                            <input type="radio" value="1hour" ng-model="dt">
+                            {{msg('sms.web.send.in1hour')}}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit" value="{{msg('sms.web.send.send')}}" ng-disabled="form.$invalid || messages.length"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- DEBUG
+<div class="alert alert-block">config:{{config}}</div>
+<div class="alert alert-block">sms:{{sms}}</div>
+-->
