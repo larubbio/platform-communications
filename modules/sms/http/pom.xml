@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>platform-communications</artifactId>
-        <version>0.21.1</version>
+        <version>0.21.2-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
