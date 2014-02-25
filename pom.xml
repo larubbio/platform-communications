@@ -15,7 +15,7 @@
 
     <properties>
         <motech.groupId>org.motechproject</motech.groupId>
-        <motech.version>0.22.1-SNAPSHOT</motech.version>
+        <motech.version>0.22</motech.version>
 
         <db.server>localhost</db.server>
         <db.port>5984</db.port>
@@ -1211,6 +1211,7 @@
         <module>modules/ivr/voxeo-bundle</module>
         <module>modules/outbox/outbox</module>
         <module>modules/sms</module>
+        <module>modules/mtraining</module>
 
         <!-- Archetypes modules -->
 
