@@ -6,11 +6,11 @@ import org.ektorp.support.TypeDiscriminator;
 import java.util.List;
 
 /**
- * Couch document object representing a Course content.
+ * Couch document object representing a Chapter content.
  */
 
-@TypeDiscriminator("doc.type === 'Course'")
-public class Course extends Content {
+@TypeDiscriminator("doc.type === 'Chapter'")
+public class Chapter extends Content {
     @JsonProperty
     private String name;
 
@@ -18,15 +18,15 @@ public class Course extends Content {
     private String description;
 
     @JsonProperty
-    private List<ChildContentIdentifier> modules;
+    private List<ChildContentIdentifier> messages;
 
-    Course() {
+    Chapter() {
     }
 
-    public Course(String name, String description, List<ChildContentIdentifier> chapters) {
+    public Chapter(String name, String description, List<ChildContentIdentifier> messages) {
         this.name = name;
         this.description = description;
-        this.modules = chapters;
+        this.messages = messages;
     }
 
     public String getName() {
@@ -37,7 +37,7 @@ public class Course extends Content {
         return description;
     }
 
-    public List<ChildContentIdentifier> getModules() {
-        return modules;
+    public List<ChildContentIdentifier> getMessages() {
+        return messages;
     }
 }

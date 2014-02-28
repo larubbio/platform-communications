@@ -7,4 +7,9 @@
 
     <osgi:reference interface="org.motechproject.mtraining.service.CourseService" id="courseService"/>
 
+    <osgi:reference id="eventListenerRegistry"
+                    interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
+    <bean id="testEventHandler" class="org.motechproject.mtraining.osgi.TestEventHandler" />
+
 </beans>
