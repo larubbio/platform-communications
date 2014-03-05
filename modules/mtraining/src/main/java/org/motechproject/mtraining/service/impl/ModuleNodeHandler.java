@@ -1,14 +1,16 @@
 package org.motechproject.mtraining.service.impl;
 
-import org.apache.log4j.Logger;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
-import org.motechproject.mtraining.domain.ChildContentIdentifier;
+import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllModules;
 import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @Component
 public class ModuleNodeHandler extends NodeHandler {
 
-    private static Logger logger = Logger.getLogger(ModuleNodeHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ModuleNodeHandler.class);
 
     @Autowired
     private AllModules allModules;
@@ -46,16 +48,22 @@ public class ModuleNodeHandler extends NodeHandler {
         }
 
         Module module = new Module(moduleDto.getName(), moduleDto.getDescription(), getChapters(node));
+        ContentIdentifierDto moduleIdentifier = moduleDto.getModuleIdentifier();
+        if (moduleIdentifier != null) {
+            module.setContentId(moduleIdentifier.getContentId());
+            module.setVersion(moduleIdentifier.getVersion());
+        }
         allModules.add(module);
+
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Raising event for saved module: %s", module.getContentId()));
         }
 
-        sendEvent(MTrainingEventConstants.MODULE_CREATION_EVENT, module.getContentId());
+        sendEvent(MTrainingEventConstants.MODULE_CREATION_EVENT, module.getContentId(), module.getVersion());
         return module;
     }
 
-    private List<ChildContentIdentifier> getChapters(Node node) {
+    private List<ContentIdentifier> getChapters(Node node) {
         return getChildContentIdentifiers(node);
     }
 }

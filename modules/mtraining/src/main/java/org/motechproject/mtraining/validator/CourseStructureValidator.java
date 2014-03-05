@@ -1,11 +1,12 @@
 package org.motechproject.mtraining.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CourseStructureValidator {
-    private static Logger logger = Logger.getLogger(CourseStructureValidator.class);
+    private static Logger logger = LoggerFactory.getLogger(CourseStructureValidator.class);
 
     public CourseStructureValidationResponse validateMessage(MessageDto message) {
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse();

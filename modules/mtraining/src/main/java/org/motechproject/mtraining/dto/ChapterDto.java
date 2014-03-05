@@ -10,6 +10,7 @@ import java.util.List;
 public class ChapterDto {
     private String name;
     private String description;
+    private ContentIdentifierDto chapterIdentifier;
     private List<MessageDto> messages;
 
     public ChapterDto() {
@@ -19,6 +20,14 @@ public class ChapterDto {
         this.name = name;
         this.description = description;
         this.messages = messages;
+        this.chapterIdentifier = null;
+    }
+
+    public ChapterDto(String name, String description, ContentIdentifierDto chapterIdentifier, List<MessageDto> messages) {
+        this.name = name;
+        this.description = description;
+        this.chapterIdentifier = chapterIdentifier;
+        this.messages = messages;
     }
 
     public String getName() {
@@ -27,6 +36,10 @@ public class ChapterDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public ContentIdentifierDto getChapterIdentifier() {
+        return chapterIdentifier;
     }
 
     public List<MessageDto> getMessages() {

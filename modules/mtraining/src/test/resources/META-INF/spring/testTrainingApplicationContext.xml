@@ -10,6 +10,6 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <bean id="testEventHandler" class="org.motechproject.mtraining.osgi.TestEventHandler" />
+    <bean id="testEventHandler" class="org.motechproject.mtraining.osgi.TestEventHandler"/>
 
 </beans>

@@ -18,12 +18,12 @@ public class Module extends Content {
     private String description;
 
     @JsonProperty
-    private List<ChildContentIdentifier> chapters;
+    private List<ContentIdentifier> chapters;
 
     Module() {
     }
 
-    public Module(String name, String description, List<ChildContentIdentifier> chapters) {
+    public Module(String name, String description, List<ContentIdentifier> chapters) {
         this.name = name;
         this.description = description;
         this.chapters = chapters;
@@ -37,7 +37,7 @@ public class Module extends Content {
         return description;
     }
 
-    public List<ChildContentIdentifier> getChapters() {
+    public List<ContentIdentifier> getChapters() {
         return chapters;
     }
 }

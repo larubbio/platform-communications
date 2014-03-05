@@ -3,8 +3,8 @@ package org.motechproject.mtraining.service.impl;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
-import org.motechproject.mtraining.domain.ChildContentIdentifier;
 import org.motechproject.mtraining.domain.Content;
+import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +30,20 @@ public abstract class NodeHandler {
 
     protected abstract Content saveAndRaiseEvent(Node node);
 
-    protected void sendEvent(String subject, UUID contentId) {
+    protected void sendEvent(String subject, UUID contentId, Integer version) {
         HashMap<String, Object> eventParameters = new HashMap<>();
-        eventParameters.put(MTrainingEventConstants.NODE_ID, contentId);
+        eventParameters.put(MTrainingEventConstants.CONTENT_ID, contentId);
+        eventParameters.put(MTrainingEventConstants.VERSION, version);
         MotechEvent motechEvent = new MotechEvent(subject, eventParameters);
         eventRelay.sendEventMessage(motechEvent);
     }
 
-    protected List<ChildContentIdentifier> getChildContentIdentifiers(Node node) {
-        List<ChildContentIdentifier> childContentIdentifiers = new ArrayList<>();
+    protected List<ContentIdentifier> getChildContentIdentifiers(Node node) {
+        List<ContentIdentifier> childContentIdentifiers = new ArrayList<>();
         for (Node childNode : node.getChildNodes()) {
             Content persistentEntity = childNode.getPersistentEntity();
             if (persistentEntity != null) {
-                childContentIdentifiers.add(new ChildContentIdentifier(persistentEntity.getContentId(), persistentEntity.getVersion()));
+                childContentIdentifiers.add(new ContentIdentifier(persistentEntity.getContentId(), persistentEntity.getVersion()));
             }
         }
         return childContentIdentifiers;

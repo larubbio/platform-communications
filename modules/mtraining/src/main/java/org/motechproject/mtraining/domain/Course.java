@@ -18,15 +18,15 @@ public class Course extends Content {
     private String description;
 
     @JsonProperty
-    private List<ChildContentIdentifier> modules;
+    private List<ContentIdentifier> modules;
 
     Course() {
     }
 
-    public Course(String name, String description, List<ChildContentIdentifier> chapters) {
+    public Course(String name, String description, List<ContentIdentifier> modules) {
         this.name = name;
         this.description = description;
-        this.modules = chapters;
+        this.modules = modules;
     }
 
     public String getName() {
@@ -37,7 +37,7 @@ public class Course extends Content {
         return description;
     }
 
-    public List<ChildContentIdentifier> getModules() {
+    public List<ContentIdentifier> getModules() {
         return modules;
     }
 }

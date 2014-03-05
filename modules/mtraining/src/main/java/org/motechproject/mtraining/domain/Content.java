@@ -10,7 +10,7 @@ import java.util.UUID;
  * defines the necessary fields that an object in a course structure should have.
  */
 
-public class Content extends MotechBaseDataObject {
+public abstract class Content extends MotechBaseDataObject {
     private static final int DEFAULT_VERSION = 1;
 
     @JsonProperty
@@ -28,7 +28,19 @@ public class Content extends MotechBaseDataObject {
         return contentId;
     }
 
+    public void setContentId(UUID contentId) {
+        this.contentId = contentId;
+    }
+
     public Integer getVersion() {
         return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public void incrementVersion() {
+        version = version + 1;
     }
 }

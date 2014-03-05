@@ -1,14 +1,16 @@
 package org.motechproject.mtraining.service.impl;
 
-import org.apache.log4j.Logger;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
-import org.motechproject.mtraining.domain.ChildContentIdentifier;
+import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Node;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllCourses;
 import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @Component
 public class CourseNodeHandler extends NodeHandler {
 
-    private static Logger logger = Logger.getLogger(CourseNodeHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(CourseNodeHandler.class);
 
     @Autowired
     private AllCourses allCourses;
@@ -41,22 +43,28 @@ public class CourseNodeHandler extends NodeHandler {
     @Override
     protected Course saveAndRaiseEvent(Node node) {
         CourseDto courseDto = (CourseDto) node.getNodeData();
+
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Saving course: %s", courseDto.getName()));
         }
 
         Course course = new Course(courseDto.getName(), courseDto.getDescription(), getModules(node));
+        ContentIdentifierDto courseIdentifier = courseDto.getCourseIdentifier();
+        if (courseIdentifier != null) {
+            course.setContentId(courseIdentifier.getContentId());
+            course.setVersion(courseIdentifier.getVersion());
+        }
         allCourses.add(course);
 
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Raising event for saved course: %s", course.getContentId()));
         }
 
-        sendEvent(MTrainingEventConstants.COURSE_CREATION_EVENT, course.getContentId());
+        sendEvent(MTrainingEventConstants.COURSE_CREATION_EVENT, course.getContentId(), course.getVersion());
         return course;
     }
 
-    private List<ChildContentIdentifier> getModules(Node node) {
+    private List<ContentIdentifier> getModules(Node node) {
         return getChildContentIdentifiers(node);
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -17,6 +18,7 @@ import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllModules;
@@ -24,6 +26,7 @@ import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -33,10 +36,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ModuleNodeHandlerTest {
-    public static final Integer DEFAULT_VERSION = 1;
     @InjectMocks
     private ModuleNodeHandler moduleNodeHandler = new ModuleNodeHandler();
-
     @Mock
     private CourseStructureValidator courseStructureValidator;
     @Mock
@@ -46,9 +47,16 @@ public class ModuleNodeHandlerTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    private ContentIdentifierDto moduleIdentifier;
+
+    @Before
+    public void setUp() throws Exception {
+        moduleIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
+    }
+
     @Test
     public void shouldValidateGivenModuleDtoAndThrowExceptionIfInvalid() {
-        ModuleDto moduleDto = new ModuleDto("name", "description", Collections.EMPTY_LIST);
+        ModuleDto moduleDto = new ModuleDto("name", "description", moduleIdentifier, Collections.EMPTY_LIST);
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateModule(moduleDto)).thenReturn(validationResponse);
@@ -61,7 +69,7 @@ public class ModuleNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenModuleDtoIsValid() {
-        ModuleDto moduleDto = new ModuleDto("name", "description", asList(new ChapterDto()));
+        ModuleDto moduleDto = new ModuleDto("name", "description", moduleIdentifier, asList(new ChapterDto()));
         when(courseStructureValidator.validateModule(moduleDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         moduleNodeHandler.validateNodeData(moduleDto);
@@ -73,7 +81,7 @@ public class ModuleNodeHandlerTest {
         Chapter expectedChapterForTheModule = new Chapter("", "", Collections.EMPTY_LIST);
         chapterNode1.setPersistentEntity(expectedChapterForTheModule);
         Node chapterNode2 = new Node(NodeType.MESSAGE, new ChapterDto());
-        ModuleDto moduleDto = new ModuleDto("name", "description", asList(new ChapterDto()));
+        ModuleDto moduleDto = new ModuleDto("name", "description", moduleIdentifier, asList(new ChapterDto()));
         Node moduleNode = new Node(NodeType.CHAPTER, moduleDto, asList(chapterNode1, chapterNode2));
 
         moduleNodeHandler.saveAndRaiseEvent(moduleNode);
@@ -97,12 +105,13 @@ public class ModuleNodeHandlerTest {
         assertEquals(expectedChapter.getContentId(), savedModule.getChapters().get(0).getContentId());
         assertEquals(expectedChapter.getVersion(), savedModule.getChapters().get(0).getVersion());
         assertNotNull(savedModule.getContentId());
-        assertEquals(DEFAULT_VERSION, savedModule.getVersion());
+        assertEquals(moduleIdentifier.getVersion(), savedModule.getVersion());
     }
 
     private void assertEventDetails(Module savedModule, MotechEvent raisedEvent) {
         assertEquals(MTrainingEventConstants.MODULE_CREATION_EVENT, raisedEvent.getSubject());
-        assertEquals(1, raisedEvent.getParameters().size());
-        assertEquals(savedModule.getContentId(), raisedEvent.getParameters().get(MTrainingEventConstants.NODE_ID));
+        assertEquals(2, raisedEvent.getParameters().size());
+        assertEquals(savedModule.getContentId(), raisedEvent.getParameters().get(MTrainingEventConstants.CONTENT_ID));
+        assertEquals(savedModule.getVersion(), raisedEvent.getParameters().get(MTrainingEventConstants.VERSION));
     }
 }

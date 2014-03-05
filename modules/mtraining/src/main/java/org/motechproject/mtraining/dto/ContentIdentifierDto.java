@@ -23,4 +23,20 @@ public class ContentIdentifierDto {
         return version;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+        ContentIdentifierDto otherDto = (ContentIdentifierDto) other;
+        return this.contentId.equals(otherDto.contentId) && this.version.equals(otherDto.version);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = contentId != null ? contentId.hashCode() : 0;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
+    }
 }

@@ -9,30 +9,37 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
-import org.motechproject.mtraining.service.CourseService;
+import org.motechproject.mtraining.repository.AllCourses;
+import org.motechproject.mtraining.repository.AllModules;
 
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CourseServiceImplTest {
 
-    private CourseService courseService;
-
     @Mock
     private NodeHandlerOrchestrator nodeHandlerOrchestrator;
+    @Mock
+    private AllCourses allCourses;
+    @Mock
+    private AllModules allModules;
+
+    private CourseServiceImpl courseService;
+    private ContentIdentifierDto chapterIdentifier;
 
     @Before
     public void setUp() throws Exception {
         courseService = new CourseServiceImpl(nodeHandlerOrchestrator);
+        chapterIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
     }
 
     @Test
@@ -54,7 +61,7 @@ public class CourseServiceImplTest {
     public void shouldConstructChapterNodeWithMessageChildNodesAndInvokeHandler() {
         MessageDto messageDto1 = new MessageDto();
         MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto = new ChapterDto("name", "desc", asList(messageDto1, messageDto2));
+        ChapterDto chapterDto = new ChapterDto("name", "desc", chapterIdentifier, asList(messageDto1, messageDto2));
 
         courseService.addChapter(chapterDto);
 
@@ -71,9 +78,9 @@ public class CourseServiceImplTest {
     public void shouldConstructModuleNodeWithAllDescendantNodesAndInvokeHandler() {
         MessageDto messageDto1 = new MessageDto();
         MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto1 = new ChapterDto("name", "desc", asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto("name", "desc", asList(messageDto1, messageDto2));
-        ModuleDto moduleDto = new ModuleDto("name", "desc", asList(chapterDto1, chapterDto2));
+        ChapterDto chapterDto1 = new ChapterDto("name", "desc", chapterIdentifier, asList(messageDto1, messageDto2));
+        ChapterDto chapterDto2 = new ChapterDto("name", "desc", chapterIdentifier, asList(messageDto1, messageDto2));
+        ModuleDto moduleDto = new ModuleDto("name", "desc", chapterIdentifier, asList(chapterDto1, chapterDto2));
 
         courseService.addModule(moduleDto);
 
@@ -90,11 +97,11 @@ public class CourseServiceImplTest {
     public void shouldConstructCourseNodeWithAllDescendantNodesAndInvokeHandler() {
         MessageDto messageDto1 = new MessageDto();
         MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto1 = new ChapterDto("name", "desc", asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto("name", "desc", asList(messageDto1, messageDto2));
-        ModuleDto moduleDto1 = new ModuleDto("name", "desc", asList(chapterDto1, chapterDto2));
-        ModuleDto moduleDto2 = new ModuleDto("name", "desc", asList(chapterDto1, chapterDto2));
-        CourseDto courseDto = new CourseDto("name", "desc", asList(moduleDto1, moduleDto2));
+        ChapterDto chapterDto1 = new ChapterDto("name", "desc", chapterIdentifier, asList(messageDto1, messageDto2));
+        ChapterDto chapterDto2 = new ChapterDto("name", "desc", chapterIdentifier, asList(messageDto1, messageDto2));
+        ModuleDto moduleDto1 = new ModuleDto("name", "desc", chapterIdentifier, asList(chapterDto1, chapterDto2));
+        ModuleDto moduleDto2 = new ModuleDto("name", "desc", chapterIdentifier, asList(chapterDto1, chapterDto2));
+        CourseDto courseDto = new CourseDto("name", "desc", chapterIdentifier, asList(moduleDto1, moduleDto2));
 
         courseService.addCourse(courseDto);
 
@@ -129,5 +136,4 @@ public class CourseServiceImplTest {
         assertEquals(messageDtos.get(0), chapterNode.getChildNodes().get(0).getNodeData());
         assertEquals(messageDtos.get(1), chapterNode.getChildNodes().get(1).getNodeData());
     }
-
 }

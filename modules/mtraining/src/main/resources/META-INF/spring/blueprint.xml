@@ -11,6 +11,9 @@
     <osgi:service interface="org.motechproject.mtraining.service.CourseService" auto-export="interfaces"
                   ref="courseService"/>
 
+    <osgi:service interface="org.motechproject.mtraining.service.BookmarkService" auto-export="interfaces"
+                  ref="bookmarkService"/>
+
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>

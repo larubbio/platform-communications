@@ -10,7 +10,9 @@ import java.util.List;
 public class CourseDto {
     private String name;
     private String description;
+    private ContentIdentifierDto courseIdentifier;
     private List<ModuleDto> modules;
+
 
     public CourseDto() {
     }
@@ -18,6 +20,14 @@ public class CourseDto {
     public CourseDto(String name, String description, List<ModuleDto> modules) {
         this.name = name;
         this.description = description;
+        this.modules = modules;
+        this.courseIdentifier = null;
+    }
+
+    public CourseDto(String name, String description, ContentIdentifierDto courseIdentifier, List<ModuleDto> modules) {
+        this.name = name;
+        this.description = description;
+        this.courseIdentifier = courseIdentifier;
         this.modules = modules;
     }
 
@@ -27,6 +37,10 @@ public class CourseDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public ContentIdentifierDto getCourseIdentifier() {
+        return courseIdentifier;
     }
 
     public List<ModuleDto> getModules() {

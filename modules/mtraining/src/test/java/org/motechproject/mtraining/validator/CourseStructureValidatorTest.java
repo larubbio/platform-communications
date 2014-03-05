@@ -3,22 +3,25 @@ package org.motechproject.mtraining.validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 
+import java.util.UUID;
+
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CourseStructureValidatorTest {
 
     private CourseStructureValidator courseStructureValidator;
+    private ContentIdentifierDto contentIdentifier;
 
     @Before
     public void setUp() throws Exception {
         courseStructureValidator = new CourseStructureValidator();
+        contentIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
     }
 
     @Test
@@ -40,7 +43,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForAValidMessage() {
-        MessageDto validMessage = new MessageDto("name", "externalId", "description");
+        MessageDto validMessage = new MessageDto("name", "externalId", "description", contentIdentifier);
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(validMessage);
         assertTrue(validationResponse.isValid());
@@ -67,7 +70,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidChapter() {
-        ChapterDto invalidChapter = new ChapterDto("name", "desc", asList(new MessageDto()));
+        ChapterDto invalidChapter = new ChapterDto("name", "desc", contentIdentifier, asList(new MessageDto()));
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateChapter(invalidChapter);
 
@@ -95,7 +98,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidModule() {
-        ModuleDto invalidModule = new ModuleDto("name", "desc", asList(new ChapterDto()));
+        ModuleDto invalidModule = new ModuleDto("name", "desc", contentIdentifier, asList(new ChapterDto()));
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateModule(invalidModule);
 
@@ -123,7 +126,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidCourse() {
-        CourseDto invalidCourse = new CourseDto("name", "desc", asList(new ModuleDto()));
+        CourseDto invalidCourse = new CourseDto("name", "desc", contentIdentifier, asList(new ModuleDto()));
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateCourse(invalidCourse);
 

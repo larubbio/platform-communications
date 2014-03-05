@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -17,6 +18,7 @@ import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllChapters;
@@ -24,6 +26,7 @@ import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -33,7 +36,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ChapterNodeHandlerTest {
-    public static final Integer DEFAULT_VERSION = 1;
     @InjectMocks
     private ChapterNodeHandler chapterNodeHandler = new ChapterNodeHandler();
 
@@ -45,10 +47,16 @@ public class ChapterNodeHandlerTest {
     private EventRelay eventRelay;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    private ContentIdentifierDto chapterIdentifier;
+
+    @Before
+    public void setUp() throws Exception {
+        chapterIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
+    }
 
     @Test
     public void shouldValidateGivenChapterDtoAndThrowExceptionIfInvalid() {
-        ChapterDto chapterDto = new ChapterDto("name", "description", Collections.EMPTY_LIST);
+        ChapterDto chapterDto = new ChapterDto("name", "description", chapterIdentifier, Collections.EMPTY_LIST);
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateChapter(chapterDto)).thenReturn(validationResponse);
@@ -61,7 +69,7 @@ public class ChapterNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenChapterDtoIsValid() {
-        ChapterDto chapterDto = new ChapterDto("name", "description", asList(new MessageDto()));
+        ChapterDto chapterDto = new ChapterDto("name", "description", chapterIdentifier, asList(new MessageDto()));
         when(courseStructureValidator.validateChapter(chapterDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         chapterNodeHandler.validateNodeData(chapterDto);
@@ -69,7 +77,7 @@ public class ChapterNodeHandlerTest {
 
     @Test
     public void shouldSaveTheGivenChapterDtoAsChapterEntityWithMessagesAndRaiseEvent() {
-        ChapterDto chapterDto = new ChapterDto("name", "description", asList(new MessageDto()));
+        ChapterDto chapterDto = new ChapterDto("name", "description", chapterIdentifier, asList(new MessageDto()));
         Node messageNode1 = new Node(NodeType.MESSAGE, new MessageDto());
         Message expectedMessageForTheChapter = new Message("", "", "");
         messageNode1.setPersistentEntity(expectedMessageForTheChapter);
@@ -97,12 +105,13 @@ public class ChapterNodeHandlerTest {
         assertEquals(expectedMessage.getContentId(), savedChapter.getMessages().get(0).getContentId());
         assertEquals(expectedMessage.getVersion(), savedChapter.getMessages().get(0).getVersion());
         assertNotNull(savedChapter.getContentId());
-        assertEquals(DEFAULT_VERSION, savedChapter.getVersion());
+        assertEquals(chapterIdentifier.getVersion(), savedChapter.getVersion());
     }
 
     private void assertEventDetails(Chapter savedChapter, MotechEvent raisedEvent) {
         assertEquals(MTrainingEventConstants.CHAPTER_CREATION_EVENT, raisedEvent.getSubject());
-        assertEquals(1, raisedEvent.getParameters().size());
-        assertEquals(savedChapter.getContentId(), raisedEvent.getParameters().get(MTrainingEventConstants.NODE_ID));
+        assertEquals(2, raisedEvent.getParameters().size());
+        assertEquals(savedChapter.getContentId(), raisedEvent.getParameters().get(MTrainingEventConstants.CONTENT_ID));
+        assertEquals(savedChapter.getVersion(), raisedEvent.getParameters().get(MTrainingEventConstants.VERSION));
     }
 }

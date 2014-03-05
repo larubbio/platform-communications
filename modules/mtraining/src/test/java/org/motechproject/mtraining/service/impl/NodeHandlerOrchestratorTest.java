@@ -10,11 +10,13 @@ import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -29,10 +31,12 @@ public class NodeHandlerOrchestratorTest {
 
     @Mock
     private NodeHandlerFactory nodeHandlerFactory;
+    private ContentIdentifierDto messageIdentifier;
 
     @Before
     public void setUp() throws Exception {
         nodeHandlerOrchestrator = new NodeHandlerOrchestrator(nodeHandlerFactory);
+        messageIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
     }
 
     @Test
@@ -79,7 +83,7 @@ public class NodeHandlerOrchestratorTest {
     @Test
     public void shouldUpdateThePersistentEntityAfterSavingTheContent() {
         TestNodeHandler testNodeHandler = mock(TestNodeHandler.class);
-        Node messageNode = new Node(NodeType.MESSAGE, new MessageDto("name", "fileName", "desc"));
+        Node messageNode = new Node(NodeType.MESSAGE, new MessageDto("name", "fileName", "desc", messageIdentifier));
         when(nodeHandlerFactory.getHandler(any(NodeType.class))).thenReturn(testNodeHandler);
         Message savedMessageEntity = new Message("name", "fileName", "desc");
         when(testNodeHandler.saveAndRaiseEvent(messageNode)).thenReturn(savedMessageEntity);

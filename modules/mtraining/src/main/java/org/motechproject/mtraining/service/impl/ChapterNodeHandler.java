@@ -1,14 +1,16 @@
 package org.motechproject.mtraining.service.impl;
 
-import org.apache.log4j.Logger;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Chapter;
-import org.motechproject.mtraining.domain.ChildContentIdentifier;
+import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllChapters;
 import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @Component
 public class ChapterNodeHandler extends NodeHandler {
 
-    private static Logger logger = Logger.getLogger(ChapterNodeHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ChapterNodeHandler.class);
 
     @Autowired
     private AllChapters allChapters;
@@ -46,17 +48,22 @@ public class ChapterNodeHandler extends NodeHandler {
         }
 
         Chapter chapter = new Chapter(chapterDto.getName(), chapterDto.getDescription(), getMessages(node));
+        ContentIdentifierDto chapterIdentifier = chapterDto.getChapterIdentifier();
+        if (chapterIdentifier != null) {
+            chapter.setContentId(chapterIdentifier.getContentId());
+            chapter.setVersion(chapterIdentifier.getVersion());
+        }
         allChapters.add(chapter);
 
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Raising event for saved chapter: %s", chapter.getContentId()));
         }
 
-        sendEvent(MTrainingEventConstants.CHAPTER_CREATION_EVENT, chapter.getContentId());
+        sendEvent(MTrainingEventConstants.CHAPTER_CREATION_EVENT, chapter.getContentId(), chapter.getVersion());
         return chapter;
     }
 
-    private List<ChildContentIdentifier> getMessages(Node node) {
+    private List<ContentIdentifier> getMessages(Node node) {
         return getChildContentIdentifiers(node);
     }
 }

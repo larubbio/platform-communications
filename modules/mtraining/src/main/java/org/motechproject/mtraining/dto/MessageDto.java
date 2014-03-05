@@ -9,6 +9,7 @@ public class MessageDto {
     private String name;
     private String externalId;
     private String description;
+    private ContentIdentifierDto messageIdentifier;
 
     public MessageDto() {
     }
@@ -17,6 +18,14 @@ public class MessageDto {
         this.name = name;
         this.externalId = externalId;
         this.description = description;
+        this.messageIdentifier = null;
+    }
+
+    public MessageDto(String name, String externalId, String description, ContentIdentifierDto messageIdentifier) {
+        this.name = name;
+        this.externalId = externalId;
+        this.description = description;
+        this.messageIdentifier = messageIdentifier;
     }
 
     public String getName() {
@@ -29,5 +38,9 @@ public class MessageDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public ContentIdentifierDto getMessageIdentifier() {
+        return messageIdentifier;
     }
 }

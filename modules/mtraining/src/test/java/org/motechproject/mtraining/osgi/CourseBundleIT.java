@@ -1,13 +1,17 @@
 package org.motechproject.mtraining.osgi;
 
-import org.motechproject.mtraining.dto.MessageDto;
+import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.CourseDto;
+import org.motechproject.mtraining.dto.ModuleDto;
 import org.motechproject.mtraining.service.CourseService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class CourseBundleIT extends BaseOsgiIT {
 
@@ -16,19 +20,19 @@ public class CourseBundleIT extends BaseOsgiIT {
         assertNotNull(courseService);
     }
 
-    public void testThatAnEventIsRaisedWhenAnyNodeIsCreated() throws InterruptedException {
+    public void testThatAnEventIsRaisedWhenACourseIsCreated() throws InterruptedException {
         final TestEventHandler testEventHandler = (TestEventHandler) getApplicationContext().getBean("testEventHandler");
         CourseService courseService = (CourseService) getApplicationContext().getBean("courseService");
-        MessageDto messageDto = new MessageDto("messageName", "messageFileName", "description");
+        CourseDto courseDto = new CourseDto("messageName", "description", new ContentIdentifierDto(UUID.randomUUID(), 1), Collections.<ModuleDto>emptyList());
 
-        courseService.addMessage(messageDto);
+        courseService.addCourse(courseDto);
 
         new Wait(new WaitCondition() {
             @Override
             public boolean needsToWait() {
                 return !testEventHandler.isEventRaised();
             }
-        }, 20000).start();
+        }, 40000).start();
 
         assertTrue(testEventHandler.isEventRaised());
     }
@@ -42,10 +46,10 @@ public class CourseBundleIT extends BaseOsgiIT {
     protected List<String> getImports() {
         List<String> imports = new ArrayList<>();
         imports.add("org.motechproject.mtraining.service");
+        imports.add("org.motechproject.mtraining.dto");
         imports.add("org.motechproject.event");
         imports.add("org.motechproject.event.listener");
         imports.add("org.motechproject.event.listener.annotations");
-
         return imports;
     }
 }
