@@ -3,6 +3,8 @@ package org.motechproject.mtraining.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
+import java.util.UUID;
+
 /**
  * Couch document object representing a Message content.
  */
@@ -22,7 +24,15 @@ public class Message extends Content {
     Message() {
     }
 
-    public Message(String name, String externalId, String description) {
+    public Message(boolean isActive, String name, String externalId, String description) {
+        super(isActive);
+        this.name = name;
+        this.externalId = externalId;
+        this.description = description;
+    }
+
+    public Message(UUID contentId, Integer version, boolean isActive, String name, String externalId, String description) {
+        super(contentId, version, isActive);
         this.name = name;
         this.externalId = externalId;
         this.description = description;

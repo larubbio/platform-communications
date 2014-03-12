@@ -3,7 +3,7 @@ package org.motechproject.mtraining.service.impl;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
-import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllMessages;
@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 /**
  * Implementation of abstract class {@link NodeHandler}.
@@ -26,7 +28,7 @@ public class MessageNodeHandler extends NodeHandler {
     private AllMessages allMessages;
 
     @Override
-    protected void validateNodeData(Object nodeData) {
+    protected void validateNodeData(ContentDto nodeData) {
         MessageDto messageDto = (MessageDto) nodeData;
         CourseStructureValidationResponse validationResponse = validator().validateMessage(messageDto);
         if (!validationResponse.isValid()) {
@@ -43,12 +45,7 @@ public class MessageNodeHandler extends NodeHandler {
             logger.debug(String.format("Saving message: %s", messageDto.getName()));
         }
 
-        Message message = new Message(messageDto.getName(), messageDto.getExternalId(), messageDto.getDescription());
-        ContentIdentifierDto messageIdentifier = messageDto.getMessageIdentifier();
-        if (messageIdentifier != null) {
-            message.setContentId(messageIdentifier.getContentId());
-            message.setVersion(messageIdentifier.getVersion());
-        }
+        Message message = getMessage(messageDto);
         allMessages.add(message);
 
         if (logger.isDebugEnabled()) {
@@ -56,5 +53,17 @@ public class MessageNodeHandler extends NodeHandler {
         }
         sendEvent(MTrainingEventConstants.MESSAGE_CREATION_EVENT, message.getContentId(), message.getVersion());
         return message;
+    }
+
+    private Message getMessage(MessageDto messageDto) {
+        UUID contentId = messageDto.getContentId();
+        if (contentId == null) {
+            return new Message(messageDto.isActive(), messageDto.getName(), messageDto.getExternalId(), messageDto.getDescription());
+        }
+
+        Message existingMessage = getLatestVersion(allMessages.findByContentId(contentId));
+        Message messageToSave = new Message(existingMessage.getContentId(), existingMessage.getVersion(), messageDto.isActive(), messageDto.getName(), messageDto.getExternalId(), messageDto.getDescription());
+        messageToSave.incrementVersion();
+        return messageToSave;
     }
 }

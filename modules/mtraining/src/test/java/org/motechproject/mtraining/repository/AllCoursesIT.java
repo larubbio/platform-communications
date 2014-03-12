@@ -19,14 +19,13 @@ import static org.junit.Assert.assertThat;
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class AllCoursesIT {
 
-
     @Autowired
     private AllCourses allCourses;
 
     @Test
     public void shouldReturnCourseByContentId() {
-        Course cs001 = new Course("cs001", "test course", Collections.<ContentIdentifier>emptyList());
-        Course cs001_version2 = new Course("cs001", "edit test course", Collections.<ContentIdentifier>emptyList());
+        Course cs001 = new Course(true, "cs001", "test course", Collections.<ContentIdentifier>emptyList());
+        Course cs001_version2 = new Course(true, "cs001", "edit test course", Collections.<ContentIdentifier>emptyList());
         cs001_version2.setContentId(cs001.getContentId());
         cs001_version2.incrementVersion();
 
@@ -43,5 +42,4 @@ public class AllCoursesIT {
     public void after() {
         allCourses.bulkDelete(allCourses.getAll());
     }
-
 }

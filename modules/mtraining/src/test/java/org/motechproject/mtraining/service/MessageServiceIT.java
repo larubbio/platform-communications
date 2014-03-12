@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -37,9 +36,9 @@ public class MessageServiceIT {
 
     @Test
     public void shouldAddAMessage() throws InterruptedException {
-        MessageDto messageDto = new MessageDto("messageName", "fileName", "description", new ContentIdentifierDto(UUID.randomUUID(), 1));
+        MessageDto messageDto = new MessageDto(true, "messageName", "fileName", "description");
 
-        ContentIdentifierDto savedMessageIdentifier = messageService.addMessage(messageDto);
+        ContentIdentifierDto savedMessageIdentifier = messageService.addOrUpdateMessage(messageDto);
 
         List<Message> messagedInDb = allMessages.getAll();
         assertMessage(asList(messageDto), messagedInDb);

@@ -10,13 +10,12 @@ import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
-import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -31,12 +30,10 @@ public class NodeHandlerOrchestratorTest {
 
     @Mock
     private NodeHandlerFactory nodeHandlerFactory;
-    private ContentIdentifierDto messageIdentifier;
 
     @Before
     public void setUp() throws Exception {
         nodeHandlerOrchestrator = new NodeHandlerOrchestrator(nodeHandlerFactory);
-        messageIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
     }
 
     @Test
@@ -57,7 +54,7 @@ public class NodeHandlerOrchestratorTest {
 
         nodeHandlerOrchestrator.process(moduleNode);
 
-        List<Object> expectedValidatedNodesInOrder = asList(moduleDto, chapterDto1, chapterDto2, messageDto1, messageDto2, messageDto3, messageDto4);
+        List<ContentDto> expectedValidatedNodesInOrder = asList(moduleDto, chapterDto1, chapterDto2, messageDto1, messageDto2, messageDto3, messageDto4);
         assertEquals(expectedValidatedNodesInOrder, testNodeHandler.getValidatedNodes());
     }
 
@@ -83,9 +80,9 @@ public class NodeHandlerOrchestratorTest {
     @Test
     public void shouldUpdateThePersistentEntityAfterSavingTheContent() {
         TestNodeHandler testNodeHandler = mock(TestNodeHandler.class);
-        Node messageNode = new Node(NodeType.MESSAGE, new MessageDto("name", "fileName", "desc", messageIdentifier));
+        Node messageNode = new Node(NodeType.MESSAGE, new MessageDto(true, "name", "fileName", "desc"));
         when(nodeHandlerFactory.getHandler(any(NodeType.class))).thenReturn(testNodeHandler);
-        Message savedMessageEntity = new Message("name", "fileName", "desc");
+        Message savedMessageEntity = new Message(true, "name", "fileName", "desc");
         when(testNodeHandler.saveAndRaiseEvent(messageNode)).thenReturn(savedMessageEntity);
 
         nodeHandlerOrchestrator.process(messageNode);
@@ -94,11 +91,11 @@ public class NodeHandlerOrchestratorTest {
     }
 
     class TestNodeHandler extends NodeHandler {
-        List<Object> validatedNodes = new ArrayList<>();
+        List<ContentDto> validatedNodes = new ArrayList<>();
         List<Node> savedNodes = new ArrayList<>();
 
         @Override
-        protected void validateNodeData(Object nodeData) {
+        protected void validateNodeData(ContentDto nodeData) {
             validatedNodes.add(nodeData);
         }
 
@@ -108,7 +105,7 @@ public class NodeHandlerOrchestratorTest {
             return null;
         }
 
-        public List<Object> getValidatedNodes() {
+        public List<ContentDto> getValidatedNodes() {
             return validatedNodes;
         }
 
@@ -116,5 +113,4 @@ public class NodeHandlerOrchestratorTest {
             return savedNodes;
         }
     }
-
 }

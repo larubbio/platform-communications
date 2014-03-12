@@ -11,6 +11,15 @@
     <osgi:service interface="org.motechproject.mtraining.service.CourseService" auto-export="interfaces"
                   ref="courseService"/>
 
+    <osgi:service interface="org.motechproject.mtraining.service.ModuleService" auto-export="interfaces"
+                  ref="courseService"/>
+
+    <osgi:service interface="org.motechproject.mtraining.service.ChapterService" auto-export="interfaces"
+                  ref="courseService"/>
+
+    <osgi:service interface="org.motechproject.mtraining.service.MessageService" auto-export="interfaces"
+                  ref="courseService"/>
+
     <osgi:service interface="org.motechproject.mtraining.service.BookmarkService" auto-export="interfaces"
                   ref="bookmarkService"/>
 

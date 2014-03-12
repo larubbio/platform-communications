@@ -16,10 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
-import static org.motechproject.mtraining.service.AssertCourseContents.*;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertChapter;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertContentIdentifier;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
@@ -41,12 +42,11 @@ public class ChapterServiceIT {
 
     @Test
     public void shouldAddChapterWithMessages() throws InterruptedException {
-        ContentIdentifierDto contentIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
-        MessageDto messageDto1 = new MessageDto("messageName1", "messageFileName1", null, contentIdentifier);
-        MessageDto messageDto2 = new MessageDto("messageName2", "messageFileName2", "description2", contentIdentifier);
-        ChapterDto chapterDto = new ChapterDto("chapterName", "chapterDescription", contentIdentifier, asList(messageDto1, messageDto2));
+        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
+        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
+        ChapterDto chapterDto = new ChapterDto(true, "chapterName", "chapterDescription", asList(messageDto1, messageDto2));
 
-        ContentIdentifierDto savedChapterIdentifier = chapterService.addChapter(chapterDto);
+        ContentIdentifierDto savedChapterIdentifier = chapterService.addOrUpdateChapter(chapterDto);
 
         List<Message> messagesInDb = allMessages.getAll();
         List<Chapter> chaptersInDb = allChapters.getAll();

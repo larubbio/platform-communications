@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.motechproject.mtraining.domain.Bookmark;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.dto.BookmarkDto;
 import org.motechproject.mtraining.dto.ChapterDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
@@ -18,12 +20,15 @@ import org.motechproject.mtraining.repository.AllBookmarks;
 import org.motechproject.mtraining.service.CourseService;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 import static java.lang.Integer.valueOf;
+import static java.util.UUID.randomUUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BookmarkServiceImplTest {
@@ -34,39 +39,38 @@ public class BookmarkServiceImplTest {
     private CourseService courseService;
 
     private BookmarkServiceImpl bookmarkService;
-    private ContentIdentifierDto messageIdentifier;
 
     @Before
     public void setUp() throws Exception {
         bookmarkService = new BookmarkServiceImpl(allBookmarks, courseService);
-        messageIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
     }
 
     @Test
     public void shouldReturnBookmarkForTheGivenCaller() {
         String externalId = "someId";
-        Bookmark expectedBookmark = mock(Bookmark.class);
+        ContentIdentifier content = new ContentIdentifier(UUID.randomUUID(), 1);
+        Bookmark expectedBookmark = new Bookmark(externalId, content, content, content, content);
         when(allBookmarks.findBy(externalId)).thenReturn(expectedBookmark);
 
         BookmarkDto actualBookmark = bookmarkService.getBookmark(externalId);
 
         verify(allBookmarks).findBy(externalId);
         assertEquals(expectedBookmark.getExternalId(), actualBookmark.getExternalId());
-        assertEquals(expectedBookmark.getCourse(), actualBookmark.getCourse());
-        assertEquals(expectedBookmark.getModule(), actualBookmark.getModule());
-        assertEquals(expectedBookmark.getChapter(), actualBookmark.getChapter());
+        assertEquals(expectedBookmark.getCourse().getContentId(), actualBookmark.getCourse().getContentId());
+        assertEquals(expectedBookmark.getModule().getContentId(), actualBookmark.getModule().getContentId());
+        assertEquals(expectedBookmark.getChapter().getContentId(), actualBookmark.getChapter().getContentId());
     }
 
     @Test
     public void shouldAddBookmark() {
-        ContentIdentifierDto courseContentDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
-        ContentIdentifierDto courseContent = new ContentIdentifierDto(UUID.randomUUID(), 1);
-        ContentIdentifierDto moduleContent = new ContentIdentifierDto(UUID.randomUUID(), 2);
-        ContentIdentifierDto chapterContent = new ContentIdentifierDto(UUID.randomUUID(), 3);
-        CourseDto courseDto = new CourseDto("course1", "some description", courseContent,
-                Arrays.asList(new ModuleDto("module1", "module", moduleContent,
-                        Arrays.asList(new ChapterDto("chapter1", "chapter", chapterContent,
-                                Arrays.asList(new MessageDto("message1", "externalId", "message description", messageIdentifier)))))));
+        ContentIdentifierDto courseContentDto = new ContentIdentifierDto(randomUUID(), 1);
+        ContentDto courseContent = new CourseDto(randomUUID(), 1, true, "name", "desc", Collections.EMPTY_LIST);
+        ContentDto moduleContent = new ModuleDto(randomUUID(), 2, true, "name", "desc", Collections.EMPTY_LIST);
+        ContentDto chapterContent = new ChapterDto(randomUUID(), 3, true, "name", "desc", Collections.EMPTY_LIST);
+        CourseDto courseDto = new CourseDto(courseContent.getContentId(), courseContent.getVersion(), true, "course1", "some description",
+                Arrays.asList(new ModuleDto(moduleContent.getContentId(), moduleContent.getVersion(), true, "module1", "module",
+                        Arrays.asList(new ChapterDto(chapterContent.getContentId(), chapterContent.getVersion(), true, "chapter1", "chapter",
+                                Arrays.asList(new MessageDto(true, "message1", "externalId", "message description")))))));
         when(courseService.getCourse(courseContentDto)).thenReturn(courseDto);
 
         bookmarkService.addBookmark("someId", courseContentDto);
@@ -82,7 +86,9 @@ public class BookmarkServiceImplTest {
 
     @Test
     public void shouldUpdateBookmarkForAGivenCallerId() {
-        BookmarkDto bookmarkDto = new BookmarkDto("externalId", new ContentIdentifier(), new ContentIdentifier(), null, null);
+        ContentIdentifierDto contentIdentifier = new ContentIdentifierDto(randomUUID(), 1);
+        BookmarkDto bookmarkDto = new BookmarkDto("externalId", contentIdentifier,
+                contentIdentifier, contentIdentifier, contentIdentifier, DateTime.now());
         Bookmark bookmark = new Bookmark("externalId", new ContentIdentifier(), null, null, null);
         when(allBookmarks.findBy(bookmarkDto.getExternalId())).thenReturn(bookmark);
 

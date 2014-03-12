@@ -1,7 +1,8 @@
 package org.motechproject.mtraining.dto;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.motechproject.mtraining.domain.ContentIdentifier;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.joda.time.DateTime;
 
 /**
  * Object representing a bookmark node in a bookmark structure.
@@ -9,41 +10,62 @@ import org.motechproject.mtraining.domain.ContentIdentifier;
  */
 
 public class BookmarkDto {
+
     @JsonIgnore
     private String externalId;
-    private ContentIdentifier course;
-    private ContentIdentifier module;
-    private ContentIdentifier chapter;
-    private ContentIdentifier message;
+
+    @JsonProperty(value = "courseIdentifier")
+    private ContentIdentifierDto course;
+
+    @JsonProperty(value = "moduleIdentifier")
+    private ContentIdentifierDto module;
+
+    @JsonProperty(value = "chapterIdentifier")
+    private ContentIdentifierDto chapter;
+
+    @JsonProperty(value = "messageIdentifier")
+    private ContentIdentifierDto message;
+
+    @JsonProperty
+    private String dateModified;
 
     public BookmarkDto() {
     }
 
-    public BookmarkDto(String externalId, ContentIdentifier course, ContentIdentifier module, ContentIdentifier chapter, ContentIdentifier message) {
+    public BookmarkDto(String externalId, ContentIdentifierDto course, ContentIdentifierDto module, ContentIdentifierDto chapter, ContentIdentifierDto message, DateTime dateModified) {
         this.externalId = externalId;
         this.course = course;
         this.module = module;
         this.chapter = chapter;
         this.message = message;
+        this.dateModified = formatDateTime(dateModified);
     }
 
     public String getExternalId() {
         return externalId;
     }
 
-    public ContentIdentifier getCourse() {
+    public ContentIdentifierDto getCourse() {
         return course;
     }
 
-    public ContentIdentifier getModule() {
+    public ContentIdentifierDto getModule() {
         return module;
     }
 
-    public ContentIdentifier getChapter() {
+    public ContentIdentifierDto getChapter() {
         return chapter;
     }
 
-    public ContentIdentifier getMessage() {
+    public ContentIdentifierDto getMessage() {
         return message;
+    }
+
+    public String getDateModified() {
+        return dateModified;
+    }
+
+    private static String formatDateTime(DateTime dateTime) {
+        return dateTime == null ? null : dateTime.toString("dd-MM-yyyy HH:mm:ss.SSS");
     }
 }

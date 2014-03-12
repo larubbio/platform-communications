@@ -5,7 +5,7 @@ import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.dto.ChapterDto;
-import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllChapters;
 import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of abstract class {@link NodeHandler}.
@@ -30,7 +31,7 @@ public class ChapterNodeHandler extends NodeHandler {
     private AllChapters allChapters;
 
     @Override
-    protected void validateNodeData(Object nodeData) {
+    protected void validateNodeData(ContentDto nodeData) {
         ChapterDto chapterDto = (ChapterDto) nodeData;
         CourseStructureValidationResponse validationResponse = validator().validateChapter(chapterDto);
         if (!validationResponse.isValid()) {
@@ -47,12 +48,7 @@ public class ChapterNodeHandler extends NodeHandler {
             logger.debug(String.format("Saving chapter: %s", chapterDto.getName()));
         }
 
-        Chapter chapter = new Chapter(chapterDto.getName(), chapterDto.getDescription(), getMessages(node));
-        ContentIdentifierDto chapterIdentifier = chapterDto.getChapterIdentifier();
-        if (chapterIdentifier != null) {
-            chapter.setContentId(chapterIdentifier.getContentId());
-            chapter.setVersion(chapterIdentifier.getVersion());
-        }
+        Chapter chapter = getChapter(chapterDto, getMessages(node));
         allChapters.add(chapter);
 
         if (logger.isDebugEnabled()) {
@@ -65,5 +61,17 @@ public class ChapterNodeHandler extends NodeHandler {
 
     private List<ContentIdentifier> getMessages(Node node) {
         return getChildContentIdentifiers(node);
+    }
+
+    private Chapter getChapter(ChapterDto chapterDto, List<ContentIdentifier> messages) {
+        UUID contentId = chapterDto.getContentId();
+        if (contentId == null) {
+            return new Chapter(chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), messages);
+        }
+
+        Chapter existingChapter = getLatestVersion(allChapters.findByContentId(contentId));
+        Chapter chapterToSave = new Chapter(existingChapter.getContentId(), existingChapter.getVersion(), chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), messages);
+        chapterToSave.incrementVersion();
+        return chapterToSave;
     }
 }

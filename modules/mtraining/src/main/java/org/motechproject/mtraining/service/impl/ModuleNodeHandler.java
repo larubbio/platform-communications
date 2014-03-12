@@ -4,7 +4,7 @@ import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
-import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.ModuleDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllModules;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of abstract class {@link NodeHandler}.
@@ -30,7 +31,7 @@ public class ModuleNodeHandler extends NodeHandler {
     private AllModules allModules;
 
     @Override
-    protected void validateNodeData(Object nodeData) {
+    protected void validateNodeData(ContentDto nodeData) {
         ModuleDto moduleDto = (ModuleDto) nodeData;
         CourseStructureValidationResponse validationResponse = validator().validateModule(moduleDto);
         if (!validationResponse.isValid()) {
@@ -47,12 +48,7 @@ public class ModuleNodeHandler extends NodeHandler {
             logger.debug(String.format("Saving module: %s", moduleDto.getName()));
         }
 
-        Module module = new Module(moduleDto.getName(), moduleDto.getDescription(), getChapters(node));
-        ContentIdentifierDto moduleIdentifier = moduleDto.getModuleIdentifier();
-        if (moduleIdentifier != null) {
-            module.setContentId(moduleIdentifier.getContentId());
-            module.setVersion(moduleIdentifier.getVersion());
-        }
+        Module module = getModule(moduleDto, getChapters(node));
         allModules.add(module);
 
         if (logger.isDebugEnabled()) {
@@ -65,5 +61,17 @@ public class ModuleNodeHandler extends NodeHandler {
 
     private List<ContentIdentifier> getChapters(Node node) {
         return getChildContentIdentifiers(node);
+    }
+
+    private Module getModule(ModuleDto moduleDto, List<ContentIdentifier> chapters) {
+        UUID contentId = moduleDto.getContentId();
+        if (contentId == null) {
+            return new Module(moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), chapters);
+        }
+
+        Module existingModule = getLatestVersion(allModules.findByContentId(contentId));
+        Module moduleToSave = new Module(existingModule.getContentId(), existingModule.getVersion(), moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), chapters);
+        moduleToSave.incrementVersion();
+        return moduleToSave;
     }
 }

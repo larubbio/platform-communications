@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Couch document object representing a Module content.
@@ -23,7 +24,15 @@ public class Module extends Content {
     Module() {
     }
 
-    public Module(String name, String description, List<ContentIdentifier> chapters) {
+    public Module(boolean isActive, String name, String description, List<ContentIdentifier> chapters) {
+        super(isActive);
+        this.name = name;
+        this.description = description;
+        this.chapters = chapters;
+    }
+
+    public Module(UUID contentId, Integer version, boolean isActive, String name, String description, List<ContentIdentifier> chapters) {
+        super(contentId, version, isActive);
         this.name = name;
         this.description = description;
         this.chapters = chapters;

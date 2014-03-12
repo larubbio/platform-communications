@@ -10,6 +10,9 @@ public class ContentIdentifierDto {
     private UUID contentId;
     private Integer version;
 
+    public ContentIdentifierDto() {
+    }
+
     public ContentIdentifierDto(UUID contentId, Integer version) {
         this.contentId = contentId;
         this.version = version;
@@ -30,7 +33,6 @@ public class ContentIdentifierDto {
         }
         ContentIdentifierDto otherDto = (ContentIdentifierDto) other;
         return this.contentId.equals(otherDto.contentId) && this.version.equals(otherDto.version);
-
     }
 
     @Override

@@ -1,32 +1,39 @@
 package org.motechproject.mtraining.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Object representing a chapter in a course structure.
  * Expected by {@link org.motechproject.mtraining.service.CourseService} APIs to manage a mTraining {@link org.motechproject.mtraining.domain.Chapter}.
  */
 
-public class ChapterDto {
+public class ChapterDto extends ContentDto {
     private String name;
     private String description;
-    private ContentIdentifierDto chapterIdentifier;
     private List<MessageDto> messages;
 
     public ChapterDto() {
     }
 
-    public ChapterDto(String name, String description, List<MessageDto> messages) {
+    public ChapterDto(boolean isActive, String name, String description, List<MessageDto> messages) {
+        super(isActive);
         this.name = name;
         this.description = description;
         this.messages = messages;
-        this.chapterIdentifier = null;
     }
 
-    public ChapterDto(String name, String description, ContentIdentifierDto chapterIdentifier, List<MessageDto> messages) {
+    public ChapterDto(UUID contentId, boolean isActive, String name, String description, List<MessageDto> messages) {
+        super(contentId, null, isActive);
         this.name = name;
         this.description = description;
-        this.chapterIdentifier = chapterIdentifier;
+        this.messages = messages;
+    }
+
+    public ChapterDto(UUID contentId, Integer version, boolean isActive, String name, String description, List<MessageDto> messages) {
+        super(contentId, version, isActive);
+        this.name = name;
+        this.description = description;
         this.messages = messages;
     }
 
@@ -36,10 +43,6 @@ public class ChapterDto {
 
     public String getDescription() {
         return description;
-    }
-
-    public ContentIdentifierDto getChapterIdentifier() {
-        return chapterIdentifier;
     }
 
     public List<MessageDto> getMessages() {

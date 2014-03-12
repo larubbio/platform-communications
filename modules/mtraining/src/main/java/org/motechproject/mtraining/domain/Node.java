@@ -1,5 +1,7 @@
 package org.motechproject.mtraining.domain;
 
+import org.motechproject.mtraining.dto.ContentDto;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,18 +16,18 @@ import java.util.List;
 
 public class Node {
     private NodeType nodeType;
-    private Object nodeData;
+    private ContentDto nodeData;
     private List<Node> childNodes;
 
     private Content persistentEntity;
 
-    public Node(NodeType nodeType, Object nodeData) {
+    public Node(NodeType nodeType, ContentDto nodeData) {
         this.nodeType = nodeType;
         this.nodeData = nodeData;
         this.childNodes = new ArrayList<>();
     }
 
-    public Node(NodeType nodeType, Object nodeData, List<Node> childNodes) {
+    public Node(NodeType nodeType, ContentDto nodeData, List<Node> childNodes) {
         this(nodeType, nodeData);
         this.childNodes = childNodes;
     }
@@ -34,7 +36,7 @@ public class Node {
         return childNodes;
     }
 
-    public Object getNodeData() {
+    public ContentDto getNodeData() {
         return nodeData;
     }
 

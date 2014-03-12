@@ -19,10 +19,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
-import static org.motechproject.mtraining.service.AssertCourseContents.*;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertChapter;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertContentIdentifier;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertMessage;
+import static org.motechproject.mtraining.service.AssertCourseContents.assertModule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
@@ -36,23 +38,16 @@ public class ModuleServiceIT {
     private AllChapters allChapters;
     @Autowired
     private AllModules allModules;
-    private ContentIdentifierDto contentIdentifier;
-
-    @Before
-    public void setUp() throws Exception {
-        contentIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
-
-    }
 
     @Test
     public void shouldAddModuleWithChaptersAndMessages() throws InterruptedException {
-        MessageDto messageDto1 = new MessageDto("messageName1", "messageFileName1", null, contentIdentifier);
-        MessageDto messageDto2 = new MessageDto("messageName2", "messageFileName2", "description2", contentIdentifier);
-        ChapterDto chapterDto1 = new ChapterDto("chapterName1", "chapterDescription1", contentIdentifier, asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto("chapterName2", "chapterDescription2", contentIdentifier, asList(messageDto1, messageDto2));
-        ModuleDto moduleDto = new ModuleDto("moduleName", null, contentIdentifier, asList(chapterDto1, chapterDto2));
+        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
+        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
+        ChapterDto chapterDto1 = new ChapterDto(true, "chapterName1", "chapterDescription1", asList(messageDto1, messageDto2));
+        ChapterDto chapterDto2 = new ChapterDto(true, "chapterName2", "chapterDescription2", asList(messageDto1, messageDto2));
+        ModuleDto moduleDto = new ModuleDto(true, "moduleName", null, asList(chapterDto1, chapterDto2));
 
-        ContentIdentifierDto savedModuleIdentifier = moduleService.addModule(moduleDto);
+        ContentIdentifierDto savedModuleIdentifier = moduleService.addOrUpdateModule(moduleDto);
 
         List<Message> messagesInDb = allMessages.getAll();
         List<Chapter> chaptersInDb = allChapters.getAll();
@@ -70,6 +65,4 @@ public class ModuleServiceIT {
         allChapters.removeAll();
         allModules.removeAll();
     }
-
-
 }

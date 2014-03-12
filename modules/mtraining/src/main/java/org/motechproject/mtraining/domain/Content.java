@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
@@ -19,9 +20,23 @@ public abstract class Content extends MotechBaseDataObject {
     @JsonProperty
     private Integer version;
 
-    public Content() {
+    @JsonProperty
+    private boolean isActive;
+
+    protected Content() {
         this.contentId = UUID.randomUUID();
         this.version = DEFAULT_VERSION;
+    }
+
+    protected Content(boolean isActive) {
+        this();
+        this.isActive = isActive;
+    }
+
+    protected Content(UUID contentId, Integer version, boolean isActive) {
+        this.contentId = contentId;
+        this.version = version;
+        this.isActive = isActive;
     }
 
     public UUID getContentId() {
@@ -36,11 +51,12 @@ public abstract class Content extends MotechBaseDataObject {
         return version;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
     public void incrementVersion() {
         version = version + 1;
+    }
+
+    @JsonIgnore
+    public boolean isActive() {
+        return isActive;
     }
 }

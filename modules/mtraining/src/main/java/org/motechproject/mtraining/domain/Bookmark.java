@@ -2,13 +2,15 @@ package org.motechproject.mtraining.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 /**
  * Couch document object representing a Bookmark content.
  */
 
 @TypeDiscriminator("doc.type === 'Bookmark'")
-public class Bookmark extends Content {
+public class Bookmark extends MotechBaseDataObject {
 
     @JsonProperty
     private String externalId;
@@ -25,6 +27,9 @@ public class Bookmark extends Content {
     @JsonProperty
     private ContentIdentifier message;
 
+    @JsonProperty
+    private DateTime dateModified;
+
     Bookmark() {
     }
 
@@ -34,6 +39,7 @@ public class Bookmark extends Content {
         this.module = module;
         this.chapter = chapter;
         this.message = message;
+        this.dateModified = DateTime.now();
     }
 
     public String getExternalId() {
@@ -54,6 +60,10 @@ public class Bookmark extends Content {
 
     public ContentIdentifier getMessage() {
         return message;
+    }
+
+    public DateTime getDateModified() {
+        return dateModified;
     }
 
     public void setCourse(ContentIdentifier course) {

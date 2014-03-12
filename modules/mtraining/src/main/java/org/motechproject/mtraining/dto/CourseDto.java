@@ -1,33 +1,39 @@
 package org.motechproject.mtraining.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Object representing a course node in a course structure.
  * Expected by {@link org.motechproject.mtraining.service.CourseService} APIs to manage a mTraining {@link org.motechproject.mtraining.domain.Course}.
  */
 
-public class CourseDto {
+public class CourseDto extends ContentDto {
     private String name;
     private String description;
-    private ContentIdentifierDto courseIdentifier;
     private List<ModuleDto> modules;
-
 
     public CourseDto() {
     }
 
-    public CourseDto(String name, String description, List<ModuleDto> modules) {
+    public CourseDto(boolean isActive, String name, String description, List<ModuleDto> modules) {
+        super(isActive);
         this.name = name;
         this.description = description;
         this.modules = modules;
-        this.courseIdentifier = null;
     }
 
-    public CourseDto(String name, String description, ContentIdentifierDto courseIdentifier, List<ModuleDto> modules) {
+    public CourseDto(UUID contentId, boolean isActive, String name, String description, List<ModuleDto> modules) {
+        super(contentId, null, isActive);
         this.name = name;
         this.description = description;
-        this.courseIdentifier = courseIdentifier;
+        this.modules = modules;
+    }
+
+    public CourseDto(UUID contentId, Integer version, boolean isActive, String name, String description, List<ModuleDto> modules) {
+        super(contentId, version, isActive);
+        this.name = name;
+        this.description = description;
         this.modules = modules;
     }
 
@@ -37,10 +43,6 @@ public class CourseDto {
 
     public String getDescription() {
         return description;
-    }
-
-    public ContentIdentifierDto getCourseIdentifier() {
-        return courseIdentifier;
     }
 
     public List<ModuleDto> getModules() {

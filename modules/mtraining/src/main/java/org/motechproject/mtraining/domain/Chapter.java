@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Couch document object representing a Chapter content.
@@ -23,7 +24,15 @@ public class Chapter extends Content {
     Chapter() {
     }
 
-    public Chapter(String name, String description, List<ContentIdentifier> messages) {
+    public Chapter(boolean isActive, String name, String description, List<ContentIdentifier> messages) {
+        super(isActive);
+        this.name = name;
+        this.description = description;
+        this.messages = messages;
+    }
+
+    public Chapter(UUID contentId, Integer version, boolean isActive, String name, String description, List<ContentIdentifier> messages) {
+        super(contentId, version, isActive);
         this.name = name;
         this.description = description;
         this.messages = messages;

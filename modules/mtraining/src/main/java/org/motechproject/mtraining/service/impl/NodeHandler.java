@@ -6,10 +6,13 @@ import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Content;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Node;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +29,7 @@ public abstract class NodeHandler {
     @Autowired
     private EventRelay eventRelay;
 
-    protected abstract void validateNodeData(Object nodeData);
+    protected abstract void validateNodeData(ContentDto nodeData);
 
     protected abstract Content saveAndRaiseEvent(Node node);
 
@@ -51,5 +54,18 @@ public abstract class NodeHandler {
 
     protected CourseStructureValidator validator() {
         return courseStructureValidator;
+    }
+
+    protected <T extends Content> T getLatestVersion(List<T> contents) {
+        if (contents.isEmpty()) {
+            return null;
+        }
+
+        return Collections.max(contents, new Comparator<Content>() {
+            @Override
+            public int compare(Content content1, Content content2) {
+                return content1.getVersion().compareTo(content2.getVersion());
+            }
+        });
     }
 }

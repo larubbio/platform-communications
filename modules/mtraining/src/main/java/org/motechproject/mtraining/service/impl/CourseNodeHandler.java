@@ -4,7 +4,7 @@ import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Node;
-import org.motechproject.mtraining.dto.ContentIdentifierDto;
+import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
 import org.motechproject.mtraining.repository.AllCourses;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of abstract class {@link NodeHandler}.
@@ -30,7 +31,7 @@ public class CourseNodeHandler extends NodeHandler {
     private AllCourses allCourses;
 
     @Override
-    protected void validateNodeData(Object nodeData) {
+    protected void validateNodeData(ContentDto nodeData) {
         CourseDto courseDto = (CourseDto) nodeData;
         CourseStructureValidationResponse validationResponse = validator().validateCourse(courseDto);
         if (!validationResponse.isValid()) {
@@ -48,12 +49,7 @@ public class CourseNodeHandler extends NodeHandler {
             logger.debug(String.format("Saving course: %s", courseDto.getName()));
         }
 
-        Course course = new Course(courseDto.getName(), courseDto.getDescription(), getModules(node));
-        ContentIdentifierDto courseIdentifier = courseDto.getCourseIdentifier();
-        if (courseIdentifier != null) {
-            course.setContentId(courseIdentifier.getContentId());
-            course.setVersion(courseIdentifier.getVersion());
-        }
+        Course course = getCourse(courseDto, getModules(node));
         allCourses.add(course);
 
         if (logger.isDebugEnabled()) {
@@ -66,5 +62,17 @@ public class CourseNodeHandler extends NodeHandler {
 
     private List<ContentIdentifier> getModules(Node node) {
         return getChildContentIdentifiers(node);
+    }
+
+    private Course getCourse(CourseDto courseDto, List<ContentIdentifier> modules) {
+        UUID contentId = courseDto.getContentId();
+        if (contentId == null) {
+            return new Course(courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), modules);
+        }
+
+        Course existingCourse = getLatestVersion(allCourses.findByContentId(contentId));
+        Course courseToSave = new Course(existingCourse.getContentId(), existingCourse.getVersion(), courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), modules);
+        courseToSave.incrementVersion();
+        return courseToSave;
     }
 }

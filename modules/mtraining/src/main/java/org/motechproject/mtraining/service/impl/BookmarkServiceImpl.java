@@ -35,7 +35,9 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public BookmarkDto getBookmark(String externalId) {
         Bookmark bookmark = allBookmarks.findBy(externalId);
-        return bookmark == null ? null : new BookmarkDto(bookmark.getExternalId(), bookmark.getCourse(), bookmark.getModule(), bookmark.getChapter(), bookmark.getMessage());
+        return bookmark == null ? null : new BookmarkDto(bookmark.getExternalId(), createContentIdentifierDto(bookmark.getCourse()),
+                createContentIdentifierDto(bookmark.getModule()), createContentIdentifierDto(bookmark.getChapter()),
+                createContentIdentifierDto(bookmark.getMessage()), bookmark.getDateModified());
     }
 
     @Override
@@ -44,18 +46,23 @@ public class BookmarkServiceImpl implements BookmarkService {
         ModuleDto moduleDto = course.getModules().get(0);
         ChapterDto chapterDto = moduleDto.getChapters().get(0);
         MessageDto messageDto = chapterDto.getMessages().get(0);
-        Bookmark bookmark = new Bookmark(externalId, createContentIdentifier(course.getCourseIdentifier()), createContentIdentifier(moduleDto.getModuleIdentifier()), createContentIdentifier(chapterDto.getChapterIdentifier()), createContentIdentifier(messageDto.getMessageIdentifier()));
+        Bookmark bookmark = new Bookmark(externalId, createContentIdentifier(course.toContentIdentifierDto()), createContentIdentifier(moduleDto.toContentIdentifierDto()), createContentIdentifier(chapterDto.toContentIdentifierDto()), createContentIdentifier(messageDto.toContentIdentifierDto()));
         allBookmarks.add(bookmark);
     }
 
     @Override
     public void update(BookmarkDto bookmark) {
         Bookmark bookmarkFromDb = allBookmarks.findBy(bookmark.getExternalId());
-        bookmarkFromDb.update(bookmark.getCourse(), bookmark.getModule(), bookmark.getChapter(), bookmark.getMessage());
+        bookmarkFromDb.update(createContentIdentifier(bookmark.getCourse()), createContentIdentifier(bookmark.getModule()),
+                createContentIdentifier(bookmark.getChapter()), createContentIdentifier(bookmark.getMessage()));
         allBookmarks.update(bookmarkFromDb);
     }
 
-    private ContentIdentifier createContentIdentifier(ContentIdentifierDto contentIdentifier) {
-        return new ContentIdentifier(contentIdentifier.getContentId(), contentIdentifier.getVersion());
+    private ContentIdentifier createContentIdentifier(ContentIdentifierDto contentIdentifierDto) {
+        return new ContentIdentifier(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion());
+    }
+
+    private ContentIdentifierDto createContentIdentifierDto(ContentIdentifier contentIdentifier) {
+        return new ContentIdentifierDto(contentIdentifier.getContentId(), contentIdentifier.getVersion());
     }
 }
