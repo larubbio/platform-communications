@@ -23,6 +23,7 @@ import org.motechproject.mtraining.repository.AllCourses;
 import org.motechproject.mtraining.repository.AllMessages;
 import org.motechproject.mtraining.repository.AllModules;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -125,10 +126,12 @@ public class CourseServiceImplTest {
 
     @Test
     public void shouldGetAllCourses() {
-        Module module = new Module(true, "moduleName", null, Collections.EMPTY_LIST);
+        Module module = new Module(true, "moduleName", null, Collections.<Chapter>emptyList());
         ContentIdentifier moduleIdentifier = new ContentIdentifier(module.getContentId(), module.getVersion());
-        Course course1 = new Course(true, "course1", null, asList(moduleIdentifier));
-        Course course2 = new Course(true, "course2", null, Collections.EMPTY_LIST);
+        List<Module> modules = new ArrayList<>();
+        modules.add(module);
+        Course course1 = new Course(true, "course1", null, modules);
+        Course course2 = new Course(true, "course2", null, Collections.<Module>emptyList());
         when(allCourses.getAll()).thenReturn(asList(course1, course2));
         when(allModules.findBy(moduleIdentifier.getContentId(), moduleIdentifier.getVersion())).thenReturn(module);
 
@@ -146,10 +149,12 @@ public class CourseServiceImplTest {
 
     @Test
     public void shouldGetAllModules() {
-        Chapter chapter = new Chapter(true, "chapterName", null, Collections.EMPTY_LIST);
+        Chapter chapter = new Chapter(true, "chapterName", null, Collections.<Message>emptyList());
         ContentIdentifier chapterIdentifier = new ContentIdentifier(chapter.getContentId(), chapter.getVersion());
-        Module module1 = new Module(true, "module1", null, asList(chapterIdentifier));
-        Module module2 = new Module(true, "module2", null, Collections.EMPTY_LIST);
+        List<Chapter> chapters = new ArrayList<>();
+        chapters.add(chapter);
+        Module module1 = new Module(true, "module1", null, chapters);
+        Module module2 = new Module(true, "module2", null, Collections.<Chapter>emptyList());
         when(allModules.getAll()).thenReturn(asList(module1, module2));
         when(allChapters.findBy(chapterIdentifier.getContentId(), chapterIdentifier.getVersion())).thenReturn(chapter);
 
@@ -169,8 +174,10 @@ public class CourseServiceImplTest {
     public void shouldGetAllChapters() {
         Message message = new Message(true, "messageName", "fileName", null);
         ContentIdentifier messageIdentifier = new ContentIdentifier(message.getContentId(), message.getVersion());
-        Chapter chapter1 = new Chapter(true, "chapter1", null, asList(messageIdentifier));
-        Chapter chapter2 = new Chapter(true, "chapter2", null, Collections.EMPTY_LIST);
+        ArrayList<Message> messages = new ArrayList<>();
+        messages.add(message);
+        Chapter chapter1 = new Chapter(true, "chapter1", null, messages);
+        Chapter chapter2 = new Chapter(true, "chapter2", null, Collections.<Message>emptyList());
         when(allChapters.getAll()).thenReturn(asList(chapter1, chapter2));
         when(allMessages.findBy(messageIdentifier.getContentId(), messageIdentifier.getVersion())).thenReturn(message);
 

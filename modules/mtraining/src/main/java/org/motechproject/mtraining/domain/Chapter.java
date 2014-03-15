@@ -19,23 +19,23 @@ public class Chapter extends Content {
     private String description;
 
     @JsonProperty
-    private List<ContentIdentifier> messages;
+    private List<Message> messages;
 
     Chapter() {
     }
 
-    public Chapter(boolean isActive, String name, String description, List<ContentIdentifier> messages) {
+    public Chapter(boolean isActive, String name, String description, List<Message> messageIdentifiers) {
         super(isActive);
         this.name = name;
         this.description = description;
-        this.messages = messages;
+        this.messages = messageIdentifiers;
     }
 
-    public Chapter(UUID contentId, Integer version, boolean isActive, String name, String description, List<ContentIdentifier> messages) {
+    public Chapter(UUID contentId, Integer version, boolean isActive, String name, String description, List<Message> messageIdentifiers) {
         super(contentId, version, isActive);
         this.name = name;
         this.description = description;
-        this.messages = messages;
+        this.messages = messageIdentifiers;
     }
 
     public String getName() {
@@ -46,7 +46,7 @@ public class Chapter extends Content {
         return description;
     }
 
-    public List<ContentIdentifier> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 }

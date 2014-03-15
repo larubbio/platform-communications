@@ -5,8 +5,8 @@ import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Course;
+import org.motechproject.mtraining.domain.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +24,8 @@ public class AllCoursesIT {
 
     @Test
     public void shouldReturnCourseByContentId() {
-        Course cs001 = new Course(true, "cs001", "test course", Collections.<ContentIdentifier>emptyList());
-        Course cs001_version2 = new Course(true, "cs001", "edit test course", Collections.<ContentIdentifier>emptyList());
+        Course cs001 = new Course(true, "cs001", "test course", Collections.<Module>emptyList());
+        Course cs001_version2 = new Course(true, "cs001", "edit test course", Collections.<Module>emptyList());
         cs001_version2.setContentId(cs001.getContentId());
         cs001_version2.incrementVersion();
 

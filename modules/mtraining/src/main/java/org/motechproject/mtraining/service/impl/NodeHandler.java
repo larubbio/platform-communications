@@ -52,6 +52,18 @@ public abstract class NodeHandler {
         return childContentIdentifiers;
     }
 
+    protected <T extends Content> List<T> getChildContentNodes(Node node) {
+        List<T> contents = new ArrayList<>();
+        for (Node childNode : node.getChildNodes()) {
+            T persistentEntity = (T) childNode.getPersistentEntity();
+            if (persistentEntity != null) {
+                contents.add(persistentEntity);
+            }
+        }
+        return contents;
+    }
+
+
     protected CourseStructureValidator validator() {
         return courseStructureValidator;
     }

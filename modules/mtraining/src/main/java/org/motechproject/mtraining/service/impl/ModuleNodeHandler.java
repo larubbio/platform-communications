@@ -1,7 +1,7 @@
 package org.motechproject.mtraining.service.impl;
 
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
-import org.motechproject.mtraining.domain.ContentIdentifier;
+import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.dto.ContentDto;
@@ -59,11 +59,11 @@ public class ModuleNodeHandler extends NodeHandler {
         return module;
     }
 
-    private List<ContentIdentifier> getChapters(Node node) {
-        return getChildContentIdentifiers(node);
+    private List<Chapter> getChapters(Node node) {
+        return getChildContentNodes(node);
     }
 
-    private Module getModule(ModuleDto moduleDto, List<ContentIdentifier> chapters) {
+    private Module getModule(ModuleDto moduleDto, List<Chapter> chapters) {
         UUID contentId = moduleDto.getContentId();
         if (contentId == null) {
             return new Module(moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), chapters);

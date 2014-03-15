@@ -2,7 +2,7 @@ package org.motechproject.mtraining.service.impl;
 
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Chapter;
-import org.motechproject.mtraining.domain.ContentIdentifier;
+import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.ContentDto;
@@ -48,7 +48,9 @@ public class ChapterNodeHandler extends NodeHandler {
             logger.debug(String.format("Saving chapter: %s", chapterDto.getName()));
         }
 
-        Chapter chapter = getChapter(chapterDto, getMessages(node));
+
+        Chapter chapter = chapterWithMessages(chapterDto, getMessages(node));
+
         allChapters.add(chapter);
 
         if (logger.isDebugEnabled()) {
@@ -59,11 +61,12 @@ public class ChapterNodeHandler extends NodeHandler {
         return chapter;
     }
 
-    private List<ContentIdentifier> getMessages(Node node) {
-        return getChildContentIdentifiers(node);
+
+    private List<Message> getMessages(Node node) {
+        return getChildContentNodes(node);
     }
 
-    private Chapter getChapter(ChapterDto chapterDto, List<ContentIdentifier> messages) {
+    private Chapter chapterWithMessages(ChapterDto chapterDto, List<Message> messages) {
         UUID contentId = chapterDto.getContentId();
         if (contentId == null) {
             return new Chapter(chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), messages);
@@ -74,4 +77,5 @@ public class ChapterNodeHandler extends NodeHandler {
         chapterToSave.incrementVersion();
         return chapterToSave;
     }
+
 }

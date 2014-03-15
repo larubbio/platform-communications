@@ -19,19 +19,19 @@ public class Module extends Content {
     private String description;
 
     @JsonProperty
-    private List<ContentIdentifier> chapters;
+    private List<Chapter> chapters;
 
     Module() {
     }
 
-    public Module(boolean isActive, String name, String description, List<ContentIdentifier> chapters) {
+    public Module(boolean isActive, String name, String description, List<Chapter> chapters) {
         super(isActive);
         this.name = name;
         this.description = description;
         this.chapters = chapters;
     }
 
-    public Module(UUID contentId, Integer version, boolean isActive, String name, String description, List<ContentIdentifier> chapters) {
+    public Module(UUID contentId, Integer version, boolean isActive, String name, String description, List<Chapter> chapters) {
         super(contentId, version, isActive);
         this.name = name;
         this.description = description;
@@ -46,7 +46,7 @@ public class Module extends Content {
         return description;
     }
 
-    public List<ContentIdentifier> getChapters() {
+    public List<Chapter> getChapters() {
         return chapters;
     }
 }

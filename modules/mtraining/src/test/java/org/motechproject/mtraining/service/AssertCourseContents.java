@@ -5,13 +5,10 @@ import org.apache.commons.collections.Predicate;
 import org.junit.Assert;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Content;
-import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.dto.ChapterDto;
-import org.motechproject.mtraining.dto.ContentDto;
-import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
@@ -73,13 +70,13 @@ public class AssertCourseContents {
         }
     }
 
-    public static <T extends Content> void assertChildNodes(List<ContentIdentifier> childContentIdentifiers, List<T> childNodesInDb) {
-        for (final ContentIdentifier childContentIdentifier : childContentIdentifiers) {
+    public static <T extends Content> void assertChildNodes(List<T> contents, List<T> childNodesInDb) {
+        for (final Content childContent : contents) {
             boolean childNodeExist = CollectionUtils.exists(childNodesInDb, new Predicate() {
                 @Override
                 public boolean evaluate(Object object) {
                     Content content = (Content) object;
-                    return content.getContentId().equals(childContentIdentifier.getContentId()) && content.getVersion().equals(childContentIdentifier.getVersion());
+                    return content.getContentId().equals(childContent.getContentId()) && content.getVersion().equals(childContent.getVersion());
                 }
             });
             assertTrue(childNodeExist);

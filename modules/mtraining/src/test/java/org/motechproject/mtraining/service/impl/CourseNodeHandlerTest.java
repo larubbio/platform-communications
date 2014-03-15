@@ -71,10 +71,10 @@ public class CourseNodeHandlerTest {
 
     @Test
     public void shouldSaveTheGivenCourseDtoAsCourseEntityWithModulesAndRaiseEvent() {
-        Node moduleNode1 = new Node(NodeType.MESSAGE, new ModuleDto());
+        Node moduleNode1 = new Node(NodeType.MODULE, new ModuleDto());
         Module expectedModuleForTheCourse = new Module(true, "", "", Collections.EMPTY_LIST);
         moduleNode1.setPersistentEntity(expectedModuleForTheCourse);
-        Node moduleNode2 = new Node(NodeType.MESSAGE, new ModuleDto());
+        Node moduleNode2 = new Node(NodeType.MODULE, new ModuleDto());
         CourseDto courseDto = new CourseDto(true, "name", "description", asList(new ModuleDto()));
         Node courseNode = new Node(NodeType.CHAPTER, courseDto, asList(moduleNode1, moduleNode2));
 

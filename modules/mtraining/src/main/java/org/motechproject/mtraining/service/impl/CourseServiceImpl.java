@@ -2,7 +2,6 @@ package org.motechproject.mtraining.service.impl;
 
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Content;
-import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Module;
@@ -198,8 +197,8 @@ public class CourseServiceImpl implements CourseService, ModuleService, ChapterS
 
     private CourseDto mapToCourseDto(Course course) {
         ArrayList<ModuleDto> modules = new ArrayList<>();
-        for (ContentIdentifier moduleIdentifier : course.getModules()) {
-            ModuleDto moduleDto = getModule(new ContentIdentifierDto(moduleIdentifier.getContentId(), moduleIdentifier.getVersion()));
+        for (Content module : course.getModules()) {
+            ModuleDto moduleDto = mapToModuleDto((Module) module);
             modules.add(moduleDto);
         }
         return new CourseDto(course.getContentId(), course.getVersion(), course.isActive(), course.getName(), course.getDescription(), modules);
@@ -207,18 +206,18 @@ public class CourseServiceImpl implements CourseService, ModuleService, ChapterS
 
     private ModuleDto mapToModuleDto(Module module) {
         List<ChapterDto> chapters = new ArrayList<>();
-        for (ContentIdentifier chapterIdentifier : module.getChapters()) {
-            ChapterDto chapter = getChapter(new ContentIdentifierDto(chapterIdentifier.getContentId(), chapterIdentifier.getVersion()));
-            chapters.add(chapter);
+        for (Content chapter : module.getChapters()) {
+            ChapterDto chapterDto = mapToChapterDto((Chapter) chapter);
+            chapters.add(chapterDto);
         }
         return new ModuleDto(module.getContentId(), module.getVersion(), module.isActive(), module.getName(), module.getDescription(), chapters);
     }
 
     private ChapterDto mapToChapterDto(Chapter chapter) {
         ArrayList<MessageDto> messages = new ArrayList<>();
-        for (ContentIdentifier messageIdentifier : chapter.getMessages()) {
-            MessageDto message = getMessage(new ContentIdentifierDto(messageIdentifier.getContentId(), messageIdentifier.getVersion()));
-            messages.add(message);
+        for (Content message : chapter.getMessages()) {
+            MessageDto messageDto = mapToMessageDto((Message) message);
+            messages.add(messageDto);
         }
         return new ChapterDto(chapter.getContentId(), chapter.getVersion(), chapter.isActive(), chapter.getName(), chapter.getDescription(), messages);
     }
