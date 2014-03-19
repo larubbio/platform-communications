@@ -17,6 +17,7 @@ import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
+import org.motechproject.mtraining.exception.BookmarkNotFoundException;
 import org.motechproject.mtraining.repository.AllBookmarks;
 import org.motechproject.mtraining.service.CourseService;
 
@@ -68,7 +69,7 @@ public class BookmarkServiceImplTest {
     }
 
     @Test
-    public void shouldAddBookmark() {
+    public void shouldCreateInitialBookmark() {
         ContentIdentifierDto courseContentDto = new ContentIdentifierDto(randomUUID(), 1);
         ContentDto courseContent = new CourseDto(randomUUID(), 1, true, "name", "desc", EMPTY);
         ContentDto moduleContent = new ModuleDto(randomUUID(), 2, true, "name", "desc", EMPTY);
@@ -79,7 +80,7 @@ public class BookmarkServiceImplTest {
                                 Arrays.asList(new MessageDto(true, "message1", "externalId", "message description")))))));
         when(courseService.getCourse(courseContentDto)).thenReturn(courseDto);
 
-        bookmarkService.addBookmark("someId", courseContentDto);
+        bookmarkService.createInitialBookmark("someId", courseContentDto);
 
         ArgumentCaptor<Bookmark> bookmarkArgumentCaptor = ArgumentCaptor.forClass(Bookmark.class);
         verify(allBookmarks).add(bookmarkArgumentCaptor.capture());
@@ -125,5 +126,14 @@ public class BookmarkServiceImplTest {
         bookmarkService.update(oldBookmark);
 
         verify(allBookmarks, never()).update(any(Bookmark.class));
+    }
+
+    @Test(expected = BookmarkNotFoundException.class)
+    public void shouldThrowExceptionIfBookmarkToUpdateNotPresentInDb() {
+        String externalId = "studentId10001";
+        when(allBookmarks.findBy(externalId)).thenReturn(null);
+
+        BookmarkDto bookmarkDto = new BookmarkBuilder().withExternalId(externalId).buildDto();
+        bookmarkService.update(bookmarkDto);
     }
 }

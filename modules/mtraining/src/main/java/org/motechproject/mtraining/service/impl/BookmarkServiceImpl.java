@@ -1,6 +1,5 @@
 package org.motechproject.mtraining.service.impl;
 
-import org.motechproject.mtraining.util.DateTimeUtil;
 import org.motechproject.mtraining.domain.Bookmark;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.dto.BookmarkDto;
@@ -9,9 +8,11 @@ import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
+import org.motechproject.mtraining.exception.BookmarkNotFoundException;
 import org.motechproject.mtraining.repository.AllBookmarks;
 import org.motechproject.mtraining.service.BookmarkService;
 import org.motechproject.mtraining.service.CourseService;
+import org.motechproject.mtraining.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public void addBookmark(String externalId, ContentIdentifierDto courseIdentifier) {
+    public void createInitialBookmark(String externalId, ContentIdentifierDto courseIdentifier) {
         LOGGER.info(String.format("Request for adding bookmark for externalId %s and courseId %s ", externalId, courseIdentifier.getContentId()));
         CourseDto course = courseService.getCourse(courseIdentifier);
         ModuleDto moduleDto = course.getModules().get(0);
@@ -62,7 +63,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         Bookmark bookmarkFromDb = allBookmarks.findBy(bookmarkDto.getExternalId());
         if (bookmarkFromDb == null) {
             LOGGER.error(String.format("Request for bookmark update failed for externalId %s as no bookmark exists for this id", bookmarkDto.getExternalId()));
-            return;
+            throw new BookmarkNotFoundException(bookmarkDto.getExternalId());
         }
         if (bookmarkFromDb.wasModifiedAfter(DateTimeUtil.parse(bookmarkDto.getDateModified()))) {
             LOGGER.info(String.format("Request for bookmark update ignored for externalId %s as more recent bookmark exists for this id", bookmarkDto.getExternalId()));

@@ -10,7 +10,7 @@ public interface BookmarkService {
 
     BookmarkDto getBookmark(String externalId);
 
-    void addBookmark(String externalId, ContentIdentifierDto courseIdentifier);
+    void createInitialBookmark(String externalId, ContentIdentifierDto courseIdentifier);
 
     void update(BookmarkDto bookmark);
 }
