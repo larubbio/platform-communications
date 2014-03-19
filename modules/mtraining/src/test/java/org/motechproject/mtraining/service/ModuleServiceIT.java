@@ -4,6 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Module;
@@ -41,11 +44,13 @@ public class ModuleServiceIT {
 
     @Test
     public void shouldAddModuleWithChaptersAndMessages() throws InterruptedException {
-        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
-        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
-        ChapterDto chapterDto1 = new ChapterDto(true, "chapterName1", "chapterDescription1", asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto(true, "chapterName2", "chapterDescription2", asList(messageDto1, messageDto2));
-        ModuleDto moduleDto = new ModuleDto(true, "moduleName", null, asList(chapterDto1, chapterDto2));
+        MessageContentBuilder messageContentBuilder = new MessageContentBuilder();
+        ChapterContentBuilder chapterContentBuilder = new ChapterContentBuilder();
+        MessageDto messageDto1 = messageContentBuilder.withName("messageName1").withAudioFile("audio1").buildMessageDTO();
+        MessageDto messageDto2 = messageContentBuilder.withName("messageName2").withAudioFile("audio2").buildMessageDTO();
+        ChapterDto chapterDto1 = chapterContentBuilder.withName("chapter01").withMessageDTOs(asList(messageDto1, messageDto2)).buildChapterDTO();
+        ChapterDto chapterDto2 = chapterContentBuilder.withName("chapter02").withMessageDTOs(asList(messageDto1, messageDto2)).buildChapterDTO();
+        ModuleDto moduleDto = new ModuleContentBuilder().withName("mod01").withChapterDTOs(asList(chapterDto1, chapterDto2)).buildModuleDTO();
 
         ContentIdentifierDto savedModuleIdentifier = moduleService.addOrUpdateModule(moduleDto);
 

@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
@@ -23,7 +25,6 @@ import org.motechproject.mtraining.validator.CourseStructureValidator;
 
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.inOrder;
@@ -44,10 +45,16 @@ public class MessageNodeHandlerTest {
     private EventRelay eventRelay;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    private MessageContentBuilder messageContentBuilder;
+
+    @Before
+    public void before() {
+        messageContentBuilder = new MessageContentBuilder();
+    }
 
     @Test
     public void shouldValidateGivenMessageDtoAndThrowExceptionIfInvalid() {
-        MessageDto messageDto = new MessageDto(true, "name", "fileName", "description");
+        MessageDto messageDto = messageContentBuilder.buildMessageDTO();
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateMessage(messageDto)).thenReturn(validationResponse);
@@ -60,7 +67,7 @@ public class MessageNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenMessageDtoIsValid() {
-        MessageDto messageDto = new MessageDto(true, "name", "fileName", "description");
+        MessageDto messageDto = messageContentBuilder.buildMessageDTO();
         when(courseStructureValidator.validateMessage(messageDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         messageNodeHandler.validateNodeData(messageDto);
@@ -68,7 +75,7 @@ public class MessageNodeHandlerTest {
 
     @Test
     public void shouldSaveTheGivenMessageDtoAsMessageEntityAndRaiseEvent() {
-        MessageDto messageDto = new MessageDto(true, "name", "fileName", "description");
+        MessageDto messageDto = messageContentBuilder.buildMessageDTO();
         Node messageNode = new Node(NodeType.MESSAGE, messageDto);
 
         messageNodeHandler.saveAndRaiseEvent(messageNode);
@@ -89,11 +96,11 @@ public class MessageNodeHandlerTest {
     @Test
     public void shouldGetLatestVersionOfExistingMessageAndSaveTheNewMessageWithSameContentId_WhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        MessageDto messageDto = new MessageDto(contentId, true, "name", "fileName", "description");
+        MessageDto messageDto = messageContentBuilder.withContentId(contentId).withVersion(2).withName("name").withAudioFile("fileName").buildMessageDTO();
         Node messageNode = new Node(NodeType.MESSAGE, messageDto);
-        Message existingMessageWithOldVersion = new Message(contentId, 1, true, "name", "fileName", "description");
-        Message existingMessageWithLatestVersion = new Message(contentId, 2, true, "name", "fileName", "description");
-        when(allMessages.findByContentId(contentId)).thenReturn(asList(existingMessageWithOldVersion, existingMessageWithLatestVersion));
+        Message existingMessageWithLatestVersion = messageContentBuilder.withContentId(contentId).withVersion(2).withName("name").buildMessage();
+
+        when(allMessages.getLatestVersionByContentId(contentId)).thenReturn(existingMessageWithLatestVersion);
 
         messageNodeHandler.saveAndRaiseEvent(messageNode);
 
@@ -107,7 +114,7 @@ public class MessageNodeHandlerTest {
     private void assertMessageDetails(MessageDto messageDto, Message savedMessage) {
         assertEquals(savedMessage.getName(), messageDto.getName());
         assertEquals(savedMessage.getDescription(), messageDto.getDescription());
-        assertEquals(savedMessage.getExternalId(), messageDto.getExternalId());
+        assertEquals(savedMessage.getExternalContentId(), messageDto.getExternalContentId());
         assertEquals(messageDto.isActive(), savedMessage.isActive());
     }
 

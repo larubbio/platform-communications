@@ -6,11 +6,15 @@ import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
+import org.motechproject.mtraining.dto.QuestionDto;
+import org.motechproject.mtraining.dto.QuizDto;
 import org.motechproject.mtraining.repository.AllChapters;
 import org.motechproject.mtraining.repository.AllContents;
 import org.motechproject.mtraining.repository.AllCourses;
 import org.motechproject.mtraining.repository.AllMessages;
 import org.motechproject.mtraining.repository.AllModules;
+import org.motechproject.mtraining.repository.AllQuestions;
+import org.motechproject.mtraining.repository.AllQuizes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,42 @@ public class CourseStructureValidator {
     private AllChapters allChapters;
     @Autowired
     private AllMessages allMessages;
+    @Autowired
+    private AllQuizes allQuizes;
+    @Autowired
+    private AllQuestions allQuestions;
+
+    public CourseStructureValidationResponse validateQuestion(QuestionDto question) {
+        CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse();
+        if (question == null) {
+            validationResponse.addError("Question should not be null");
+            return validationResponse;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Validating Question: %s", question.getName()));
+        }
+        validateName(question.getName(), validationResponse, "Question name should not be blank");
+        validateExternalId(question.getExternalContentId(), validationResponse);
+        validateIfContentExists(question.getContentId(), allQuestions, validationResponse, "Question does not exist for given contentId");
+
+        return validationResponse;
+    }
+
+    public CourseStructureValidationResponse validateQuiz(QuizDto quiz) {
+        CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse();
+        if (quiz == null) {
+            validationResponse.addError("Quiz should not be null");
+            return validationResponse;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Validating Quiz"));
+        }
+        if (quiz.getNoOfQuestionsToBePlayed() == 0) {
+            validationResponse.addError("No of questions to be played should not be 0 for a quiz");
+        }
+        validateIfContentExists(quiz.getContentId(), allQuizes, validationResponse, "Quiz does not exist for given contentId");
+        return validationResponse;
+    }
 
     public CourseStructureValidationResponse validateMessage(MessageDto message) {
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse();
@@ -50,7 +90,7 @@ public class CourseStructureValidator {
             logger.debug(String.format("Validating Message: %s", message.getName()));
         }
         validateName(message.getName(), validationResponse, "Message name should not be blank");
-        validateExternalId(message.getExternalId(), validationResponse);
+        validateExternalId(message.getExternalContentId(), validationResponse);
         validateIfContentExists(message.getContentId(), allMessages, validationResponse, "Message does not exist for given contentId");
 
         return validationResponse;

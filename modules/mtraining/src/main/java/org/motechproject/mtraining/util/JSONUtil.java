@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Utility class to convert an object to a JSON string.
+ */
 public final class JSONUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JSONUtil.class);

@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.MessageDto;
@@ -36,7 +37,7 @@ public class MessageServiceIT {
 
     @Test
     public void shouldAddAMessage() throws InterruptedException {
-        MessageDto messageDto = new MessageDto(true, "messageName", "fileName", "description");
+        MessageDto messageDto = new MessageContentBuilder().buildMessageDTO();
 
         ContentIdentifierDto savedMessageIdentifier = messageService.addOrUpdateMessage(messageDto);
 

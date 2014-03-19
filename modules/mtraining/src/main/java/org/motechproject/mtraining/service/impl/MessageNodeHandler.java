@@ -58,11 +58,11 @@ public class MessageNodeHandler extends NodeHandler {
     private Message getMessage(MessageDto messageDto) {
         UUID contentId = messageDto.getContentId();
         if (contentId == null) {
-            return new Message(messageDto.isActive(), messageDto.getName(), messageDto.getExternalId(), messageDto.getDescription());
+            return new Message(messageDto.isActive(), messageDto.getName(), messageDto.getDescription(), messageDto.getExternalContentId(), messageDto.getCreatedBy());
         }
 
-        Message existingMessage = getLatestVersion(allMessages.findByContentId(contentId));
-        Message messageToSave = new Message(existingMessage.getContentId(), existingMessage.getVersion(), messageDto.isActive(), messageDto.getName(), messageDto.getExternalId(), messageDto.getDescription());
+        Message existingMessage = allMessages.getLatestVersionByContentId(contentId);
+        Message messageToSave = new Message(existingMessage.getContentId(), existingMessage.getVersion(), messageDto.isActive(), messageDto.getName(), messageDto.getDescription(), messageDto.getExternalContentId(), messageDto.getCreatedBy());
         messageToSave.incrementVersion();
         return messageToSave;
     }

@@ -6,13 +6,12 @@ import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Content;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.domain.Node;
+import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -52,11 +51,11 @@ public abstract class NodeHandler {
         return childContentIdentifiers;
     }
 
-    protected <T extends Content> List<T> getChildContentNodes(Node node) {
+    protected <T extends Content> List<T> getChildContentNodes(Node node, NodeType nodeType) {
         List<T> contents = new ArrayList<>();
         for (Node childNode : node.getChildNodes()) {
             T persistentEntity = (T) childNode.getPersistentEntity();
-            if (persistentEntity != null) {
+            if (persistentEntity != null && childNode.getNodeType().equals(nodeType)) {
                 contents.add(persistentEntity);
             }
         }
@@ -66,18 +65,5 @@ public abstract class NodeHandler {
 
     protected CourseStructureValidator validator() {
         return courseStructureValidator;
-    }
-
-    protected <T extends Content> T getLatestVersion(List<T> contents) {
-        if (contents.isEmpty()) {
-            return null;
-        }
-
-        return Collections.max(contents, new Comparator<Content>() {
-            @Override
-            public int compare(Content content1, Content content2) {
-                return content1.getVersion().compareTo(content2.getVersion());
-            }
-        });
     }
 }

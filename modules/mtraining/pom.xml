@@ -37,6 +37,11 @@
             <artifactId>motech-platform-event</artifactId>
             <version>${motech.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -58,6 +63,7 @@
                             org.motechproject.mtraining.service;version=${project.version},
                             org.motechproject.mtraining.constants;version=${project.version},
                             org.motechproject.mtraining.dto;version=${project.version},
+                            org.motechproject.mtraining.util;version=${project.version},
                             org.motechproject.mtraining.exception;version=${project.version}
                         </Export-Package>
                     </instructions>

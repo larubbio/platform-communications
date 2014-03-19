@@ -10,13 +10,25 @@
         </layout>
     </appender>
 
+    <appender name="PLATFORM-MTRAINING-LOG" class="org.apache.log4j.FileAppender">
+        <param name="file" value="/var/log/motech/platform-mtraining.log"/>
+        <param name="append" value="false"/>
+        <param name="threshold" value="debug"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] - %m%n"/>
+        </layout>
+    </appender>
+
     <logger name="org.motechproject.mtraining">
-        <level value="ERROR"/>
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="PLATFORM-MTRAINING-LOG"/>-->
     </logger>
 
     <root>
         <priority value="ERROR"/>
         <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="PLATFORM-MTRAINING-LOG"/>-->
     </root>
 
 </log4j:configuration>

@@ -12,18 +12,31 @@
                   ref="courseService"/>
 
     <osgi:service interface="org.motechproject.mtraining.service.ModuleService" auto-export="interfaces"
-                  ref="courseService"/>
+                  ref="moduleService"/>
 
     <osgi:service interface="org.motechproject.mtraining.service.ChapterService" auto-export="interfaces"
-                  ref="courseService"/>
+                  ref="chapterService"/>
 
     <osgi:service interface="org.motechproject.mtraining.service.MessageService" auto-export="interfaces"
-                  ref="courseService"/>
+                  ref="messageService"/>
 
     <osgi:service interface="org.motechproject.mtraining.service.BookmarkService" auto-export="interfaces"
                   ref="bookmarkService"/>
 
+    <osgi:service interface="org.motechproject.mtraining.service.QuizService" auto-export="interfaces"
+                  ref="quizService"/>
+
+    <osgi:service interface="org.motechproject.mtraining.service.QuestionService" auto-export="interfaces"
+                  ref="questionService"/>
+
+    <osgi:service interface="org.motechproject.mtraining.service.CourseConfigurationService" auto-export="interfaces"
+                  ref="courseConfigurationService"/>
+
+    <osgi:service interface="org.motechproject.mtraining.service.CourseProgressService" auto-export="interfaces"
+                  ref="courseProgressService"/>
+
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+
 </beans>

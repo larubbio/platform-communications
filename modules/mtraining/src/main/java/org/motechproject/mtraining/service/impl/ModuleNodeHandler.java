@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+import static org.motechproject.mtraining.domain.NodeType.CHAPTER;
+
 /**
  * Implementation of abstract class {@link NodeHandler}.
  * Validates, saves and raises an event for a node of type {@link org.motechproject.mtraining.domain.NodeType#MODULE}
@@ -60,17 +62,17 @@ public class ModuleNodeHandler extends NodeHandler {
     }
 
     private List<Chapter> getChapters(Node node) {
-        return getChildContentNodes(node);
+        return getChildContentNodes(node, CHAPTER);
     }
 
     private Module getModule(ModuleDto moduleDto, List<Chapter> chapters) {
         UUID contentId = moduleDto.getContentId();
         if (contentId == null) {
-            return new Module(moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), chapters);
+            return new Module(moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), moduleDto.getExternalContentId(), moduleDto.getCreatedBy(), chapters);
         }
 
-        Module existingModule = getLatestVersion(allModules.findByContentId(contentId));
-        Module moduleToSave = new Module(existingModule.getContentId(), existingModule.getVersion(), moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), chapters);
+        Module existingModule = allModules.getLatestVersionByContentId(contentId);
+        Module moduleToSave = new Module(existingModule.getContentId(), existingModule.getVersion(), moduleDto.isActive(), moduleDto.getName(), moduleDto.getDescription(), moduleDto.getExternalContentId(), moduleDto.getCreatedBy(), chapters);
         moduleToSave.incrementVersion();
         return moduleToSave;
     }

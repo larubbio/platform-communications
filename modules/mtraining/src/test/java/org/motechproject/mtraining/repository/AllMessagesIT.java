@@ -21,6 +21,7 @@ public class AllMessagesIT {
 
     @Autowired
     private AllContents<Message> allMessages;
+    private static final String COURSE_AUTHOR = "Course Admin";
 
     @Before
     @After
@@ -31,8 +32,8 @@ public class AllMessagesIT {
     @Test
     public void shouldGetMessagesByContentId() {
         UUID contentId = UUID.randomUUID();
-        Message existingMessage1 = new Message(contentId, 1, true, "messageName", "externalId1", "desc1");
-        Message existingMessage2 = new Message(contentId, 2, true, "messageName", "externalId2", "desc2");
+        Message existingMessage1 = new Message(contentId, 1, true, "messageName", "desc1", "externalId1", COURSE_AUTHOR);
+        Message existingMessage2 = new Message(contentId, 2, true, "messageName", "desc2", "externalId2", COURSE_AUTHOR);
         allMessages.add(existingMessage1);
         allMessages.add(existingMessage2);
 
@@ -50,11 +51,25 @@ public class AllMessagesIT {
         assertTrue(messagesByContentId.isEmpty());
     }
 
+    @Test
+    public void shouldGetLatestVersionByContentId() {
+        UUID contentId = UUID.randomUUID();
+        Message messageWithOldVersion = new Message(contentId, 1, true, "name", "description", "fileName", COURSE_AUTHOR);
+        Message messageWithLatestVersion = new Message(contentId, 2, true, "name", "description", "fileName", COURSE_AUTHOR);
+        allMessages.add(messageWithOldVersion);
+        allMessages.add(messageWithLatestVersion);
+
+        Message latestVersionFromDb = allMessages.getLatestVersionByContentId(contentId);
+
+        assertEquals(contentId, latestVersionFromDb.getContentId());
+        assertEquals(messageWithLatestVersion.getVersion(), latestVersionFromDb.getVersion());
+    }
+
     private void assertMessageDetails(Message existingMessage, Message actualMessage) {
         assertEquals(existingMessage.getContentId(), actualMessage.getContentId());
         assertEquals(existingMessage.getVersion(), actualMessage.getVersion());
         assertEquals(existingMessage.getName(), actualMessage.getName());
-        assertEquals(existingMessage.getExternalId(), actualMessage.getExternalId());
+        assertEquals(existingMessage.getExternalContentId(), actualMessage.getExternalContentId());
         assertEquals(existingMessage.getDescription(), actualMessage.getDescription());
     }
 }

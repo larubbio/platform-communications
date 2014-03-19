@@ -18,12 +18,14 @@ public class NodeHandlerFactory {
 
     @Autowired
     public NodeHandlerFactory(CourseNodeHandler courseNodeHandler, ModuleNodeHandler moduleNodeHandler,
-                              ChapterNodeHandler chapterNodeHandler, MessageNodeHandler messageNodeHandler) {
+                              ChapterNodeHandler chapterNodeHandler, MessageNodeHandler messageNodeHandler, QuizNodeHandler quizNodeHandler, QuestionNodeHandler questionNodeHandler) {
         nodeHandlerMap = new HashMap<>();
         nodeHandlerMap.put(NodeType.COURSE, courseNodeHandler);
         nodeHandlerMap.put(NodeType.MODULE, moduleNodeHandler);
         nodeHandlerMap.put(NodeType.CHAPTER, chapterNodeHandler);
         nodeHandlerMap.put(NodeType.MESSAGE, messageNodeHandler);
+        nodeHandlerMap.put(NodeType.QUIZ, quizNodeHandler);
+        nodeHandlerMap.put(NodeType.QUESTION, questionNodeHandler);
     }
 
     public NodeHandler getHandler(NodeType nodeType) {

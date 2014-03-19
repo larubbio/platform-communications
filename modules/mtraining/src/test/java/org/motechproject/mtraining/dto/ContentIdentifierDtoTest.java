@@ -2,9 +2,16 @@ package org.motechproject.mtraining.dto;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.motechproject.mtraining.builder.QuizContentBuilder;
+import org.motechproject.mtraining.domain.Content;
+import org.motechproject.mtraining.domain.ContentIdentifier;
+import org.motechproject.mtraining.domain.Quiz;
 
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public class ContentIdentifierDtoTest {
@@ -40,5 +47,35 @@ public class ContentIdentifierDtoTest {
         assertThat(contentIdentifierDto.hashCode(), Is.is(similarContentIdentifierDto.hashCode()));
     }
 
+    @Test
+    public void shouldTestThatFindContentByContentIdReturnsNullIfNotFound() {
+        ContentIdentifier contentIdentifier = new ContentIdentifier(UUID.randomUUID(), 1);
+        Quiz quiz1 = new QuizContentBuilder().
+                withContentId(contentIdentifier.getContentId())
+                .withVersion(contentIdentifier.getVersion())
+                .buildQuiz();
+        Quiz quiz2 = new QuizContentBuilder().
+                withContentId(contentIdentifier.getContentId())
+                .withVersion(contentIdentifier.getVersion())
+                .buildQuiz();
+        Quiz quizByContentId = (Quiz) Content.findContentByContentId(newArrayList(quiz1, quiz2), UUID.randomUUID());
+        assertNull(quizByContentId);
+    }
+
+    @Test
+    public void shouldTestThatFindContentByContentIdReturnsContentIfFound() {
+        UUID contentId = UUID.randomUUID();
+        ContentIdentifier contentIdentifier = new ContentIdentifier(contentId, 1);
+        Quiz quiz1 = new QuizContentBuilder().
+                withContentId(contentIdentifier.getContentId())
+                .withVersion(contentIdentifier.getVersion())
+                .buildQuiz();
+        Quiz quiz2 = new QuizContentBuilder().
+                withContentId(contentIdentifier.getContentId())
+                .withVersion(contentIdentifier.getVersion())
+                .buildQuiz();
+        Quiz quizByContentId = (Quiz) Content.findContentByContentId(newArrayList(quiz1, quiz2), contentId);
+        assertNotNull(quizByContentId);
+    }
 
 }

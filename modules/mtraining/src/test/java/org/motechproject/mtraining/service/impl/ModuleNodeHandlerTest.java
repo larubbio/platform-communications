@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Module;
@@ -47,10 +50,16 @@ public class ModuleNodeHandlerTest {
     private EventRelay eventRelay;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    private ModuleContentBuilder moduleContentBuilder;
+
+    @Before
+    public void before() {
+        moduleContentBuilder = new ModuleContentBuilder();
+    }
 
     @Test
     public void shouldValidateGivenModuleDtoAndThrowExceptionIfInvalid() {
-        ModuleDto moduleDto = new ModuleDto(true, "name", "description", Collections.EMPTY_LIST);
+        ModuleDto moduleDto = moduleContentBuilder.buildModuleDTO();
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateModule(moduleDto)).thenReturn(validationResponse);
@@ -63,7 +72,7 @@ public class ModuleNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenModuleDtoIsValid() {
-        ModuleDto moduleDto = new ModuleDto(true, "name", "description", asList(new ChapterDto()));
+        ModuleDto moduleDto = moduleContentBuilder.buildModuleDTO();
         when(courseStructureValidator.validateModule(moduleDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         moduleNodeHandler.validateNodeData(moduleDto);
@@ -71,12 +80,16 @@ public class ModuleNodeHandlerTest {
 
     @Test
     public void shouldSaveTheGivenModuleDtoAsModuleEntityWithChaptersAndRaiseEvent() {
-        Node chapterNode1 = new Node(NodeType.MESSAGE, new ChapterDto());
-        Chapter expectedChapterForTheModule = new Chapter(true, "", "", Collections.EMPTY_LIST);
+        Node chapterNode1 = new Node(NodeType.CHAPTER, new ChapterDto());
+        Chapter expectedChapterForTheModule = new ChapterContentBuilder().buildChapter();
         chapterNode1.setPersistentEntity(expectedChapterForTheModule);
-        Node chapterNode2 = new Node(NodeType.MESSAGE, new ChapterDto());
-        ModuleDto moduleDto = new ModuleDto(true, "name", "description", asList(new ChapterDto()));
-        Node moduleNode = new Node(NodeType.CHAPTER, moduleDto, asList(chapterNode1, chapterNode2));
+
+        Node chapterNode2 = new Node(NodeType.CHAPTER, new ChapterDto());
+        ChapterDto chapterDto = new ChapterContentBuilder().buildChapterDTO();
+
+        ModuleDto moduleDto = new ModuleContentBuilder().withChapterDTOs(asList(chapterDto)).buildModuleDTO();
+
+        Node moduleNode = new Node(NodeType.MODULE, moduleDto, asList(chapterNode1, chapterNode2));
 
         moduleNodeHandler.saveAndRaiseEvent(moduleNode);
 
@@ -96,15 +109,19 @@ public class ModuleNodeHandlerTest {
     @Test
     public void shouldGetLatestVersionOfExistingModuleAndSaveTheNewModuleWithSameContentId_WhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        ModuleDto moduleDto = new ModuleDto(contentId, true, "name", "description", asList(new ChapterDto()));
+        ChapterDto chapterDto = new ChapterContentBuilder().buildChapterDTO();
+        ModuleDto moduleDto = moduleContentBuilder
+                .withContentId(contentId)
+                .withVersion(2)
+                .withChapterDTOs(asList(chapterDto))
+                .buildModuleDTO();
         Node chapterNode1 = new Node(NodeType.CHAPTER, new ChapterDto());
-        Chapter expectedChapterForTheModule = new Chapter(true, "", "", Collections.EMPTY_LIST);
+        Chapter expectedChapterForTheModule = new ChapterContentBuilder().buildChapter();
         chapterNode1.setPersistentEntity(expectedChapterForTheModule);
         Node chapterNode2 = new Node(NodeType.CHAPTER, new ChapterDto());
         Node moduleNode = new Node(NodeType.MODULE, moduleDto, asList(chapterNode1, chapterNode2));
-        Module existingModuleWithOldVersion = new Module(contentId, 1, true, "name", "description", Collections.EMPTY_LIST);
-        Module existingModuleWithLatestVersion = new Module(contentId, 2, true, "name", "description", Collections.EMPTY_LIST);
-        when(allModules.findByContentId(contentId)).thenReturn(asList(existingModuleWithOldVersion, existingModuleWithLatestVersion));
+        Module existingModuleWithLatestVersion = new Module(contentId, 2, true, "name", "description", "externalId", "Course Author", Collections.<Chapter>emptyList());
+        when(allModules.getLatestVersionByContentId(contentId)).thenReturn(existingModuleWithLatestVersion);
 
         moduleNodeHandler.saveAndRaiseEvent(moduleNode);
 

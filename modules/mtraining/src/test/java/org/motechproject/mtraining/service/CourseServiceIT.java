@@ -6,6 +6,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.CourseContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Message;
@@ -25,7 +29,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +62,10 @@ public class CourseServiceIT extends SpringIntegrationTest {
     private AllModules allModules;
     @Autowired
     private AllCourses allCourses;
+    private MessageContentBuilder messageContentBuilder;
+    private ChapterContentBuilder chapterContentBuilder;
+    private ModuleContentBuilder moduleContentBuilder;
+    private CourseContentBuilder courseContentBuilder;
 
     @Before
     @After
@@ -67,17 +74,21 @@ public class CourseServiceIT extends SpringIntegrationTest {
         allModules.removeAll();
         allChapters.removeAll();
         allMessages.removeAll();
+        messageContentBuilder = new MessageContentBuilder();
+        chapterContentBuilder = new ChapterContentBuilder();
+        moduleContentBuilder = new ModuleContentBuilder();
+        courseContentBuilder = new CourseContentBuilder();
     }
 
     @Test
     public void shouldAddACourseWithModulesAndChaptersAndMessages() throws InterruptedException {
-        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
-        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
-        ChapterDto chapterDto1 = new ChapterDto(true, "chapterName1", "chapterDescription1", asList(messageDto1));
-        ChapterDto chapterDto2 = new ChapterDto(true, "chapterName2", "chapterDescription2", asList(messageDto2));
-        ModuleDto moduleDto1 = new ModuleDto(true, "moduleName1", null, asList(chapterDto1, chapterDto2));
-        ModuleDto moduleDto2 = new ModuleDto(true, "moduleName2", null, asList(chapterDto1, chapterDto2));
-        CourseDto courseDto = new CourseDto(true, "courseName", "courseDescription", asList(moduleDto1, moduleDto2));
+        MessageDto messageDto1 = messageContentBuilder.withName("ms01").withAudioFile("audio-01").buildMessageDTO();
+        MessageDto messageDto2 = messageContentBuilder.withName("ms02").withAudioFile("audio-02").buildMessageDTO();
+        ChapterDto chapterDto1 = chapterContentBuilder.withName("ch01").withMessageDTOs(asList(messageDto1)).buildChapterDTO();
+        ChapterDto chapterDto2 = chapterContentBuilder.withName("ch02").withMessageDTOs(asList(messageDto2)).buildChapterDTO();
+        ModuleDto moduleDto1 = moduleContentBuilder.withName("mod 01").withChapterDTOs(asList(chapterDto1, chapterDto2)).buildModuleDTO();
+        ModuleDto moduleDto2 = moduleContentBuilder.withName("mod 02").withChapterDTOs(asList(chapterDto1, chapterDto2)).buildModuleDTO();
+        CourseDto courseDto = courseContentBuilder.withName("mod 01").withModuleDtos(asList(moduleDto1, moduleDto2)).buildCourseDTO();
 
         ContentIdentifierDto savedCourse = courseService.addOrUpdateCourse(courseDto);
 
@@ -94,20 +105,53 @@ public class CourseServiceIT extends SpringIntegrationTest {
 
     @Test
     public void shouldMapTheContentIdOfExistingContentsToGivenContentsAndAddCourseWithModulesAndChaptersAndMessages() throws InterruptedException {
-        Message existingMessage = new Message(UUID.randomUUID(), 1, true, "messageName1", "messageFileName1", null);
-        Chapter existingChapter = new Chapter(UUID.randomUUID(), 1, true, "chapterName1", "oldChapter1Description", Collections.EMPTY_LIST);
-        Module existingModule = new Module(UUID.randomUUID(), 1, true, "moduleName1", "oldModule2Description", Collections.EMPTY_LIST);
+        Message existingMessage = messageContentBuilder.withContentId(UUID.randomUUID()).withVersion(1).withName("messageName1").withAudioFile("messageFileName1").buildMessage();
+        Chapter existingChapter = chapterContentBuilder.withContentId(UUID.randomUUID()).withVersion(1).withName("chapterName1").withDescription("oldChapter1Description1").buildChapter();
+        Module existingModule = moduleContentBuilder.withContentId(UUID.randomUUID()).withVersion(1).withName("moduleName1").withDescription("oldModule2Description").buildModule();
         allMessages.add(existingMessage);
         allChapters.add(existingChapter);
         allModules.add(existingModule);
+        MessageDto messageDto1 = messageContentBuilder
+                .withContentId(existingMessage.getContentId())
+                .withVersion(1)
+                .withName("messageName1")
+                .withAudioFile("messageFileName1")
+                .buildMessageDTO();
+        MessageDto messageDto2 = messageContentBuilder.withContentId(existingMessage.getContentId())
+                .withVersion(1)
+                .withName("messageName2")
+                .withAudioFile("messageFileName2")
+                .buildMessageDTO();
 
-        MessageDto messageDto1 = new MessageDto(existingMessage.getContentId(), true, "messageName1", "messageFileName1", null);
-        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
-        ChapterDto chapterDto1 = new ChapterDto(existingChapter.getContentId(), true, "chapterName1", "chapterDescription1", asList(messageDto1));
-        ChapterDto chapterDto2 = new ChapterDto(true, "chapterName2", "chapterDescription2", asList(messageDto2));
-        ModuleDto moduleDto1 = new ModuleDto(existingModule.getContentId(), true, "moduleName1", null, asList(chapterDto1, chapterDto2));
-        ModuleDto moduleDto2 = new ModuleDto(true, "moduleName2", null, asList(chapterDto1, chapterDto2));
-        CourseDto courseDto = new CourseDto(true, "courseName", "courseDescription", asList(moduleDto1, moduleDto2));
+        ChapterDto chapterDto1 = chapterContentBuilder
+                .withContentId(existingChapter.getContentId())
+                .withVersion(1)
+                .withName("chapterName1")
+                .withDescription("chapterDescription1")
+                .withMessageDTOs(asList(messageDto1))
+                .buildChapterDTO();
+
+        ChapterDto chapterDto2 = chapterContentBuilder
+                .withName("chapterName2")
+                .withDescription("chapterDescription2")
+                .withMessageDTOs(asList(messageDto2))
+                .buildChapterDTO();
+
+
+        ModuleDto moduleDto1 = moduleContentBuilder
+                .withName("mod 01")
+                .withContentId(existingModule.getContentId())
+                .withVersion(1)
+                .withChapterDTOs(asList(chapterDto1, chapterDto2))
+                .buildModuleDTO();
+        ModuleDto moduleDto2 = moduleContentBuilder
+                .withName("mod 02")
+                .withChapterDTOs(asList(chapterDto1, chapterDto2))
+                .buildModuleDTO();
+        CourseDto courseDto = courseContentBuilder
+                .withName("CS001")
+                .withModuleDtos(asList(moduleDto1, moduleDto2))
+                .buildCourseDTO();
 
         ContentIdentifierDto savedCourse = courseService.addOrUpdateCourse(courseDto);
 
@@ -127,10 +171,10 @@ public class CourseServiceIT extends SpringIntegrationTest {
 
     @Test
     public void shouldRetrieveACourseGivenItsId() {
-        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
-        ChapterDto chapterDto1 = new ChapterDto(true, "chapterName1", "chapterDescription1", asList(messageDto1));
-        ModuleDto moduleDto1 = new ModuleDto(true, "moduleName1", null, asList(chapterDto1));
-        CourseDto savedCourse = new CourseDto(true, "courseName", "courseDescription", asList(moduleDto1));
+        MessageDto messageDto1 = messageContentBuilder.withName("messageName1").buildMessageDTO();
+        ChapterDto chapterDto1 = chapterContentBuilder.withName("chapterName1").withMessageDTOs(asList(messageDto1)).buildChapterDTO();
+        ModuleDto moduleDto1 = moduleContentBuilder.withName("moduleName1").withChapterDTOs(asList(chapterDto1)).buildModuleDTO();
+        CourseDto savedCourse = courseContentBuilder.withName("courseName1").withModuleDtos(asList(moduleDto1)).buildCourseDTO();
 
         ContentIdentifierDto savedCourseIdentifier = courseService.addOrUpdateCourse(savedCourse);
 

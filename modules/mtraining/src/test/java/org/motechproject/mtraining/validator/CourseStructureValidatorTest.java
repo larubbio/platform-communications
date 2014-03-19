@@ -1,11 +1,15 @@
 package org.motechproject.mtraining.validator;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mtraining.domain.Message;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.CourseContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
@@ -39,6 +43,18 @@ public class CourseStructureValidatorTest {
 
     @InjectMocks
     private CourseStructureValidator courseStructureValidator = new CourseStructureValidator();
+    private MessageContentBuilder messageContentBuilder;
+    private ChapterContentBuilder chapterContentBuilder;
+    private ModuleContentBuilder moduleContentBuilder;
+    private CourseContentBuilder courseContentBuilder;
+
+    @Before
+    public void before() {
+        messageContentBuilder = new MessageContentBuilder();
+        chapterContentBuilder = new ChapterContentBuilder();
+        moduleContentBuilder = new ModuleContentBuilder();
+        courseContentBuilder = new CourseContentBuilder();
+    }
 
     @Test
     public void shouldValidateIfMessageIsNotNull() {
@@ -59,7 +75,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForAValidMessage() {
-        MessageDto validMessage = new MessageDto(true, "name", "externalId", "description");
+        MessageDto validMessage = messageContentBuilder.withName("name").withDescription("description").withAudioFile("hello.wav").buildMessageDTO();
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(validMessage);
         assertTrue(validationResponse.isValid());
@@ -86,7 +102,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidChapter() {
-        ChapterDto invalidChapter = new ChapterDto(true, "name", "desc", asList(new MessageDto()));
+        ChapterDto invalidChapter = chapterContentBuilder.withName("name").withDescription("desc").buildChapterDTO();
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateChapter(invalidChapter);
 
@@ -114,7 +130,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidModule() {
-        ModuleDto invalidModule = new ModuleDto(true, "name", "desc", asList(new ChapterDto()));
+        ModuleDto invalidModule = moduleContentBuilder.buildModuleDTO();
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateModule(invalidModule);
 
@@ -142,7 +158,7 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotReturnAnyErrorsForValidCourse() {
-        CourseDto invalidCourse = new CourseDto(true, "name", "desc", asList(new ModuleDto()));
+        CourseDto invalidCourse = new CourseContentBuilder().buildCourseDTO();
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateCourse(invalidCourse);
 
@@ -153,7 +169,13 @@ public class CourseStructureValidatorTest {
     @Test
     public void shouldValidateIfMessageExistsByContentIdWhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        MessageDto messageDto = new MessageDto(contentId, true, "name", "fileName", "desc");
+        MessageDto messageDto = messageContentBuilder
+                .withVersion(1)
+                .withContentId(contentId)
+                .withName("name")
+                .withAudioFile("hello.wav")
+                .withDescription("desc")
+                .buildMessageDTO();
         when(allMessages.findByContentId(contentId)).thenReturn(Collections.EMPTY_LIST);
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(messageDto);
@@ -165,8 +187,15 @@ public class CourseStructureValidatorTest {
     @Test
     public void shouldNotReturnAnyErrorIfMessageExistsByContentIdWhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        MessageDto messageDto = new MessageDto(contentId, true, "name", "fileName", "desc");
-        when(allMessages.findByContentId(contentId)).thenReturn(asList(new Message(true, "name", "fileName", "desc")));
+        MessageDto messageDto = messageContentBuilder
+                .withContentId(contentId)
+                .withVersion(1)
+                .withName("name")
+                .withAudioFile("hello.wav")
+                .withDescription("desc")
+                .buildMessageDTO();
+
+        when(allMessages.findByContentId(contentId)).thenReturn(asList(new MessageContentBuilder().buildMessage()));
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(messageDto);
 
@@ -175,7 +204,8 @@ public class CourseStructureValidatorTest {
 
     @Test
     public void shouldNotCheckIfMessageExistsIfContentIdIsNotProvidedWithDto() {
-        CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(new MessageDto(true, "name", "externalId", "desc"));
+        MessageDto messageDto = messageContentBuilder.buildMessageDTO();
+        CourseStructureValidationResponse validationResponse = courseStructureValidator.validateMessage(messageDto);
 
         verifyZeroInteractions(allMessages);
         assertTrue(validationResponse.isValid());
@@ -184,7 +214,10 @@ public class CourseStructureValidatorTest {
     @Test
     public void shouldValidateIfChapterExistsByContentIdWhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        ChapterDto chapterDto = new ChapterDto(contentId, true, "name", "desc", Collections.EMPTY_LIST);
+        ChapterDto chapterDto = chapterContentBuilder
+                .withContentId(contentId)
+                .withVersion(1)
+                .buildChapterDTO();
         when(allChapters.findByContentId(contentId)).thenReturn(Collections.EMPTY_LIST);
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateChapter(chapterDto);
@@ -196,7 +229,10 @@ public class CourseStructureValidatorTest {
     @Test
     public void shouldValidateIfModuleExistsByContentIdWhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        ModuleDto moduleDto = new ModuleDto(contentId, true, "name", "desc", Collections.EMPTY_LIST);
+        ModuleDto moduleDto = moduleContentBuilder
+                .withContentId(contentId)
+                .withVersion(1)
+                .buildModuleDTO();
         when(allModules.findByContentId(contentId)).thenReturn(Collections.EMPTY_LIST);
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateModule(moduleDto);
@@ -208,7 +244,10 @@ public class CourseStructureValidatorTest {
     @Test
     public void shouldValidateIfCourseExistsByContentIdWhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        CourseDto courseDto = new CourseDto(contentId, true, "name", "desc", Collections.EMPTY_LIST);
+        CourseDto courseDto = courseContentBuilder
+                .withContentId(contentId)
+                .withVersion(1)
+                .buildCourseDTO();
         when(allCourses.findByContentId(contentId)).thenReturn(Collections.EMPTY_LIST);
 
         CourseStructureValidationResponse validationResponse = courseStructureValidator.validateCourse(courseDto);

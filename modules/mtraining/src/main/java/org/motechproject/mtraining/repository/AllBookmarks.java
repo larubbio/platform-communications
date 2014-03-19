@@ -33,4 +33,9 @@ public class AllBookmarks extends MotechBaseRepository<Bookmark> {
         List<Bookmark> resultSet = db.queryView(viewQuery, Bookmark.class);
         return singleResult(resultSet);
     }
+
+    public void deleteBookmarkFor(String externalId) {
+        Bookmark bookmark = findBy(externalId);
+        remove(bookmark);
+    }
 }
