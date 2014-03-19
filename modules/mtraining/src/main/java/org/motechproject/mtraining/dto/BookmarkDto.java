@@ -3,6 +3,8 @@ package org.motechproject.mtraining.dto;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
+import org.motechproject.mtraining.util.DateTimeUtil;
+import org.motechproject.mtraining.util.JSONUtil;
 
 /**
  * Object representing a bookmark node in a bookmark structure.
@@ -14,16 +16,16 @@ public class BookmarkDto {
     @JsonIgnore
     private String externalId;
 
-    @JsonProperty(value = "courseIdentifier")
+    @JsonProperty(value = "course")
     private ContentIdentifierDto course;
 
-    @JsonProperty(value = "moduleIdentifier")
+    @JsonProperty(value = "module")
     private ContentIdentifierDto module;
 
-    @JsonProperty(value = "chapterIdentifier")
+    @JsonProperty(value = "chapter")
     private ContentIdentifierDto chapter;
 
-    @JsonProperty(value = "messageIdentifier")
+    @JsonProperty(value = "message")
     private ContentIdentifierDto message;
 
     @JsonProperty
@@ -38,7 +40,7 @@ public class BookmarkDto {
         this.module = module;
         this.chapter = chapter;
         this.message = message;
-        this.dateModified = formatDateTime(dateModified);
+        this.dateModified = DateTimeUtil.formatDateTime(dateModified);
     }
 
     public String getExternalId() {
@@ -65,7 +67,8 @@ public class BookmarkDto {
         return dateModified;
     }
 
-    private static String formatDateTime(DateTime dateTime) {
-        return dateTime == null ? null : dateTime.toString("dd-MM-yyyy HH:mm:ss.SSS");
+    @Override
+    public String toString() {
+        return JSONUtil.toJsonString(this);
     }
 }

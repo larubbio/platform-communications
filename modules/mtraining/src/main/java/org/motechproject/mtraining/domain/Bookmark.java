@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mtraining.util.JSONUtil;
 
 /**
  * Couch document object representing a Bookmark content.
@@ -42,6 +43,16 @@ public class Bookmark extends MotechBaseDataObject {
         this.dateModified = DateTime.now();
     }
 
+    public Bookmark(String externalId, ContentIdentifier course, ContentIdentifier module, ContentIdentifier chapter, ContentIdentifier message, DateTime dateModified) {
+        this.externalId = externalId;
+        this.course = course;
+        this.module = module;
+        this.chapter = chapter;
+        this.message = message;
+        this.dateModified = dateModified;
+    }
+
+
     public String getExternalId() {
         return externalId;
     }
@@ -75,5 +86,14 @@ public class Bookmark extends MotechBaseDataObject {
         this.module = module;
         this.chapter = chapter;
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return JSONUtil.toJsonString(this);
+    }
+
+    public boolean wasModifiedAfter(DateTime dateTime) {
+        return dateModified.isAfter(dateTime);
     }
 }

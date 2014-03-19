@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mtraining.builder.BookmarkBuilder;
 import org.motechproject.mtraining.domain.Bookmark;
 import org.motechproject.mtraining.domain.ContentIdentifier;
 import org.motechproject.mtraining.dto.BookmarkDto;
@@ -21,12 +22,15 @@ import org.motechproject.mtraining.service.CourseService;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static java.lang.Integer.valueOf;
 import static java.util.UUID.randomUUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +43,8 @@ public class BookmarkServiceImplTest {
     private CourseService courseService;
 
     private BookmarkServiceImpl bookmarkService;
+
+    private static List EMPTY = Collections.emptyList();
 
     @Before
     public void setUp() throws Exception {
@@ -64,9 +70,9 @@ public class BookmarkServiceImplTest {
     @Test
     public void shouldAddBookmark() {
         ContentIdentifierDto courseContentDto = new ContentIdentifierDto(randomUUID(), 1);
-        ContentDto courseContent = new CourseDto(randomUUID(), 1, true, "name", "desc", Collections.EMPTY_LIST);
-        ContentDto moduleContent = new ModuleDto(randomUUID(), 2, true, "name", "desc", Collections.EMPTY_LIST);
-        ContentDto chapterContent = new ChapterDto(randomUUID(), 3, true, "name", "desc", Collections.EMPTY_LIST);
+        ContentDto courseContent = new CourseDto(randomUUID(), 1, true, "name", "desc", EMPTY);
+        ContentDto moduleContent = new ModuleDto(randomUUID(), 2, true, "name", "desc", EMPTY);
+        ContentDto chapterContent = new ChapterDto(randomUUID(), 3, true, "name", "desc", EMPTY);
         CourseDto courseDto = new CourseDto(courseContent.getContentId(), courseContent.getVersion(), true, "course1", "some description",
                 Arrays.asList(new ModuleDto(moduleContent.getContentId(), moduleContent.getVersion(), true, "module1", "module",
                         Arrays.asList(new ChapterDto(chapterContent.getContentId(), chapterContent.getVersion(), true, "chapter1", "chapter",
@@ -87,9 +93,13 @@ public class BookmarkServiceImplTest {
     @Test
     public void shouldUpdateBookmarkForAGivenCallerId() {
         ContentIdentifierDto contentIdentifier = new ContentIdentifierDto(randomUUID(), 1);
+        DateTime now = DateTime.now();
+        DateTime updatedOneHourAgo = now.minusHours(1);
         BookmarkDto bookmarkDto = new BookmarkDto("externalId", contentIdentifier,
-                contentIdentifier, contentIdentifier, contentIdentifier, DateTime.now());
-        Bookmark bookmark = new Bookmark("externalId", new ContentIdentifier(), null, null, null);
+                contentIdentifier, contentIdentifier, contentIdentifier, now);
+
+        Bookmark bookmark = new Bookmark("externalId", new ContentIdentifier(), null, null, null, updatedOneHourAgo);
+
         when(allBookmarks.findBy(bookmarkDto.getExternalId())).thenReturn(bookmark);
 
         bookmarkService.update(bookmarkDto);
@@ -99,5 +109,21 @@ public class BookmarkServiceImplTest {
         verify(allBookmarks).update(bookmarkArgumentCaptor.capture());
         Bookmark bookmarkSaved = bookmarkArgumentCaptor.getValue();
         assertNotNull(bookmarkSaved.getModule());
+    }
+
+    @Test
+    public void shouldNotUpdateBookmarkIfAMoreRecentBookmarkExists() {
+        DateTime now = DateTime.now();
+        DateTime someSecondsBeforeNow = now.minusSeconds(100);
+        String callerId = "9886557745l";
+        BookmarkDto oldBookmark = new BookmarkBuilder().withExternalId(callerId).modifiedOn(someSecondsBeforeNow).buildDto();
+
+        Bookmark existingBookmarkInDb = new BookmarkBuilder().withExternalId(callerId).modifiedOn(now).build();
+
+        when(allBookmarks.findBy(callerId)).thenReturn(existingBookmarkInDb);
+
+        bookmarkService.update(oldBookmark);
+
+        verify(allBookmarks, never()).update(any(Bookmark.class));
     }
 }
