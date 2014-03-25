@@ -9,6 +9,8 @@ import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class CalllogBundleIT extends BaseOsgiIT {
 
@@ -26,8 +28,8 @@ public class CalllogBundleIT extends BaseOsgiIT {
         assertNotNull(service);
     }
 
-//    @Override
-//    protected List<String> getImports() {
-//        return Arrays.asList("org.motechproject.ivr.service", "org.motechproject.ivr.repository");
-//    }
+    @Override
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.ivr.service", "org.motechproject.ivr.repository", "sun.misc");
+    }
 }

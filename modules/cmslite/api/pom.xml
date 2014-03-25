@@ -27,6 +27,11 @@
             <version>${motech.version}</version>
         </dependency>
         <dependency>
+            <groupId>${motech.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
@@ -71,6 +76,10 @@
             <version>${motech.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.paranamer</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -107,8 +116,8 @@
                         <Resource-Path>cmsliteapi/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
+                            org.motechproject.cmslite.api;version=${project.version},
                             org.motechproject.cmslite.api.model;version=${project.version},
-                            org.motechproject.cmslite.api.repository;version=${project.version},
                             org.motechproject.cmslite.api.service;version=${project.version},
                             org.motechproject.cmslite.api.web;version=${project.version}
                         </Export-Package>
@@ -117,7 +126,6 @@
                             org.apache.commons.fileupload,
                             org.ektorp.impl,
                             org.ektorp.spring,
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
@@ -141,21 +149,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-osgi-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeScope>runtime</includeScope>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <outputDirectory>
-                                ${user.home}/.motech/bundles
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -183,37 +176,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>IT</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>drop DB =&gt; motech-cmslite</id>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <target>
-                                        <exec executable="curl">
-                                            <arg value="-s" />
-                                            <arg value="-S" />
-                                            <arg value="-X" />
-                                            <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-cmslite" />
-                                        </exec>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

@@ -2,12 +2,10 @@ package org.motechproject.cmslite.api.web;
 
 import org.apache.commons.io.IOUtils;
 import org.ektorp.AttachmentInputStream;
+import org.motechproject.cmslite.api.model.CMSContent;
 import org.motechproject.cmslite.api.model.CMSLiteException;
-import org.motechproject.cmslite.api.model.Content;
 import org.motechproject.cmslite.api.model.ContentNotFoundException;
-import org.motechproject.cmslite.api.model.StreamContent;
-import org.motechproject.cmslite.api.model.StringContent;
-import org.motechproject.cmslite.api.service.CMSLiteService;
+import org.motechproject.cmslite.api.service.CMSContentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +45,12 @@ public class ResourceController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceController.class);
 
+    private CMSContentService cmsContentService;
+
     @Autowired
-    private CMSLiteService cmsLiteService;
+    public ResourceController(CMSContentService cmsContentService) {
+        this.cmsContentService = cmsContentService;
+    }
 
     @RequestMapping(value = "/resource/available/{field}", method = RequestMethod.GET)
     @ResponseBody
@@ -57,7 +59,7 @@ public class ResourceController {
 
         switch (field) {
             case "name":
-                for (Content content : cmsLiteService.getAllContents()) {
+                for (CMSContent content : cmsContentService.retrieveAll()) {
                     if (startsWith(content.getName(), term)) {
                         strings.add(content.getName());
                     }
@@ -69,6 +71,7 @@ public class ResourceController {
                         strings.add(locale.getDisplayLanguage());
                     }
                 }
+
                 break;
             default:
         }
@@ -79,7 +82,7 @@ public class ResourceController {
     @RequestMapping(value = "/resource", method = RequestMethod.GET)
     @ResponseBody
     public Resources getContents(GridSettings settings) {
-        List<Content> contents = cmsLiteService.getAllContents();
+        List<CMSContent> contents = cmsContentService.retrieveAll();
         List<ResourceDto> resourceDtos = ResourceFilter.filter(settings, contents);
 
         Collections.sort(resourceDtos, new ResourceComparator(settings));
@@ -90,10 +93,10 @@ public class ResourceController {
     @RequestMapping(value = "/resource/all/languages", method = RequestMethod.GET)
     @ResponseBody
     public Set<String> getAllLanguages() throws ContentNotFoundException {
-        List<Content> contents = cmsLiteService.getAllContents();
+        List<CMSContent> contents = cmsContentService.retrieveAll();
         Set<String> strings = new TreeSet<>();
 
-        for (Content content : contents) {
+        for (CMSContent content : contents) {
             strings.add(content.getLanguage());
         }
 
@@ -102,15 +105,15 @@ public class ResourceController {
 
     @RequestMapping(value = "/resource/{type}/{language}/{name}", method = RequestMethod.GET)
     @ResponseBody
-    public Content getContent(@PathVariable String type, @PathVariable String language, @PathVariable String name) throws ContentNotFoundException {
-        Content content = null;
+    public CMSContent getContent(@PathVariable String type, @PathVariable String language, @PathVariable String name) throws ContentNotFoundException {
+        CMSContent content = null;
 
         switch (type) {
             case "stream":
-                content = cmsLiteService.getStreamContent(language, name);
+                content = null;
                 break;
             case "string":
-                content = cmsLiteService.getStringContent(language, name);
+                content = null;
                 break;
             default:
         }
@@ -122,24 +125,24 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.OK)
     public void editStringContent(@PathVariable String language, @PathVariable String name,
                                   @RequestParam String value) throws ContentNotFoundException, CMSLiteException, IOException {
-        StringContent stringContent = cmsLiteService.getStringContent(language, name);
-        stringContent.setValue(value);
+        CMSContent content = cmsContentService.byNameAndLanguage(language, name).get(0);
+        content.setValue(value);
 
-        cmsLiteService.addContent(stringContent);
+        cmsContentService.create(content);
     }
 
     @RequestMapping(value = "/resource/stream/{language}/{name}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void editStreamContent(@PathVariable String language, @PathVariable String name,
                                   @RequestParam MultipartFile contentFile) throws ContentNotFoundException, CMSLiteException, IOException {
-        StreamContent streamContent = cmsLiteService.getStreamContent(language, name);
+        CMSContent content = cmsContentService.byNameAndLanguage(language, name).get(0);
 
         try (InputStream inputStream = contentFile.getInputStream()) {
-            streamContent.setChecksum(md5Hex(contentFile.getBytes()));
-            streamContent.setContentType(contentFile.getContentType());
-            streamContent.setInputStream(inputStream);
+            content.setChecksum(md5Hex(contentFile.getBytes()));
+            content.setContentType(contentFile.getContentType());
+            content.setInputStream(inputStream);
 
-            cmsLiteService.addContent(streamContent);
+            cmsContentService.create(content);
         }
     }
 
@@ -168,18 +171,18 @@ public class ResourceController {
                     throw new CMSLiteException("Resource content is required");
                 }
 
-                if (cmsLiteService.isStringContentAvailable(language, name)) {
+                if (cmsContentService.byNameAndLanguage(language, name) != null) {
                     throw new CMSLiteException(String.format("Resource %s in %s language already exists.", name, language));
                 }
 
-                cmsLiteService.addContent(new StringContent(language, name, value));
+                cmsContentService.create(new CMSContent(language, name, null, value, null, null, null));
                 break;
             case "stream":
                 if (null == contentFile) {
                     throw new CMSLiteException("Resource content is required");
                 }
 
-                if (cmsLiteService.isStreamContentAvailable(language, name)) {
+                if (cmsContentService.byNameAndLanguage(language, name) != null) {
                     throw new CMSLiteException(String.format("Resource %s in %s language already exists.", name, language));
                 }
 
@@ -187,7 +190,7 @@ public class ResourceController {
                     String checksum = md5Hex(contentFile.getBytes());
                     String contentType = contentFile.getContentType();
 
-                    cmsLiteService.addContent(new StreamContent(language, name, inputStream, checksum, contentType));
+                    cmsContentService.create(new CMSContent(language, name, null, null, checksum, contentType, inputStream));
                 }
                 break;
             default:
@@ -197,15 +200,7 @@ public class ResourceController {
     @RequestMapping(value = "/resource/{type}/{language}/{name}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void removeContent(@PathVariable String type, @PathVariable String language, @PathVariable String name) throws ContentNotFoundException {
-        switch (type) {
-            case "stream":
-                cmsLiteService.removeStreamContent(language, name);
-                break;
-            case "string":
-                cmsLiteService.removeStringContent(language, name);
-                break;
-            default:
-        }
+        cmsContentService.delete(cmsContentService.byNameAndLanguage(language, name).get(0));
     }
 
     @RequestMapping(value = "/stream/{language}/{name}", method = RequestMethod.GET)
@@ -219,7 +214,7 @@ public class ResourceController {
         try {
             out = response.getOutputStream();
 
-            contentStream = (AttachmentInputStream) cmsLiteService.getStreamContent(language, name).getInputStream();
+            contentStream = (AttachmentInputStream) cmsContentService.byNameAndLanguage(language, name).get(0).getInputStream();
 
             response.setContentLength((int) contentStream.getContentLength());
             response.setContentType(contentStream.getContentType());
@@ -227,7 +222,7 @@ public class ResourceController {
             response.setStatus(HttpServletResponse.SC_OK);
 
             IOUtils.copy(contentStream, out);
-        } catch (ContentNotFoundException e) {
+        } catch (Exception e) {
             LOG.error(String.format("Content not found for : stream:%s:%s%n:%s", language, name,
                     Arrays.toString(e.getStackTrace())));
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NOT_FOUND_RESPONSE);
@@ -247,14 +242,14 @@ public class ResourceController {
         try {
             writer = response.getWriter();
 
-            StringContent stringContent = cmsLiteService.getStringContent(language, name);
+            CMSContent stringContent = cmsContentService.byNameAndLanguage(language, name).get(0);
 
             response.setContentLength(stringContent.getValue().length());
             response.setContentType("text/plain");
             response.setStatus(HttpServletResponse.SC_OK);
 
             writer.print(stringContent.getValue());
-        } catch (ContentNotFoundException e) {
+        } catch (Exception e) {
             LOG.error(String.format("Content not found for : string:%s:%s%n:%s", language, name,
                     Arrays.toString(e.getStackTrace())));
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, NOT_FOUND_RESPONSE);

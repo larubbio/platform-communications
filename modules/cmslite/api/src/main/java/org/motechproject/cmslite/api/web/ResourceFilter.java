@@ -2,23 +2,22 @@ package org.motechproject.cmslite.api.web;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.motechproject.cmslite.api.model.Content;
+import org.motechproject.cmslite.api.model.CMSContent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 
 public final class ResourceFilter {
 
     private ResourceFilter() {
     }
 
-    public static List<ResourceDto> filter(GridSettings settings, final List<Content> contents) {
+    public static List<ResourceDto> filter(GridSettings settings, final List<CMSContent> contents) {
         List<ResourceDto> resourceDtos = new ArrayList<>();
 
-        for (final Content content : contents) {
+        for (final CMSContent content : contents) {
             if (settings.isCorrect(content.getName(), content.getLanguage(), getContentType(content))) {
                 ResourceDto dto = (ResourceDto) CollectionUtils.find(resourceDtos, new Predicate() {
                     @Override
@@ -39,16 +38,8 @@ public final class ResourceFilter {
         return resourceDtos;
     }
 
-    public static String getContentType(Content content) {
-        String contentType;
-
-        if (startsWithIgnoreCase(content.getType(), "string")) {
-            contentType = "string";
-        } else if (startsWithIgnoreCase(content.getType(), "stream")) {
-            contentType = "stream";
-        } else {
-            contentType = "";
-        }
+    public static String getContentType(CMSContent content) {
+        String contentType = "";
 
         return contentType;
     }
