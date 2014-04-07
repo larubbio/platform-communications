@@ -8,7 +8,6 @@
         <relativePath>../../../</relativePath>
     </parent>
 
-    <groupId>org.motechproject</groupId>
     <artifactId>motech-decisiontree-core</artifactId>
     <packaging>bundle</packaging>
     <name>MOTECH Decision Tree Core</name>
@@ -33,6 +32,14 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-ivr-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.motechproject.org.ektorp</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>
