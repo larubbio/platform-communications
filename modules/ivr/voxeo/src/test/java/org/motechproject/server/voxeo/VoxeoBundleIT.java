@@ -18,6 +18,8 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,10 +40,23 @@ public class VoxeoBundleIT extends BasePaxIT {
         return true;
     }
 
+    @Override
+    protected Collection<String> getAdditionalTestDependencies() {
+        return Arrays.asList("org.motechproject:motech-testing-utils",
+                "org.springframework:org.springframework.test",
+                "org.mortbay.jetty:com.springsource.org.mortbay.jetty.server",
+                "org.mortbay.jetty:com.springsource.org.mortbay.util");
+    }
+
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         voxeoServer = new StubServer(TestContext.getVoxeoPort(), CONTEXT_PATH);
         voxeoServer.start();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        voxeoServer.stop();
     }
 
     @Test
@@ -69,10 +84,5 @@ public class VoxeoBundleIT extends BasePaxIT {
     private void assertThatCallRequestWasMadeToVoxeoServer(RequestInfo requestInfo) {
         assertNotNull(requestInfo);
         assertEquals("1233", requestInfo.getQueryParam("phonenum"));
-    }
-
-    @After
-    protected void onTearDown() throws Exception {
-        voxeoServer.stop();
     }
 }

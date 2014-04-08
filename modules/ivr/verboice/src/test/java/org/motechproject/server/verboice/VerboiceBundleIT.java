@@ -56,7 +56,7 @@ public class VerboiceBundleIT extends BasePaxIT {
                 TestContext.getJettyPort()));
         addAuthHeader(httpGet, "bad", "user");
 
-        HttpResponse response = getHttpClient().execute(httpGet);
+        HttpResponse response = getHttpClient().execute(httpGet, HttpStatus.SC_UNAUTHORIZED);
 
         assertNotNull(response);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
@@ -80,7 +80,7 @@ public class VerboiceBundleIT extends BasePaxIT {
                 TestContext.getJettyPort()));
         addAuthHeader(httpGet, "bad", "user");
 
-        HttpResponse response = getHttpClient().execute(httpGet);
+        HttpResponse response = getHttpClient().execute(httpGet, HttpStatus.SC_UNAUTHORIZED);
 
         assertNotNull(response);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());

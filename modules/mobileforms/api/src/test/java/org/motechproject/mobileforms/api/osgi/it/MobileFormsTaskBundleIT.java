@@ -5,8 +5,6 @@ import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.osgi.test.AbstractTaskBundleIT;
-import org.motechproject.testing.osgi.wait.ContextPublishedWaitCondition;
-import org.motechproject.testing.osgi.wait.Wait;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -32,17 +30,17 @@ public class MobileFormsTaskBundleIT extends AbstractTaskBundleIT {
     private BundleContext bundleContext;
 
     @Test
-    public void testValidFormTriggerExists() throws IOException {
+    public void testValidFormTriggerExists() throws IOException, InterruptedException {
         assertTrigger(FORM_VALID_FROMS);
     }
 
     @Test
-    public void testFormErrorTriggerExists() throws IOException {
+    public void testFormErrorTriggerExists() throws IOException, InterruptedException {
         assertTrigger(FORM_ERROR);
     }
 
-    private void assertTrigger(String subject) throws IOException {
-        new Wait(new ContextPublishedWaitCondition(bundleContext, CHANNEL_NAME), 10000);
+    private void assertTrigger(String subject) throws IOException, InterruptedException {
+        waitForChannel(CHANNEL_NAME);
 
         Channel channel = findChannel(CHANNEL_NAME);
         assertNotNull(channel);
