@@ -68,6 +68,7 @@ public class KookooIvrServiceBundleIT extends BaseOsgiIT {
 
                     if (rules != null && !rules.isEmpty()) {
                         for (MotechURLSecurityRule rule : rules) {
+                            System.out.println("***RULE***" + rule.getPattern());
                             if ("/**/kookoo/web-api/**".equals(rule.getPattern())) {
                                 System.out.println("Security rule for Kookoo found");
                                 Thread.sleep(2000);
