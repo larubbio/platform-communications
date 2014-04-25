@@ -4,6 +4,8 @@ import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
+import org.motechproject.mtraining.domain.NodeType;
+import org.motechproject.mtraining.domain.Quiz;
 import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.ContentDto;
 import org.motechproject.mtraining.exception.CourseStructureValidationException;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 /**
  * Implementation of abstract class {@link NodeHandler}.
@@ -47,35 +51,33 @@ public class ChapterNodeHandler extends NodeHandler {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Saving chapter: %s", chapterDto.getName()));
         }
-
-
-        Chapter chapter = chapterWithMessages(chapterDto, getMessages(node));
-
+        Quiz quiz = isEmpty(getQuizContent(node)) ? null : getQuizContent(node).get(0);
+        Chapter chapter = chapterWithMessagesAndQuiz(chapterDto, getMessages(node), quiz);
         allChapters.add(chapter);
-
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Raising event for saved chapter: %s", chapter.getContentId()));
         }
-
         sendEvent(MTrainingEventConstants.CHAPTER_CREATION_EVENT, chapter.getContentId(), chapter.getVersion());
         return chapter;
     }
 
-
-    private List<Message> getMessages(Node node) {
-        return getChildContentNodes(node);
+    private List<Quiz> getQuizContent(Node node) {
+        return getChildContentNodes(node, NodeType.QUIZ);
     }
 
-    private Chapter chapterWithMessages(ChapterDto chapterDto, List<Message> messages) {
+    private List<Message> getMessages(Node node) {
+        return getChildContentNodes(node, NodeType.MESSAGE);
+    }
+
+    private Chapter chapterWithMessagesAndQuiz(ChapterDto chapterDto, List<Message> messages, Quiz quizContent) {
         UUID contentId = chapterDto.getContentId();
         if (contentId == null) {
-            return new Chapter(chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), messages);
+            return new Chapter(chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), chapterDto.getExternalContentId(), chapterDto.getCreatedBy(), messages, quizContent);
         }
-
-        Chapter existingChapter = getLatestVersion(allChapters.findByContentId(contentId));
-        Chapter chapterToSave = new Chapter(existingChapter.getContentId(), existingChapter.getVersion(), chapterDto.isActive(), chapterDto.getName(), chapterDto.getDescription(), messages);
+        Chapter existingChapter = allChapters.getLatestVersionByContentId(contentId);
+        Chapter chapterToSave = new Chapter(existingChapter.getContentId(), existingChapter.getVersion(), chapterDto.isActive(),
+                chapterDto.getName(), chapterDto.getDescription(), chapterDto.getExternalContentId(), chapterDto.getCreatedBy(), messages, quizContent);
         chapterToSave.incrementVersion();
         return chapterToSave;
     }
-
 }

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+import static org.motechproject.mtraining.domain.NodeType.MODULE;
+
 /**
  * Implementation of abstract class {@link NodeHandler}.
  * Validates, saves and raises an event for a node of type {@link org.motechproject.mtraining.domain.NodeType#COURSE}
@@ -29,6 +31,7 @@ public class CourseNodeHandler extends NodeHandler {
 
     @Autowired
     private AllCourses allCourses;
+
 
     @Override
     protected void validateNodeData(ContentDto nodeData) {
@@ -61,18 +64,19 @@ public class CourseNodeHandler extends NodeHandler {
     }
 
     private List<Module> getModules(Node node) {
-        return getChildContentNodes(node);
+        return getChildContentNodes(node, MODULE);
     }
 
     private Course getCourse(CourseDto courseDto, List<Module> modules) {
         UUID contentId = courseDto.getContentId();
         if (contentId == null) {
-            return new Course(courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), modules);
+            return new Course(courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), courseDto.getExternalContentId(), courseDto.getCreatedBy(), modules);
         }
 
-        Course existingCourse = getLatestVersion(allCourses.findByContentId(contentId));
-        Course courseToSave = new Course(existingCourse.getContentId(), existingCourse.getVersion(), courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), modules);
+        Course existingCourse = allCourses.getLatestVersionByContentId(contentId);
+        Course courseToSave = new Course(existingCourse.getContentId(), existingCourse.getVersion(), courseDto.isActive(), courseDto.getName(), courseDto.getDescription(), courseDto.getExternalContentId(), courseDto.getCreatedBy(), modules);
         courseToSave.incrementVersion();
         return courseToSave;
     }
+
 }

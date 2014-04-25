@@ -3,9 +3,12 @@ package org.motechproject.mtraining.dto;
 import java.util.UUID;
 
 /**
- * Object identifying the saved content in DB, which is returned when {@link org.motechproject.mtraining.service.CourseService} add content APIs are called
+ * Object identifying a child element of a contract object using {@link org.motechproject.mtraining.dto.ContentIdentifierDto#contentId}
+ * and {@link org.motechproject.mtraining.dto.ContentIdentifierDto#version} fields.
+ * Any contract object which has children will have a list of this object.
+ * For e.g., a {@link org.motechproject.mtraining.dto.CourseDto} will have a list, each representing a {@link org.motechproject.mtraining.dto.ModuleDto},
+ * by fields having values as contentId and version of the module.
  */
-
 public class ContentIdentifierDto {
     private UUID contentId;
     private Integer version;
@@ -40,5 +43,9 @@ public class ContentIdentifierDto {
         int result = contentId != null ? contentId.hashCode() : 0;
         result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
+    }
+
+    public boolean hasContentIdAndVersion() {
+        return contentId != null && version != null;
     }
 }

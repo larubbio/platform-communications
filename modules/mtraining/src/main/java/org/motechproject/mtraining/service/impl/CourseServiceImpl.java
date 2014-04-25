@@ -1,32 +1,23 @@
 package org.motechproject.mtraining.service.impl;
 
-import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Content;
 import org.motechproject.mtraining.domain.Course;
-import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
 import org.motechproject.mtraining.domain.NodeType;
-import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
-import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
-import org.motechproject.mtraining.repository.AllChapters;
+import org.motechproject.mtraining.exception.CourseNotFoundException;
+import org.motechproject.mtraining.exception.CoursePublicationException;
 import org.motechproject.mtraining.repository.AllCourses;
-import org.motechproject.mtraining.repository.AllMessages;
-import org.motechproject.mtraining.repository.AllModules;
-import org.motechproject.mtraining.service.ChapterService;
 import org.motechproject.mtraining.service.CourseService;
-import org.motechproject.mtraining.service.MessageService;
-import org.motechproject.mtraining.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Arrays.asList;
+import java.util.UUID;
 
 /**
  * Implementation class for {@link CourseService}.
@@ -35,49 +26,24 @@ import static java.util.Arrays.asList;
  */
 
 @Service("courseService")
-public class CourseServiceImpl implements CourseService, ModuleService, ChapterService, MessageService {
+public class CourseServiceImpl implements CourseService {
 
-    @Autowired
     private NodeHandlerOrchestrator nodeHandlerOrchestrator;
-
-    @Autowired
+    private ModuleServiceImpl moduleService;
     private AllCourses allCourses;
 
     @Autowired
-    private AllModules allModules;
-
-    @Autowired
-    private AllChapters allChapters;
-
-    @Autowired
-    private AllMessages allMessages;
+    public CourseServiceImpl(NodeHandlerOrchestrator nodeHandlerOrchestrator, ModuleServiceImpl moduleService, AllCourses allCourses) {
+        this.nodeHandlerOrchestrator = nodeHandlerOrchestrator;
+        this.moduleService = moduleService;
+        this.allCourses = allCourses;
+    }
 
     @Override
     public ContentIdentifierDto addOrUpdateCourse(CourseDto courseDto) {
         Node courseNode = constructCourseNode(courseDto);
         nodeHandlerOrchestrator.process(courseNode);
         return getContentIdentifier(courseNode);
-    }
-
-    @Override
-    public ContentIdentifierDto addOrUpdateModule(ModuleDto moduleDto) {
-        Node moduleNode = constructModuleNode(moduleDto);
-        nodeHandlerOrchestrator.process(moduleNode);
-        return getContentIdentifier(moduleNode);
-    }
-
-    @Override
-    public ContentIdentifierDto addOrUpdateChapter(ChapterDto chapterDto) {
-        Node chapterNode = constructChapterNode(chapterDto);
-        nodeHandlerOrchestrator.process(chapterNode);
-        return getContentIdentifier(chapterNode);
-    }
-
-    @Override
-    public ContentIdentifierDto addOrUpdateMessage(MessageDto messageDto) {
-        Node messageNode = constructMessageNode(messageDto);
-        nodeHandlerOrchestrator.process(messageNode);
-        return getContentIdentifier(messageNode);
     }
 
     @Override
@@ -96,98 +62,44 @@ public class CourseServiceImpl implements CourseService, ModuleService, ChapterS
         return courseDtoList;
     }
 
+    /**
+     * Get latest by version course which is published and active
+     * @param contentId
+     * @return
+     */
     @Override
-    public ModuleDto getModule(ContentIdentifierDto moduleIdentifier) {
-        Module module = allModules.findBy(moduleIdentifier.getContentId(), moduleIdentifier.getVersion());
-        return module != null ? mapToModuleDto(module) : null;
-    }
-
-    @Override
-    public List<ModuleDto> getAllModules() {
-        List<Module> modules = allModules.getAll();
-        List<ModuleDto> moduleDtoList = new ArrayList<>();
-        for (Module module : modules) {
-            moduleDtoList.add(mapToModuleDto(module));
+    public CourseDto getLatestPublishedCourse(UUID contentId) {
+        Course course = allCourses.findLatestPublishedCourse(contentId);
+        if (course == null) {
+            return null;
         }
-        return moduleDtoList;
+        return mapToCourseDto(course);
     }
 
+    /**
+     * Mark course with given course identifier as published.
+     * If course is not found then throws CourseNotFoundException
+     * If course is not active then throws CoursePublicationException
+     * @param courseIdentifier
+     */
     @Override
-    public ChapterDto getChapter(ContentIdentifierDto chapterIdentifier) {
-        Chapter chapter = allChapters.findBy(chapterIdentifier.getContentId(), chapterIdentifier.getVersion());
-        return chapter != null ? mapToChapterDto(chapter) : null;
-    }
-
-    @Override
-    public List<ChapterDto> getAllChapters() {
-        ArrayList<ChapterDto> chapterDtoList = new ArrayList<>();
-        List<Chapter> chapters = allChapters.getAll();
-        for (Chapter chapter : chapters) {
-            chapterDtoList.add(mapToChapterDto(chapter));
+    public void publish(ContentIdentifierDto courseIdentifier) {
+        Course course = allCourses.findBy(courseIdentifier.getContentId(), courseIdentifier.getVersion());
+        if (course == null) {
+            throw new CourseNotFoundException(String.format("Course with contentId %s and version %s not found",
+                    courseIdentifier.getContentId(), courseIdentifier.getVersion()));
         }
-        return chapterDtoList;
-    }
-
-    @Override
-    public MessageDto getMessage(ContentIdentifierDto messageIdentifier) {
-        Message message = allMessages.findBy(messageIdentifier.getContentId(), messageIdentifier.getVersion());
-        return message != null ? mapToMessageDto(message) : null;
-    }
-
-    @Override
-    public List<MessageDto> getAllMessages() {
-        List<Message> messages = allMessages.getAll();
-        List<MessageDto> messageDtoList = new ArrayList<>();
-        for (Message message : messages) {
-            messageDtoList.add(mapToMessageDto(message));
+        if (!course.isActive()) {
+            throw new CoursePublicationException(String.format("Course with id %s and version %s could not be published as it is inactive",
+                    courseIdentifier.getContentId(), courseIdentifier.getVersion()));
         }
-        return messageDtoList;
+        course.publish();
+        allCourses.update(course);
     }
 
     private Node constructCourseNode(CourseDto courseDto) {
-        List<Node> moduleNodes = constructModuleNodes(courseDto.getModules());
+        List<Node> moduleNodes = moduleService.constructModuleNodes(courseDto.getModules());
         return new Node(NodeType.COURSE, courseDto, moduleNodes);
-    }
-
-    private Node constructModuleNode(ModuleDto moduleDto) {
-        return constructModuleNodes(asList(moduleDto)).get(0);
-    }
-
-    private Node constructChapterNode(ChapterDto chapterDto) {
-        return constructChapterNodes(asList(chapterDto)).get(0);
-    }
-
-    private Node constructMessageNode(MessageDto messageDto) {
-        return constructMessageNodes(asList(messageDto)).get(0);
-    }
-
-    private List<Node> constructModuleNodes(List<ModuleDto> modules) {
-        List<Node> moduleNodes = new ArrayList<>();
-        for (ModuleDto module : modules) {
-            List<Node> chapterNodes = constructChapterNodes(module.getChapters());
-            Node moduleNode = new Node(NodeType.MODULE, module, chapterNodes);
-            moduleNodes.add(moduleNode);
-        }
-        return moduleNodes;
-    }
-
-    private List<Node> constructChapterNodes(List<ChapterDto> chapters) {
-        List<Node> chapterNodes = new ArrayList<>();
-        for (ChapterDto chapter : chapters) {
-            List<Node> messageNodes = constructMessageNodes(chapter.getMessages());
-            Node chapterNode = new Node(NodeType.CHAPTER, chapter, messageNodes);
-            chapterNodes.add(chapterNode);
-        }
-        return chapterNodes;
-    }
-
-    private List<Node> constructMessageNodes(List<MessageDto> messages) {
-        List<Node> messageNodes = new ArrayList<>();
-        for (MessageDto message : messages) {
-            Node messageNode = new Node(NodeType.MESSAGE, message);
-            messageNodes.add(messageNode);
-        }
-        return messageNodes;
     }
 
     private ContentIdentifierDto getContentIdentifier(Node node) {
@@ -198,31 +110,10 @@ public class CourseServiceImpl implements CourseService, ModuleService, ChapterS
     private CourseDto mapToCourseDto(Course course) {
         ArrayList<ModuleDto> modules = new ArrayList<>();
         for (Content module : course.getModules()) {
-            ModuleDto moduleDto = mapToModuleDto((Module) module);
+            ModuleDto moduleDto = moduleService.mapToModuleDto((Module) module);
             modules.add(moduleDto);
         }
-        return new CourseDto(course.getContentId(), course.getVersion(), course.isActive(), course.getName(), course.getDescription(), modules);
-    }
-
-    private ModuleDto mapToModuleDto(Module module) {
-        List<ChapterDto> chapters = new ArrayList<>();
-        for (Content chapter : module.getChapters()) {
-            ChapterDto chapterDto = mapToChapterDto((Chapter) chapter);
-            chapters.add(chapterDto);
-        }
-        return new ModuleDto(module.getContentId(), module.getVersion(), module.isActive(), module.getName(), module.getDescription(), chapters);
-    }
-
-    private ChapterDto mapToChapterDto(Chapter chapter) {
-        ArrayList<MessageDto> messages = new ArrayList<>();
-        for (Content message : chapter.getMessages()) {
-            MessageDto messageDto = mapToMessageDto((Message) message);
-            messages.add(messageDto);
-        }
-        return new ChapterDto(chapter.getContentId(), chapter.getVersion(), chapter.isActive(), chapter.getName(), chapter.getDescription(), messages);
-    }
-
-    private MessageDto mapToMessageDto(Message message) {
-        return new MessageDto(message.getContentId(), message.getVersion(), message.isActive(), message.getName(), message.getExternalId(), message.getDescription());
+        return new CourseDto(course.getContentId(), course.getVersion(), course.isActive(), course.getName(), course.getDescription(),
+                course.getExternalContentId(), course.getCreatedBy(), modules);
     }
 }

@@ -13,7 +13,9 @@ public class NodeHandlerFactoryTest {
         ModuleNodeHandler moduleNodeHandler = mock(ModuleNodeHandler.class);
         ChapterNodeHandler chapterNodeHandler = mock(ChapterNodeHandler.class);
         MessageNodeHandler messageNodeHandler = mock(MessageNodeHandler.class);
-        NodeHandlerFactory nodeHandlerFactory = new NodeHandlerFactory(courseNodeHandler, moduleNodeHandler, chapterNodeHandler, messageNodeHandler);
+        QuizNodeHandler quizNodeHandler = mock(QuizNodeHandler.class);
+        QuestionNodeHandler questionNodeHandler = mock(QuestionNodeHandler.class);
+        NodeHandlerFactory nodeHandlerFactory = new NodeHandlerFactory(courseNodeHandler, moduleNodeHandler, chapterNodeHandler, messageNodeHandler, quizNodeHandler, questionNodeHandler);
 
         assertEquals(courseNodeHandler, nodeHandlerFactory.getHandler(NodeType.COURSE));
         assertEquals(moduleNodeHandler, nodeHandlerFactory.getHandler(NodeType.MODULE));

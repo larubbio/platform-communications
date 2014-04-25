@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.dto.ChapterDto;
@@ -42,9 +44,10 @@ public class ChapterServiceIT {
 
     @Test
     public void shouldAddChapterWithMessages() throws InterruptedException {
-        MessageDto messageDto1 = new MessageDto(true, "messageName1", "messageFileName1", null);
-        MessageDto messageDto2 = new MessageDto(true, "messageName2", "messageFileName2", "description2");
-        ChapterDto chapterDto = new ChapterDto(true, "chapterName", "chapterDescription", asList(messageDto1, messageDto2));
+        MessageContentBuilder messageContentBuilder = new MessageContentBuilder();
+        MessageDto messageDto1 = messageContentBuilder.withName("ms01").withAudioFile("aud01").buildMessageDTO();
+        MessageDto messageDto2 = messageContentBuilder.withName("ms02").withAudioFile("aud02").buildMessageDTO();
+        ChapterDto chapterDto = new ChapterContentBuilder().withMessageDTOs(asList(messageDto1, messageDto2)).buildChapterDTO();
 
         ContentIdentifierDto savedChapterIdentifier = chapterService.addOrUpdateChapter(chapterDto);
 

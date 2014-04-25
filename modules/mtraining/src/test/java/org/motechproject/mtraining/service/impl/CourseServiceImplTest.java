@@ -1,39 +1,45 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mtraining.domain.Chapter;
-import org.motechproject.mtraining.domain.ContentIdentifier;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.CourseContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.domain.Course;
-import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
-import org.motechproject.mtraining.domain.NodeType;
 import org.motechproject.mtraining.dto.ChapterDto;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.CourseDto;
 import org.motechproject.mtraining.dto.MessageDto;
 import org.motechproject.mtraining.dto.ModuleDto;
-import org.motechproject.mtraining.repository.AllChapters;
+import org.motechproject.mtraining.exception.CourseNotFoundException;
+import org.motechproject.mtraining.exception.CoursePublicationException;
 import org.motechproject.mtraining.repository.AllCourses;
-import org.motechproject.mtraining.repository.AllMessages;
-import org.motechproject.mtraining.repository.AllModules;
+import org.motechproject.mtraining.service.CourseService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.motechproject.mtraining.domain.NodeType.COURSE;
+import static org.motechproject.mtraining.domain.NodeType.MODULE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CourseServiceImplTest {
@@ -41,101 +47,50 @@ public class CourseServiceImplTest {
     @Mock
     private NodeHandlerOrchestrator nodeHandlerOrchestrator;
     @Mock
+    private ModuleServiceImpl moduleService;
+    @Mock
     private AllCourses allCourses;
-    @Mock
-    private AllModules allModules;
-    @Mock
-    private AllChapters allChapters;
-    @Mock
-    private AllMessages allMessages;
 
-    @InjectMocks
-    private CourseServiceImpl courseServiceImpl = new CourseServiceImpl();
+    private CourseService courseService;
 
-    @Test
-    public void shouldConstructMessageNodeAndInvokeHandler() {
-        MessageDto messageDto = new MessageDto();
-
-        courseServiceImpl.addOrUpdateMessage(messageDto);
-
-        ArgumentCaptor<Node> nodeArgumentCaptor = ArgumentCaptor.forClass(Node.class);
-        verify(nodeHandlerOrchestrator).process(nodeArgumentCaptor.capture());
-        Node actualMessageNode = nodeArgumentCaptor.getValue();
-        assertEquals(NodeType.MESSAGE, actualMessageNode.getNodeType());
-        assertEquals(messageDto, actualMessageNode.getNodeData());
-        assertTrue(actualMessageNode.getChildNodes().isEmpty());
-        assertNull(actualMessageNode.getPersistentEntity());
-    }
-
-    @Test
-    public void shouldConstructChapterNodeWithMessageChildNodesAndInvokeHandler() {
-        MessageDto messageDto1 = new MessageDto();
-        MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto = new ChapterDto(true, "name", "desc", asList(messageDto1, messageDto2));
-
-        courseServiceImpl.addOrUpdateChapter(chapterDto);
-
-        ArgumentCaptor<Node> nodeArgumentCaptor = ArgumentCaptor.forClass(Node.class);
-        verify(nodeHandlerOrchestrator).process(nodeArgumentCaptor.capture());
-        Node actualChapterNode = nodeArgumentCaptor.getValue();
-        assertEquals(NodeType.CHAPTER, actualChapterNode.getNodeType());
-        assertEquals(chapterDto, actualChapterNode.getNodeData());
-        assertNull(actualChapterNode.getPersistentEntity());
-        assertMessageNodesForChapter(actualChapterNode, asList(messageDto1, messageDto2));
-    }
-
-    @Test
-    public void shouldConstructModuleNodeWithAllDescendantNodesAndInvokeHandler() {
-        MessageDto messageDto1 = new MessageDto();
-        MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto1 = new ChapterDto(true, "name", "desc", asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto(true, "name", "desc", asList(messageDto1, messageDto2));
-        ModuleDto moduleDto = new ModuleDto(true, "name", "desc", asList(chapterDto1, chapterDto2));
-
-        courseServiceImpl.addOrUpdateModule(moduleDto);
-
-        ArgumentCaptor<Node> nodeArgumentCaptor = ArgumentCaptor.forClass(Node.class);
-        verify(nodeHandlerOrchestrator).process(nodeArgumentCaptor.capture());
-        Node actualModuleNode = nodeArgumentCaptor.getValue();
-        assertEquals(NodeType.MODULE, actualModuleNode.getNodeType());
-        assertEquals(moduleDto, actualModuleNode.getNodeData());
-        assertChapterNodesForModule(actualModuleNode, asList(chapterDto1, chapterDto2), asList(messageDto1, messageDto2));
-        assertNull(actualModuleNode.getPersistentEntity());
+    @Before
+    public void setUp() {
+        courseService = new CourseServiceImpl(nodeHandlerOrchestrator, moduleService, allCourses);
     }
 
     @Test
     public void shouldConstructCourseNodeWithAllDescendantNodesAndInvokeHandler() {
-        MessageDto messageDto1 = new MessageDto();
-        MessageDto messageDto2 = new MessageDto();
-        ChapterDto chapterDto1 = new ChapterDto(true, "name", "desc", asList(messageDto1, messageDto2));
-        ChapterDto chapterDto2 = new ChapterDto(true, "name", "desc", asList(messageDto1, messageDto2));
-        ModuleDto moduleDto1 = new ModuleDto(true, "name", "desc", asList(chapterDto1, chapterDto2));
-        ModuleDto moduleDto2 = new ModuleDto(true, "name", "desc", asList(chapterDto1, chapterDto2));
-        CourseDto courseDto = new CourseDto(true, "name", "desc", asList(moduleDto1, moduleDto2));
+        List<MessageDto> messageDTOs = getMessageDTOs();
+        ChapterDto chapterDto1 = new ChapterContentBuilder().withName("name").withDescription("desc").withMessageDTOs(messageDTOs).buildChapterDTO();
+        ChapterDto chapterDto2 = new ChapterContentBuilder().withName("name").withDescription("desc").withMessageDTOs(messageDTOs).buildChapterDTO();
+        ModuleDto moduleDto1 = new ModuleContentBuilder().withName("module 01").withChapterDTOs(asList(chapterDto1, chapterDto2)).buildModuleDTO();
+        ModuleDto moduleDto2 = new ModuleContentBuilder().withName("module 02").withChapterDTOs(asList(chapterDto1, chapterDto2)).buildModuleDTO();
+        CourseDto courseDto = new CourseContentBuilder().withName("CS 001").withModuleDtos(asList(moduleDto1, moduleDto2)).buildCourseDTO();
+        when(moduleService.constructModuleNodes(courseDto.getModules())).thenReturn(newArrayList(new Node(MODULE, moduleDto1), new Node(MODULE, moduleDto2)));
 
-        courseServiceImpl.addOrUpdateCourse(courseDto);
+        courseService.addOrUpdateCourse(courseDto);
 
         ArgumentCaptor<Node> nodeArgumentCaptor = ArgumentCaptor.forClass(Node.class);
         verify(nodeHandlerOrchestrator).process(nodeArgumentCaptor.capture());
         Node actualCourseNode = nodeArgumentCaptor.getValue();
-        assertEquals(NodeType.COURSE, actualCourseNode.getNodeType());
+        assertEquals(COURSE, actualCourseNode.getNodeType());
         assertEquals(courseDto, actualCourseNode.getNodeData());
-        assertModuleNodesForCourse(actualCourseNode, asList(moduleDto1, moduleDto2), asList(chapterDto1, chapterDto2), asList(messageDto1, messageDto2));
+        assertModuleNodesForCourse(actualCourseNode, asList(moduleDto1, moduleDto2));
         assertNull(actualCourseNode.getPersistentEntity());
     }
 
     @Test
     public void shouldGetAllCourses() {
-        Module module = new Module(true, "moduleName", null, Collections.<Chapter>emptyList());
-        ContentIdentifier moduleIdentifier = new ContentIdentifier(module.getContentId(), module.getVersion());
+        Module module = new ModuleContentBuilder().buildModule();
         List<Module> modules = new ArrayList<>();
         modules.add(module);
-        Course course1 = new Course(true, "course1", null, modules);
-        Course course2 = new Course(true, "course2", null, Collections.<Module>emptyList());
+        Course course1 = new CourseContentBuilder().withName("course1").withModules(modules).buildCourse();
+        Course course2 = new CourseContentBuilder().withName("course2").buildCourse();
         when(allCourses.getAll()).thenReturn(asList(course1, course2));
-        when(allModules.findBy(moduleIdentifier.getContentId(), moduleIdentifier.getVersion())).thenReturn(module);
+        when(moduleService.mapToModuleDto(module)).thenReturn(new ModuleContentBuilder().withContentId(module.getContentId()).
+                withVersion(module.getVersion()).buildModuleDTO());
 
-        List<CourseDto> allCourseDtos = courseServiceImpl.getAllCourses();
+        List<CourseDto> allCourseDtos = courseService.getAllCourses();
 
         assertEquals(2, allCourseDtos.size());
         CourseDto courseDto1 = allCourseDtos.get(0);
@@ -148,73 +103,38 @@ public class CourseServiceImplTest {
     }
 
     @Test
-    public void shouldGetAllModules() {
-        Chapter chapter = new Chapter(true, "chapterName", null, Collections.<Message>emptyList());
-        ContentIdentifier chapterIdentifier = new ContentIdentifier(chapter.getContentId(), chapter.getVersion());
-        List<Chapter> chapters = new ArrayList<>();
-        chapters.add(chapter);
-        Module module1 = new Module(true, "module1", null, chapters);
-        Module module2 = new Module(true, "module2", null, Collections.<Chapter>emptyList());
-        when(allModules.getAll()).thenReturn(asList(module1, module2));
-        when(allChapters.findBy(chapterIdentifier.getContentId(), chapterIdentifier.getVersion())).thenReturn(chapter);
-
-        List<ModuleDto> allModuleDtos = courseServiceImpl.getAllModules();
-
-        assertEquals(2, allModuleDtos.size());
-        ModuleDto moduleDto1 = allModuleDtos.get(0);
-        assertModuleDetails(module1, moduleDto1);
-        assertEquals(chapter.getContentId(), moduleDto1.getChapters().get(0).getContentId());
-        assertEquals(chapter.getVersion(), moduleDto1.getChapters().get(0).getVersion());
-        ModuleDto moduleDto2 = allModuleDtos.get(1);
-        assertModuleDetails(module2, moduleDto2);
-        assertTrue(moduleDto2.getChapters().isEmpty());
-    }
-
-    @Test
-    public void shouldGetAllChapters() {
-        Message message = new Message(true, "messageName", "fileName", null);
-        ContentIdentifier messageIdentifier = new ContentIdentifier(message.getContentId(), message.getVersion());
-        ArrayList<Message> messages = new ArrayList<>();
-        messages.add(message);
-        Chapter chapter1 = new Chapter(true, "chapter1", null, messages);
-        Chapter chapter2 = new Chapter(true, "chapter2", null, Collections.<Message>emptyList());
-        when(allChapters.getAll()).thenReturn(asList(chapter1, chapter2));
-        when(allMessages.findBy(messageIdentifier.getContentId(), messageIdentifier.getVersion())).thenReturn(message);
-
-        List<ChapterDto> allChapterDtos = courseServiceImpl.getAllChapters();
-
-        assertEquals(2, allChapterDtos.size());
-        ChapterDto chapterDto1 = allChapterDtos.get(0);
-        assertChapterDetails(chapter1, chapterDto1);
-        assertEquals(message.getContentId(), chapterDto1.getMessages().get(0).getContentId());
-        assertEquals(message.getVersion(), chapterDto1.getMessages().get(0).getVersion());
-        ChapterDto chapterDto2 = allChapterDtos.get(1);
-        assertChapterDetails(chapter2, chapterDto2);
-        assertTrue(chapterDto2.getMessages().isEmpty());
-    }
-
-    @Test
-    public void shouldGetAllMessages() {
-        Message message1 = new Message(true, "messageName1", "fileName1", null);
-        Message message2 = new Message(true, "messageName2", "fileName2", null);
-        when(allMessages.getAll()).thenReturn(asList(message1, message2));
-
-        List<MessageDto> allMessageDtos = courseServiceImpl.getAllMessages();
-
-        assertEquals(2, allMessageDtos.size());
-        assertMessageDetails(message1, allMessageDtos.get(0));
-        assertMessageDetails(message2, allMessageDtos.get(1));
-    }
-
-    @Test
     public void shouldReturnCourseDtoIfCourseFound() {
-        Course course = new Course(true, "course1", "some description", Collections.EMPTY_LIST);
+        Course course = new Course(true, "course1", "some description", "externalId", "Author", Collections.<Module>emptyList());
         ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
         when(allCourses.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(course);
-        CourseDto courseFromDb = courseServiceImpl.getCourse(contentIdentifierDto);
+        CourseDto courseFromDb = courseService.getCourse(contentIdentifierDto);
 
         assertEquals(course.getContentId(), courseFromDb.getContentId());
+    }
+
+    @Test
+    public void shouldReturnNullIfCourseNotFound() throws Exception {
+        UUID contentId = UUID.randomUUID();
+
+        when(allCourses.findLatestPublishedCourse(contentId)).thenReturn(null);
+        CourseDto latestPublishedCourse = courseService.getLatestPublishedCourse(contentId);
+
+        verify(allCourses).findLatestPublishedCourse(contentId);
+        assertNull(latestPublishedCourse);
+    }
+
+    @Test
+    public void shouldReturnLatestPublishedCourse() throws Exception {
+        UUID contentId = UUID.randomUUID();
+
+        Course course = new CourseContentBuilder().withContentId(contentId).withVersion(3).buildCourse();
+
+        when(allCourses.findLatestPublishedCourse(contentId)).thenReturn(course);
+        CourseDto latestPublishedCourse = courseService.getLatestPublishedCourse(contentId);
+
+        verify(allCourses).findLatestPublishedCourse(contentId);
+        assertThat(latestPublishedCourse.getContentId(), Is.is(course.getContentId()));
     }
 
     @Test
@@ -222,72 +142,60 @@ public class CourseServiceImplTest {
         ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
         when(allCourses.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(null);
-        CourseDto courseFromDb = courseServiceImpl.getCourse(contentIdentifierDto);
+        CourseDto courseFromDb = courseService.getCourse(contentIdentifierDto);
 
         assertNull(courseFromDb);
     }
 
     @Test
-    public void shouldReturnModuleDtoIfModuleFound() {
-        Module module = new Module(true, "module1", "some description", Collections.EMPTY_LIST);
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
+    public void shouldMarkCourseAsPublished() {
+        ContentIdentifierDto courseIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
-        when(allModules.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(module);
-        ModuleDto moduleFromDb = courseServiceImpl.getModule(contentIdentifierDto);
+        Course cs001 = new CourseContentBuilder()
+                .withContentId(courseIdentifier.getContentId())
+                .withVersion(courseIdentifier.getVersion())
+                .withName("CS001").buildCourse();
 
-        assertEquals(module.getContentId(), moduleFromDb.getContentId());
+        when(allCourses.findBy(courseIdentifier.getContentId(), courseIdentifier.getVersion())).thenReturn(cs001);
+
+        courseService.publish(courseIdentifier);
+
+        ArgumentCaptor<Course> courseArgumentCaptor = ArgumentCaptor.forClass(Course.class);
+        verify(allCourses).update(courseArgumentCaptor.capture());
+
+        Course publishedCourse = courseArgumentCaptor.getValue();
+
+        assertThat(publishedCourse.getContentId(), Is.is(cs001.getContentId()));
+        assertThat(publishedCourse.getVersion(), Is.is(cs001.getVersion()));
+        assertThat(publishedCourse.isPublished(), Is.is(true));
+
     }
 
-    @Test
-    public void shouldReturnNullIfModuleByContentIdNotFound() {
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
+    @Test(expected = CourseNotFoundException.class)
+    public void shouldThrowCourseNotFoundExceptionIfCourseToPublishIsNotFound() {
+        ContentIdentifierDto courseIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
-        when(allModules.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(null);
-        ModuleDto moduleFromDb = courseServiceImpl.getModule(contentIdentifierDto);
+        when(allCourses.findBy(courseIdentifier.getContentId(), courseIdentifier.getVersion())).thenReturn(null);
 
-        assertNull(moduleFromDb);
+        courseService.publish(courseIdentifier);
     }
 
-    @Test
-    public void shouldReturnChapterDtoIfChapterFound() {
-        Chapter chapter = new Chapter(true, "chapter1", "some description", Collections.EMPTY_LIST);
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
+    @Test(expected = CoursePublicationException.class)
+    public void shouldThrowCoursePublicationExceptionIfCourseToPublishIsNotFound() {
+        ContentIdentifierDto courseIdentifier = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
-        when(allChapters.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(chapter);
-        ChapterDto chapterFromDb = courseServiceImpl.getChapter(contentIdentifierDto);
+        Course inactiveCourse = new CourseContentBuilder().asInactive().buildCourse();
 
-        assertEquals(chapter.getContentId(), chapterFromDb.getContentId());
+        when(allCourses.findBy(courseIdentifier.getContentId(), courseIdentifier.getVersion())).thenReturn(inactiveCourse);
+
+        courseService.publish(courseIdentifier);
     }
 
-    @Test
-    public void shouldReturnNullIfChapterByContentIdNotFound() {
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
 
-        when(allChapters.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(null);
-        ChapterDto chapterFromDb = courseServiceImpl.getChapter(contentIdentifierDto);
-
-        assertNull(chapterFromDb);
-    }
-
-    @Test
-    public void shouldReturnMessageDtoIfMessageFound() {
-        Message message = new Message(true, "message1", "filename", "some description");
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
-
-        when(allMessages.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(message);
-        MessageDto messageFromDb = courseServiceImpl.getMessage(contentIdentifierDto);
-
-        assertEquals(message.getContentId(), messageFromDb.getContentId());
-    }
-
-    @Test
-    public void shouldReturnNullIfMessageByContentIdNotFound() {
-        ContentIdentifierDto contentIdentifierDto = new ContentIdentifierDto(UUID.randomUUID(), 1);
-
-        when(allMessages.findBy(contentIdentifierDto.getContentId(), contentIdentifierDto.getVersion())).thenReturn(null);
-        MessageDto messageFromDb = courseServiceImpl.getMessage(contentIdentifierDto);
-
-        assertNull(messageFromDb);
+    private List<MessageDto> getMessageDTOs() {
+        MessageDto messageDto1 = new MessageContentBuilder().withName("ms001").withAudioFile("audio1").buildMessageDTO();
+        MessageDto messageDto2 = new MessageContentBuilder().withName("ms002").withAudioFile("audio2").buildMessageDTO();
+        return Arrays.asList(messageDto1, messageDto2);
     }
 
     private void assertCourseDetails(Course course, CourseDto courseDto) {
@@ -297,48 +205,10 @@ public class CourseServiceImplTest {
         assertEquals(course.getDescription(), courseDto.getDescription());
     }
 
-    private void assertModuleDetails(Module module, ModuleDto moduleDto) {
-        assertEquals(module.getContentId(), moduleDto.getContentId());
-        assertEquals(module.getVersion(), moduleDto.getVersion());
-        assertEquals(module.getName(), moduleDto.getName());
-        assertEquals(module.getDescription(), moduleDto.getDescription());
-    }
-
-    private void assertChapterDetails(Chapter chapter, ChapterDto chapterDto) {
-        assertEquals(chapter.getContentId(), chapterDto.getContentId());
-        assertEquals(chapter.getVersion(), chapterDto.getVersion());
-        assertEquals(chapter.getName(), chapterDto.getName());
-        assertEquals(chapter.getDescription(), chapterDto.getDescription());
-    }
-
-    private void assertMessageDetails(Message message, MessageDto messageDto) {
-        assertEquals(message.getContentId(), messageDto.getContentId());
-        assertEquals(message.getVersion(), messageDto.getVersion());
-        assertEquals(message.getName(), messageDto.getName());
-        assertEquals(message.getExternalId(), messageDto.getExternalId());
-        assertEquals(message.getDescription(), messageDto.getDescription());
-    }
-
-    private void assertModuleNodesForCourse(Node courseNode, List<ModuleDto> moduleDtos, List<ChapterDto> chapterDtos, List<MessageDto> messageDtos) {
+    private void assertModuleNodesForCourse(Node courseNode, List<ModuleDto> moduleDtos) {
         Node actualModuleNode1 = courseNode.getChildNodes().get(0);
         assertEquals(moduleDtos.get(0), actualModuleNode1.getNodeData());
-        assertChapterNodesForModule(actualModuleNode1, chapterDtos, messageDtos);
         Node actualModuleNode2 = courseNode.getChildNodes().get(1);
         assertEquals(moduleDtos.get(1), actualModuleNode2.getNodeData());
-        assertChapterNodesForModule(actualModuleNode2, chapterDtos, messageDtos);
-    }
-
-    private void assertChapterNodesForModule(Node moduleNode, List<ChapterDto> chapterDtos, List<MessageDto> messageDtos) {
-        Node actualChapterNode1 = moduleNode.getChildNodes().get(0);
-        assertEquals(chapterDtos.get(0), actualChapterNode1.getNodeData());
-        assertMessageNodesForChapter(actualChapterNode1, messageDtos);
-        Node actualChapterNode2 = moduleNode.getChildNodes().get(1);
-        assertEquals(chapterDtos.get(1), actualChapterNode2.getNodeData());
-        assertMessageNodesForChapter(actualChapterNode2, messageDtos);
-    }
-
-    private void assertMessageNodesForChapter(Node chapterNode, List<MessageDto> messageDtos) {
-        assertEquals(messageDtos.get(0), chapterNode.getChildNodes().get(0).getNodeData());
-        assertEquals(messageDtos.get(1), chapterNode.getChildNodes().get(1).getNodeData());
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mtraining.builder.ChapterContentBuilder;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
 import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Message;
@@ -23,7 +26,7 @@ import org.motechproject.mtraining.repository.AllChapters;
 import org.motechproject.mtraining.validator.CourseStructureValidationResponse;
 import org.motechproject.mtraining.validator.CourseStructureValidator;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -48,10 +51,18 @@ public class ChapterNodeHandlerTest {
     private EventRelay eventRelay;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    private ChapterContentBuilder chapterContentBuilder;
+    private MessageContentBuilder messageContentBuilder;
+
+    @Before
+    public void before() {
+        chapterContentBuilder = new ChapterContentBuilder();
+        messageContentBuilder = new MessageContentBuilder();
+    }
 
     @Test
     public void shouldValidateGivenChapterDtoAndThrowExceptionIfInvalid() {
-        ChapterDto chapterDto = new ChapterDto(true, "name", "description", Collections.EMPTY_LIST);
+        ChapterDto chapterDto = chapterContentBuilder.buildChapterDTO();
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateChapter(chapterDto)).thenReturn(validationResponse);
@@ -64,7 +75,7 @@ public class ChapterNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenChapterDtoIsValid() {
-        ChapterDto chapterDto = new ChapterDto(true, "name", "description", asList(new MessageDto()));
+        ChapterDto chapterDto = chapterContentBuilder.buildChapterDTO();
         when(courseStructureValidator.validateChapter(chapterDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         chapterNodeHandler.validateNodeData(chapterDto);
@@ -72,9 +83,9 @@ public class ChapterNodeHandlerTest {
 
     @Test
     public void shouldSaveTheGivenChapterDtoAsChapterEntityWithMessagesAndRaiseEvent() {
-        ChapterDto chapterDto = new ChapterDto(true, "name", "description", asList(new MessageDto()));
+        ChapterDto chapterDto = chapterContentBuilder.withName("name").withMessageDTOs(Arrays.asList(messageContentBuilder.buildMessageDTO())).buildChapterDTO();
         Node messageNode1 = new Node(NodeType.MESSAGE, new MessageDto());
-        Message expectedMessageForTheChapter = new Message(true, "", "", "");
+        Message expectedMessageForTheChapter = new MessageContentBuilder().buildMessage();
         messageNode1.setPersistentEntity(expectedMessageForTheChapter);
         Node messageNode2 = new Node(NodeType.MESSAGE, new MessageDto());
         Node chapterNode = new Node(NodeType.CHAPTER, chapterDto, asList(messageNode1, messageNode2));
@@ -97,15 +108,26 @@ public class ChapterNodeHandlerTest {
     @Test
     public void shouldGetLatestVersionOfExistingChapterAndSaveTheNewChapterWithSameContentId_WhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        ChapterDto chapterDto = new ChapterDto(contentId, true, "name", "description", asList(new MessageDto()));
+        ChapterDto chapterDto = chapterContentBuilder
+                .withContentId(contentId)
+                .withVersion(2)
+                .withName("name")
+                .withDescription("description")
+                .withMessageDTOs(Arrays.asList(messageContentBuilder.buildMessageDTO())).buildChapterDTO();
         Node messageNode1 = new Node(NodeType.MESSAGE, new MessageDto());
-        Message expectedMessageForTheChapter = new Message(true, "", "", "");
+        Message expectedMessageForTheChapter = new MessageContentBuilder().buildMessage();
         messageNode1.setPersistentEntity(expectedMessageForTheChapter);
         Node messageNode2 = new Node(NodeType.MESSAGE, new MessageDto());
         Node chapterNode = new Node(NodeType.CHAPTER, chapterDto, asList(messageNode1, messageNode2));
-        Chapter existingChapterWithOldVersion = new Chapter(contentId, 1, true, "name", "description", Collections.EMPTY_LIST);
-        Chapter existingChapterWithLatestVersion = new Chapter(contentId, 2, true, "name", "description", Collections.EMPTY_LIST);
-        when(allChapters.findByContentId(contentId)).thenReturn(asList(existingChapterWithLatestVersion, existingChapterWithOldVersion));
+
+        Chapter existingChapterWithLatestVersion = chapterContentBuilder.withContentId(contentId)
+                .withVersion(2)
+                .withName("name")
+                .withDescription("description")
+                .createBy("Course Author")
+                .buildChapter();
+
+        when(allChapters.getLatestVersionByContentId(contentId)).thenReturn(existingChapterWithLatestVersion);
 
         chapterNodeHandler.saveAndRaiseEvent(chapterNode);
 

@@ -1,5 +1,6 @@
 package org.motechproject.mtraining.service.impl;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,7 +12,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mtraining.builder.CourseContentBuilder;
+import org.motechproject.mtraining.builder.ModuleContentBuilder;
 import org.motechproject.mtraining.constants.MTrainingEventConstants;
+import org.motechproject.mtraining.domain.Chapter;
 import org.motechproject.mtraining.domain.Course;
 import org.motechproject.mtraining.domain.Module;
 import org.motechproject.mtraining.domain.Node;
@@ -47,10 +51,16 @@ public class CourseNodeHandlerTest {
     private EventRelay eventRelay;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    private CourseContentBuilder courseContentBuilder;
+
+    @Before
+    public void setUp() throws Exception {
+        courseContentBuilder = new CourseContentBuilder();
+    }
 
     @Test
     public void shouldValidateGivenCourseDtoAndThrowExceptionIfInvalid() {
-        CourseDto courseDto = new CourseDto(true, "name", "description", Collections.EMPTY_LIST);
+        CourseDto courseDto = courseContentBuilder.buildCourseDTO();
         CourseStructureValidationResponse validationResponse = new CourseStructureValidationResponse(false);
         validationResponse.addError("some validation error");
         when(courseStructureValidator.validateCourse(courseDto)).thenReturn(validationResponse);
@@ -63,7 +73,7 @@ public class CourseNodeHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfTheGivenCourseDtoIsValid() {
-        CourseDto courseDto = new CourseDto(true, "name", "description", asList(new ModuleDto()));
+        CourseDto courseDto = courseContentBuilder.buildCourseDTO();
         when(courseStructureValidator.validateCourse(courseDto)).thenReturn(new CourseStructureValidationResponse(true));
 
         courseNodeHandler.validateNodeData(courseDto);
@@ -72,10 +82,11 @@ public class CourseNodeHandlerTest {
     @Test
     public void shouldSaveTheGivenCourseDtoAsCourseEntityWithModulesAndRaiseEvent() {
         Node moduleNode1 = new Node(NodeType.MODULE, new ModuleDto());
-        Module expectedModuleForTheCourse = new Module(true, "", "", Collections.EMPTY_LIST);
+        Module expectedModuleForTheCourse = new Module(true, "", "", "externalId", "Course Author", Collections.<Chapter>emptyList());
         moduleNode1.setPersistentEntity(expectedModuleForTheCourse);
         Node moduleNode2 = new Node(NodeType.MODULE, new ModuleDto());
-        CourseDto courseDto = new CourseDto(true, "name", "description", asList(new ModuleDto()));
+        ModuleDto moduleDto = new ModuleContentBuilder().buildModuleDTO();
+        CourseDto courseDto = courseContentBuilder.withModuleDtos(asList(moduleDto)).buildCourseDTO();
         Node courseNode = new Node(NodeType.CHAPTER, courseDto, asList(moduleNode1, moduleNode2));
 
         courseNodeHandler.saveAndRaiseEvent(courseNode);
@@ -96,15 +107,14 @@ public class CourseNodeHandlerTest {
     @Test
     public void shouldGetLatestVersionOfExistingCourseAndSaveTheNewCourseWithSameContentId_WhenContentIdIsProvidedWithDto() {
         UUID contentId = UUID.randomUUID();
-        CourseDto courseDto = new CourseDto(contentId, true, "name", "description", asList(new ModuleDto()));
+        CourseDto courseDto = courseContentBuilder.withContentId(contentId).withVersion(1).buildCourseDTO();
         Node moduleNode1 = new Node(NodeType.MODULE, new ModuleDto());
-        Module expectedModuleForTheCourse = new Module(true, "", "", Collections.EMPTY_LIST);
+        Module expectedModuleForTheCourse = new ModuleContentBuilder().buildModule();
         moduleNode1.setPersistentEntity(expectedModuleForTheCourse);
         Node moduleNode2 = new Node(NodeType.MODULE, new ModuleDto());
         Node courseNode = new Node(NodeType.COURSE, courseDto, asList(moduleNode1, moduleNode2));
-        Course existingCourseWithOldVersion = new Course(contentId, 1, true, "name", "description", Collections.EMPTY_LIST);
-        Course existingCourseWithLatestVersion = new Course(contentId, 2, true, "name", "description", Collections.EMPTY_LIST);
-        when(allCourses.findByContentId(contentId)).thenReturn(asList(existingCourseWithOldVersion, existingCourseWithLatestVersion));
+        Course existingCourseWithLatestVersion = courseContentBuilder.withContentId(contentId).withVersion(2).buildCourse();
+        when(allCourses.getLatestVersionByContentId(contentId)).thenReturn(existingCourseWithLatestVersion);
 
         courseNodeHandler.saveAndRaiseEvent(courseNode);
 
@@ -119,6 +129,7 @@ public class CourseNodeHandlerTest {
         assertEquals(savedCourse.getName(), courseDto.getName());
         assertEquals(savedCourse.getDescription(), courseDto.getDescription());
         assertEquals(courseDto.isActive(), savedCourse.isActive());
+        assertEquals(courseDto.getCreatedBy(), savedCourse.getCreatedBy());
         assertEquals(1, savedCourse.getModules().size());
         assertEquals(expectedModule.getContentId(), savedCourse.getModules().get(0).getContentId());
         assertEquals(expectedModule.getVersion(), savedCourse.getModules().get(0).getVersion());

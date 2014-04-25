@@ -5,6 +5,8 @@ package org.motechproject.mtraining.constants;
  */
 public final class MTrainingEventConstants {
 
+    public static final String QUIZ_CREATION_EVENT = "org.motechproject.mtraining.quiz.creation";
+    public static final String QUESTION_CREATION_EVENT = "org.motechproject.mtraining.question.creation";
     public static final String MESSAGE_CREATION_EVENT = "org.motechproject.mtraining.message.creation";
     public static final String CHAPTER_CREATION_EVENT = "org.motechproject.mtraining.chapter.creation";
     public static final String MODULE_CREATION_EVENT = "org.motechproject.mtraining.module.creation";

@@ -6,10 +6,15 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.mtraining.domain.Content;
+import org.motechproject.mtraining.domain.ContentVersionComparator;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+/**
+ * Base Repository class for all content couch documents.
+ */
 
 public abstract class AllContents<T extends Content> extends MotechBaseRepository<T> {
 
@@ -35,5 +40,17 @@ public abstract class AllContents<T extends Content> extends MotechBaseRepositor
             return Collections.EMPTY_LIST;
         }
         return queryView("by_contentId", contentId.toString());
+    }
+
+    public T getLatestVersionByContentId(UUID contentId) {
+        List<T> contents = findByContentId(contentId);
+        return getLatestVersion(contents);
+    }
+
+    private T getLatestVersion(List<T> contents) {
+        if (contents.isEmpty()) {
+            return null;
+        }
+        return Collections.max(contents, new ContentVersionComparator());
     }
 }

@@ -1,6 +1,6 @@
 package org.motechproject.mtraining.osgi;
 
-import org.motechproject.mtraining.dto.CourseDto;
+import org.motechproject.mtraining.builder.CourseContentBuilder;
 import org.motechproject.mtraining.dto.ModuleDto;
 import org.motechproject.mtraining.service.ChapterService;
 import org.motechproject.mtraining.service.CourseService;
@@ -12,7 +12,6 @@ import org.motechproject.testing.utils.WaitCondition;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CourseBundleIT extends BaseOsgiIT {
@@ -31,22 +30,25 @@ public class CourseBundleIT extends BaseOsgiIT {
         assertNotNull(service);
     }
 
-    //TODO:FIX This Randomly failing test
-    public void shouldRaiseEventWhenCourseIsCreated() throws InterruptedException {
-        final TestEventHandler testEventHandler = (TestEventHandler) getApplicationContext().getBean("testEventHandler");
-        CourseService courseService = (CourseService) getApplicationContext().getBean("courseService");
-        CourseDto courseDto = new CourseDto(true, "messageName", "description", Collections.<ModuleDto>emptyList());
+    /**
+     * Fails randomly (though passes every time it is debugged), need to fix it.Commenting out now
+     * @throws InterruptedException
+     */
+    public void eventShouldBeRaisedWhenModuleIsCreated() throws InterruptedException {
+        final TestModuleCreationEventListener testModuleCreationEventListener = (TestModuleCreationEventListener) getApplicationContext().getBean("testEventHandler");
+        ModuleService moduleService = (ModuleService) getApplicationContext().getBean("moduleService");
 
-        courseService.addOrUpdateCourse(courseDto);
+        ModuleDto moduleDto = new CourseContentBuilder().buildModuleDTO();
+        moduleService.addOrUpdateModule(moduleDto);
 
         new Wait(new WaitCondition() {
             @Override
             public boolean needsToWait() {
-                return !testEventHandler.isEventRaised();
+                return !testModuleCreationEventListener.isEventRaised();
             }
-        }, 60000).start();
+        }, 5000).start();
 
-        assertTrue(testEventHandler.isEventRaised());
+        assertTrue(testModuleCreationEventListener.isEventRaised());
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mtraining.builder.MessageContentBuilder;
 import org.motechproject.mtraining.domain.Content;
 import org.motechproject.mtraining.domain.Message;
 import org.motechproject.mtraining.domain.Node;
@@ -80,9 +81,9 @@ public class NodeHandlerOrchestratorTest {
     @Test
     public void shouldUpdateThePersistentEntityAfterSavingTheContent() {
         TestNodeHandler testNodeHandler = mock(TestNodeHandler.class);
-        Node messageNode = new Node(NodeType.MESSAGE, new MessageDto(true, "name", "fileName", "desc"));
+        Node messageNode = new Node(NodeType.MESSAGE, new MessageContentBuilder().buildMessageDTO());
         when(nodeHandlerFactory.getHandler(any(NodeType.class))).thenReturn(testNodeHandler);
-        Message savedMessageEntity = new Message(true, "name", "fileName", "desc");
+        Message savedMessageEntity = new Message(true, "name", "desc", "fileName", "Course Author");
         when(testNodeHandler.saveAndRaiseEvent(messageNode)).thenReturn(savedMessageEntity);
 
         nodeHandlerOrchestrator.process(messageNode);
