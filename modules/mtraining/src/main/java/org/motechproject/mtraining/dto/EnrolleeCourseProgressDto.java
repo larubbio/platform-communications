@@ -65,11 +65,11 @@ public class EnrolleeCourseProgressDto {
     }
 
     public void setTimeLeftToCompleteCourseInHrs(Integer courseDuration) {
-        this.timeLeftToCompleteCourseInHrs = courseDuration*HOURS_IN_A_DAY - getHoursCompleted();
+        this.timeLeftToCompleteCourseInHrs = courseDuration * HOURS_IN_A_DAY - getHoursCompleted();
     }
 
     public void setTimeLeftToCompleteCourse() {
-        this.timeLeftToCompleteCourseInHrs = DEFAULT_COURSE_DURATION_IN_HOURS *HOURS_IN_A_DAY - getHoursCompleted();
+        this.timeLeftToCompleteCourseInHrs = DEFAULT_COURSE_DURATION_IN_HOURS * HOURS_IN_A_DAY - getHoursCompleted();
     }
 
     public void markComplete() {

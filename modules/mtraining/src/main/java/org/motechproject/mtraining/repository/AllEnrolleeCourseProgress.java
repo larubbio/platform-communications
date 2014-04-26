@@ -36,25 +36,6 @@ public class AllEnrolleeCourseProgress extends MotechBaseRepository<EnrolleeCour
         return db.queryView(viewQuery, EnrolleeCourseProgress.class);
     }
 
-    /**
-     * Returns the course progress for which course status is not CLOSED.
-     * Assuming here that at a given point of time enrollee will have only one course in which he or she is enrolled
-     * Course is not considered done till status is not Closed
-     *
-     * @param externalId
-     * @return
-     */
-    public EnrolleeCourseProgress findCourseProgressForOngoingCourse(String externalId) {
-        List<EnrolleeCourseProgress> enrolleeCourseProgressList = findBy(externalId);
-        return (EnrolleeCourseProgress) CollectionUtils.find(enrolleeCourseProgressList, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                EnrolleeCourseProgress enrolleeCourseProgress = (EnrolleeCourseProgress) object;
-                return enrolleeCourseProgress.notClosed();
-            }
-        });
-    }
-
     public EnrolleeCourseProgress findBy(String externalId, final UUID courseIdentifier) {
         if (externalId == null || courseIdentifier == null) {
             return null;

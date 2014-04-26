@@ -44,18 +44,19 @@ public class CourseProgressServiceImpl implements CourseProgressService {
     }
 
     /**
-     * Return the course progress dto for the current course for the enrollee.
+     * Return the course progress dto for the given courseId for the enrollee.
      * This API makes the assumption that at a given point of time an enrollee will be doing one course only.
      * The courseProgressDTO contains information about course progress as well as the current bookmark.
      * If the enrollee has course progress information for only courses that has been successfully completed by enrollee and certification released i.e the course
      * has been 'CLOSED' with respect to the enrollee,then null is returned.
      * Please have a look at @CourseStatus for more information.
      * @param externalId
+     * @param courseContentId
      * @return CourseProgressDto
      */
     @Override
-    public EnrolleeCourseProgressDto getCourseProgressForEnrollee(String externalId) {
-        EnrolleeCourseProgress enrolleeCourseProgress = allEnrolleeCourseProgress.findCourseProgressForOngoingCourse(externalId);
+    public EnrolleeCourseProgressDto getCourseProgressForEnrollee(String externalId, UUID courseContentId) {
+        EnrolleeCourseProgress enrolleeCourseProgress = allEnrolleeCourseProgress.findBy(externalId, courseContentId);
         if (enrolleeCourseProgress != null) {
             BookmarkDto bookmarkDto = bookmarkService.getBookmark(externalId);
             if (bookmarkDto == null) {

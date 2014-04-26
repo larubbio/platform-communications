@@ -3,6 +3,8 @@ package org.motechproject.mtraining.service;
 import org.motechproject.mtraining.dto.ContentIdentifierDto;
 import org.motechproject.mtraining.dto.EnrolleeCourseProgressDto;
 
+import java.util.UUID;
+
 /**
  *  Service that exposes APIs to manage Course Progress for a given Enrollee.
  *  Course Progress of an enrollee is captured in the @EnrolleeCourseProgress object which is stored in couch db.
@@ -17,9 +19,10 @@ public interface CourseProgressService {
     /**
      * Given a externalId (i.e the enrollee id) return a course progress dto for the currently enrolled course
      * @param externalId
+     * @param courseContentId
      * @return
      */
-    EnrolleeCourseProgressDto getCourseProgressForEnrollee(String externalId);
+    EnrolleeCourseProgressDto getCourseProgressForEnrollee(String externalId, UUID courseContentId);
 
     /**
      * Given a externalId (i.e the enrollee id) and courseId return a course progress dto with the first bookmark from the given course.

@@ -21,6 +21,9 @@ import java.util.UUID;
  * + message : message identifier points to the message at which the enrollee is currently at.
  * + quiz : quiz identifier points to the quiz at which the enrollee is currently at.
  * + dateModified : it reflects the last modified date of the bookmark
+ *
+ * Note : A Bookmark will always point to either one of Message or Quiz and never both.
+ * If the value of the message is set then that of quiz will be NULL and vice-versa
  */
 @TypeDiscriminator("doc.type === 'Bookmark'")
 public class Bookmark extends MotechBaseDataObject {

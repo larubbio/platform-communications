@@ -44,20 +44,22 @@ public class EnrolleeCourseProgressServiceImplTest {
     private BookmarkServiceImpl bookmarkService;
     private CourseProgressServiceImpl courseProgressService;
     private Location location;
+    private UUID courseContentId;
 
     @Before
     public void setUp() throws Exception {
         courseProgressService = new CourseProgressServiceImpl(bookmarkService, allCourseProgress, courseProgressUpdater, allCourseConfigs);
         location = new Location("block", "district", "state");
+        courseContentId = UUID.randomUUID();
     }
 
     @Test
     public void shouldReturnNullIfNoCourseProgressExistsForEnrollee() throws Exception {
         String externalId = "user1";
 
-        when(allCourseProgress.findCourseProgressForOngoingCourse(externalId)).thenReturn(null);
+        when(allCourseProgress.findBy(externalId, courseContentId)).thenReturn(null);
 
-        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId);
+        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId, courseContentId);
 
         assertNull(courseProgressForEnrollee);
         verifyZeroInteractions(bookmarkService);
@@ -70,10 +72,10 @@ public class EnrolleeCourseProgressServiceImplTest {
 
         EnrolleeCourseProgress enrolleeCourseProgress = new EnrolleeCourseProgress(externalId, DateTime.now(), CourseStatus.STARTED, UUID.randomUUID());
 
-        when(allCourseProgress.findCourseProgressForOngoingCourse(externalId)).thenReturn(enrolleeCourseProgress);
+        when(allCourseProgress.findBy(externalId, courseContentId)).thenReturn(enrolleeCourseProgress);
         when(bookmarkService.getBookmark(externalId)).thenReturn(null);
 
-        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId);
+        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId, courseContentId);
 
         assertNull(courseProgressForEnrollee);
         verifyZeroInteractions(courseProgressUpdater);
@@ -90,7 +92,7 @@ public class EnrolleeCourseProgressServiceImplTest {
         EnrolleeCourseProgress enrolleeCourseProgress = new EnrolleeCourseProgress(externalId, DateTime.now(), CourseStatus.STARTED, course.getContentId());
         CourseConfiguration courseConfig = new CourseConfiguration(course.getContentId(), 60, location);
 
-        when(allCourseProgress.findCourseProgressForOngoingCourse(externalId)).thenReturn(enrolleeCourseProgress);
+        when(allCourseProgress.findBy(externalId, courseContentId)).thenReturn(enrolleeCourseProgress);
         when(bookmarkService.getBookmark(externalId)).thenReturn(oldBookmark);
         when(allCourseConfigs.findCourseConfigurationFor(course.getContentId())).thenReturn(courseConfig);
 
@@ -99,7 +101,7 @@ public class EnrolleeCourseProgressServiceImplTest {
 
         when(courseProgressUpdater.update(any(EnrolleeCourseProgressDto.class))).thenReturn(newEnrolleeCourseProgressDto);
 
-        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId);
+        EnrolleeCourseProgressDto courseProgressForEnrollee = courseProgressService.getCourseProgressForEnrollee(externalId, courseContentId);
 
         ArgumentCaptor<EnrolleeCourseProgressDto> argumentCaptor = ArgumentCaptor.forClass(EnrolleeCourseProgressDto.class);
         verify(courseProgressUpdater).update(argumentCaptor.capture());

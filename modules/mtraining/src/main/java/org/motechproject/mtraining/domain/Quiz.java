@@ -36,6 +36,7 @@ public class Quiz extends Content {
 
     @JsonProperty
     private String strategy;
+    private static final String RANDOM = "RANDOM";
 
     Quiz() {
     }
@@ -46,7 +47,7 @@ public class Quiz extends Content {
         this.questions = questions;
         this.numberOfQuizQuestionsToBePlayed = numberOfQuizQuestionsToBePlayed;
         this.passPercentage = passPercentage;
-        this.strategy = "RANDOM";
+        this.strategy = RANDOM;
     }
 
     public Quiz(UUID contentId, Integer version, boolean isActive, String name, String externalContentId, List<Question> questions, Integer numberOfQuizQuestionsToBePlayed, Double passPercentage, String createdBy) {
@@ -55,7 +56,7 @@ public class Quiz extends Content {
         this.questions = questions;
         this.numberOfQuizQuestionsToBePlayed = numberOfQuizQuestionsToBePlayed;
         this.passPercentage = passPercentage;
-        this.strategy = "RANDOM";
+        this.strategy = RANDOM;
     }
 
     public String getName() {

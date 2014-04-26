@@ -51,17 +51,6 @@ public class AllEnrolleeCourseProgressIT {
         assertEquals(CourseStatus.ONGOING, enrolleeCourseProgress.getCourseStatus());
     }
 
-    @Test
-    public void shouldGetOnlyOngoingCourseForEnrollee() {
-        ContentIdentifier course01 = new ContentIdentifier(UUID.randomUUID(), 1);
-        ContentIdentifier course02 = new ContentIdentifier(UUID.randomUUID(), 1);
-        allCourseProgress.add(new EnrolleeCourseProgress("externalId1", DateTime.now(), CourseStatus.CLOSED, course01.getContentId()));
-        allCourseProgress.add(new EnrolleeCourseProgress("externalId1", DateTime.now(), CourseStatus.STARTED,course02.getContentId() ));
-        EnrolleeCourseProgress enrolleeCourseProgress = allCourseProgress.findCourseProgressForOngoingCourse("externalId1");
-        assertEquals(course02.getContentId(), enrolleeCourseProgress.getCourseContentId());
-        assertEquals(CourseStatus.STARTED, enrolleeCourseProgress.getCourseStatus());
-    }
-
     @After
     @Before
     public void cleanDb() {

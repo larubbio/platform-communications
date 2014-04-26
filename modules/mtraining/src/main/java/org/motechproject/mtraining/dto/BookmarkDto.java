@@ -102,10 +102,10 @@ public class BookmarkDto {
         if (isNotValid(course) || isNotValid(module) || isNotValid(chapter)) {
             return false;
         }
-        if(areBothQuizAndMessageInvalid()){
+        if (areBothQuizAndMessageInvalid()) {
             return false;
         }
-        if(areBothQuizAndMessagePresent()){
+        if (areBothQuizAndMessagePresent()) {
             return false;
         }
         return true;
