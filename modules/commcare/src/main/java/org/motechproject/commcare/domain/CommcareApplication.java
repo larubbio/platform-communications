@@ -1,30 +1,35 @@
 package org.motechproject.commcare.domain;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
+import javax.jdo.annotations.Column;
 import java.util.List;
 
 /**
- * Controller that handles the incoming full form feed from CommCareHQ.
+ * Represents the current schema of the Commcare application.
+ * Entity managed by MDS.
  */
-@TypeDiscriminator("doc.type === 'CommcareApplication'")
-public class CommcareApplication extends MotechBaseDataObject {
+@Entity
+public class CommcareApplication {
 
-    private static final long serialVersionUID = 1L;
-
+    @Field(required = true)
     private String applicationName;
+
+    @Field
+    @Column(length = 5000)
     private String resourceUri;
-    private List<CommcareModuleJson> modules;
+
+    @Field
+    private List<String> modules;
 
     public CommcareApplication() {
     }
 
-    public CommcareApplication(String applicationName, String resourceUri, List<CommcareModuleJson> modules) {
-        this();
+    public CommcareApplication(String applicationName, String resourceUri, List<String> moduleJsons) {
         this.applicationName = applicationName;
         this.resourceUri = resourceUri;
-        this.modules = modules;
+        this.modules = moduleJsons;
     }
 
     public String getApplicationName() {
@@ -43,11 +48,11 @@ public class CommcareApplication extends MotechBaseDataObject {
         this.resourceUri = resourceUri;
     }
 
-    public List<CommcareModuleJson> getModules() {
+    public List<String> getModules() {
         return modules;
     }
 
-    public void setModules(List<CommcareModuleJson> modules) {
+    public void setModules(List<String> modules) {
         this.modules = modules;
     }
 }

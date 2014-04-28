@@ -1,7 +1,6 @@
-package org.motechproject.commcare.repository;
+package org.motechproject.commcare.service.impl;
 
 import com.google.gson.reflect.TypeToken;
-import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,13 +8,16 @@ import org.motechproject.commcare.domain.AppStructureResponseJson;
 import org.motechproject.commcare.domain.CommcareApplication;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.domain.CommcareModuleJson;
+import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.testing.utils.SpringIntegrationTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.testing.osgi.BasePaxIT;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -23,9 +25,10 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
-public class AllCommcareApplicationsIT extends SpringIntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerSuite.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class CommcareApplicationDataServiceIT extends BasePaxIT {
 
     private static final String APPLICATION_NAME = "myApplication";
     private static final String RESOURCE_URI = "";
@@ -33,21 +36,25 @@ public class AllCommcareApplicationsIT extends SpringIntegrationTest {
     private static final String CASE_PROPERTY_1 = "name";
     private static final String CASE_PROPERTY_2 = "user_bednet";
 
-    @Autowired
-    AllCommcareApplications allCommcareApplications;
-
-    @Autowired
-    @Qualifier("commcareApplicationDatabaseConnector")
-    private CouchDbConnector connector;
+    @Inject
+    private CommcareApplicationDataService commareApplicationDataService;
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return true;
+    }
 
     @Test
     public void shouldSaveAndRetrieveCommcareApplications() throws Exception {
         List<CommcareApplicationJson> commcareApplicationJsonList = application();
 
-        allCommcareApplications.addAll(commcareApplicationJsonList);
-        List<CommcareApplication> commcareApplications = allCommcareApplications.getAll();
+        for (CommcareApplicationJson app : commcareApplicationJsonList) {
+            commareApplicationDataService.create(app.toCommcareApplication());
+        }
+
+        List<CommcareApplication> commcareApplications = commareApplicationDataService.retrieveAll();
 
         assertEquals(commcareApplications.size(), 1);
 
@@ -56,7 +63,7 @@ public class AllCommcareApplicationsIT extends SpringIntegrationTest {
         assertEquals(application.getResourceUri(), RESOURCE_URI);
         assertEquals(application.getModules().size(), 1);
 
-        CommcareModuleJson commcareModule = application.getModules().get(0);
+        CommcareModuleJson commcareModule = moduleJson(application.getModules().get(0));
         assertEquals(commcareModule.getCaseType(), CASE_TYPE);
         assertEquals(commcareModule.getCaseProperties().size(), 2);
         assertEquals(commcareModule.getFormSchemas().size(), 1);
@@ -64,14 +71,9 @@ public class AllCommcareApplicationsIT extends SpringIntegrationTest {
         assertEquals(commcareModule.getCaseProperties().get(1), CASE_PROPERTY_2);
     }
 
-    @Override
-    public CouchDbConnector getDBConnector() {
-        return connector;
-    }
-
     @After
     public void tearDown() {
-        allCommcareApplications.removeAll();
+        commareApplicationDataService.deleteAll();
     }
 
     private List<CommcareApplicationJson> application() throws IOException {
@@ -80,5 +82,10 @@ public class AllCommcareApplicationsIT extends SpringIntegrationTest {
             return ((AppStructureResponseJson) motechJsonReader.readFromStream(in, appStructureResponseType))
                     .getApplications();
         }
+    }
+
+    private CommcareModuleJson moduleJson(String module) {
+        return (CommcareModuleJson) motechJsonReader.readFromString(module,
+                new TypeToken<CommcareModuleJson>(){}.getType());
     }
 }

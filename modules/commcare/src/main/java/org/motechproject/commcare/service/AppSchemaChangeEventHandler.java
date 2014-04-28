@@ -1,7 +1,6 @@
 package org.motechproject.commcare.service;
 
 import org.motechproject.commcare.domain.CommcareApplicationJson;
-import org.motechproject.commcare.repository.AllCommcareApplications;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,15 @@ public class AppSchemaChangeEventHandler {
     private CommcareAppStructureService appStructureService;
 
     @Autowired
-    private AllCommcareApplications allCommcareApplications;
+    private CommcareApplicationDataService commcareApplicationDataService;
 
     @MotechListener(subjects = SCHEMA_CHANGE_EVENT)
     public void schemaChange(MotechEvent event) {
         List<CommcareApplicationJson> applications = appStructureService.getAllApplications();
-        allCommcareApplications.removeAll();
-        allCommcareApplications.addAll(applications);
+        commcareApplicationDataService.deleteAll();
+
+        for (CommcareApplicationJson app : applications) {
+            commcareApplicationDataService.create(app.toCommcareApplication());
+        }
     }
 }
