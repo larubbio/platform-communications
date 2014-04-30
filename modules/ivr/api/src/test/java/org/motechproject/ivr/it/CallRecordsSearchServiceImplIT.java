@@ -38,12 +38,12 @@ public class CallRecordsSearchServiceImplIT {
         log.setStartDate(DateUtil.now());
         log.setEndDate(DateUtil.now());
         log.setDuration(34);
-        log.setCallDirection(CallDirection.Inbound);
+        log.setCallDirection(CallDirection.INBOUND);
         log.setDisposition(CallDisposition.UNKNOWN);
         repository.add(log);
         final CallDetailRecord b = repository.findOrCreate("b", PHONE_NUMBER + "23");
         b.setDisposition(CallDisposition.ANSWERED);
-        b.setCallDirection(CallDirection.Outbound);
+        b.setCallDirection(CallDirection.OUTBOUND);
         b.setDuration(324);
         repository.update(b);
     }

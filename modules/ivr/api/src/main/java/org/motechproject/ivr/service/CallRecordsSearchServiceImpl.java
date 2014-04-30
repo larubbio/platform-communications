@@ -5,13 +5,14 @@ import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
 import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
-import org.motechproject.ivr.repository.AllCallDetailRecords;
+import org.motechproject.ivr.service.contract.CallRecordsDataService;
 import org.motechproject.ivr.service.contract.CallRecordsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides convenient methods for searching call records.
@@ -19,17 +20,17 @@ import java.util.List;
 
 @Service
 public class CallRecordsSearchServiceImpl implements CallRecordsSearchService {
-    private AllCallDetailRecords allCallDetailRecords;
+    private CallRecordsDataService callRecordsDataService;
 
     @Autowired
-    public CallRecordsSearchServiceImpl(AllCallDetailRecords allCallDetailRecords) {
-        this.allCallDetailRecords = allCallDetailRecords;
+    public CallRecordsSearchServiceImpl(CallRecordsDataService callRecordsDataService) {
+        this.callRecordsDataService = callRecordsDataService;
     }
 
     @Override
     public List<CallDetailRecord> search(CallRecordSearchParameters callLogSearchParameters) {
-        QueryParam queryParam = callLogSearchParameters.getQueryParam();
-        return allCallDetailRecords.search(callLogSearchParameters.getPhoneNumber(),
+        QueryParam queryParam = callLogSearchParameters.getQueryParams();
+        return callRecordsDataService.findByCriteria(callLogSearchParameters.getPhoneNumber(),
                 callLogSearchParameters.getStartFromDateAsDateTime(),
                 callLogSearchParameters.getStartToDateAsDateTime(),
                 callLogSearchParameters.getAnswerFromDateAsDateTime(),
@@ -38,8 +39,9 @@ public class CallRecordsSearchServiceImpl implements CallRecordsSearchService {
                 callLogSearchParameters.getEndToDateAsDateTime(),
                 callLogSearchParameters.getMinDuration(),
                 callLogSearchParameters.getMaxDuration(),
-                mapToDispositions(callLogSearchParameters), mapToDirections(callLogSearchParameters),
-                queryParam.getSortBy(), queryParam.isReverse());
+                mapToDispositions(callLogSearchParameters),
+                mapToDirections(callLogSearchParameters),
+                callLogSearchParameters.getQueryParams());
     }
 
     /**
@@ -59,7 +61,7 @@ public class CallRecordsSearchServiceImpl implements CallRecordsSearchService {
                 callLogSearchParameters.getMinDuration(),
                 callLogSearchParameters.getMaxDuration(), mapToDispositions(callLogSearchParameters),
                 mapToDirections(callLogSearchParameters)) /
-                (callLogSearchParameters.getQueryParam().getRecordsPerPage() * 1.0);
+                (callLogSearchParameters.getQueryParams().getRecordsPerPage() * 1.0);
         return Math.round(Math.ceil(numOfPages));
     }
 
@@ -75,36 +77,36 @@ public class CallRecordsSearchServiceImpl implements CallRecordsSearchService {
 
     //Takes the given Call Record Search Parameters and returns a list of all dispositions
     //in the parameters
-    private List<String> mapToDispositions(CallRecordSearchParameters callLogSearchParameters) {
-        List<String> dispositions = new ArrayList<>();
+    private Set<CallDisposition> mapToDispositions(CallRecordSearchParameters callLogSearchParameters) {
+        Set<CallDisposition> dispositions = new HashSet<>();
 
         if (callLogSearchParameters.getAnswered()) {
-            dispositions.add(CallDisposition.ANSWERED.name());
+            dispositions.add(CallDisposition.ANSWERED);
         }
         if (callLogSearchParameters.getBusy()) {
-            dispositions.add(CallDisposition.BUSY.name());
+            dispositions.add(CallDisposition.BUSY);
         }
         if (callLogSearchParameters.getFailed()) {
-            dispositions.add(CallDisposition.FAILED.name());
+            dispositions.add(CallDisposition.FAILED);
         }
         if (callLogSearchParameters.getNoAnswer()) {
-            dispositions.add(CallDisposition.NO_ANSWER.name());
+            dispositions.add(CallDisposition.NO_ANSWER);
         }
         if (callLogSearchParameters.getUnknown()) {
-            dispositions.add(CallDisposition.UNKNOWN.name());
+            dispositions.add(CallDisposition.UNKNOWN);
         }
         return dispositions;
     }
 
     //Takes the given Call Record Search Parameters and returns a list of all directions
     //in the parameters
-    private List<String> mapToDirections(CallRecordSearchParameters callLogSearchParameters) {
-        List<String> directions = new ArrayList<>();
+    private Set<CallDirection> mapToDirections(CallRecordSearchParameters callLogSearchParameters) {
+        Set<CallDirection> directions = new HashSet<>();
         if (callLogSearchParameters.isInbound()) {
-            directions.add(CallDirection.Inbound.name());
+            directions.add(CallDirection.INBOUND);
         }
         if (callLogSearchParameters.isOutbound()) {
-            directions.add(CallDirection.Outbound.name());
+            directions.add(CallDirection.OUTBOUND);
         }
         return directions;
     }

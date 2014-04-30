@@ -67,7 +67,7 @@ public class VerboiceIVRController {
         if (session == null) {
             session = flowSessionService.findOrCreate(verboiceCallId, phoneNumber);
             final CallDetailRecord callDetailRecord = session.getCallDetailRecord();
-            callDetailRecord.setCallDirection(CallDirection.Inbound);
+            callDetailRecord.setCallDirection(CallDirection.INBOUND);
         }
 
         String tree = request.getParameter("tree");
@@ -171,7 +171,7 @@ public class VerboiceIVRController {
         } else {
             record = (FlowSessionRecord) flowSessionService.findOrCreate(motechId, phoneNumber);
             final CallDetailRecord callDetailRecord = record.getCallDetailRecord();
-            callDetailRecord.setCallDirection(CallDirection.Inbound);
+            callDetailRecord.setCallDirection(CallDirection.INBOUND);
             flowSessionService.updateSession(record);
         }
     }

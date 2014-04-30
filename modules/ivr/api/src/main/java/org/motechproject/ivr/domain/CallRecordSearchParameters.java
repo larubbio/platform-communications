@@ -2,7 +2,7 @@ package org.motechproject.ivr.domain;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.commons.couchdb.query.QueryParam;
+import org.motechproject.mds.util.QueryParams;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -32,15 +32,15 @@ public class CallRecordSearchParameters {
     private boolean inbound;
     private boolean outbound;
 
-    //Query Param holds page number to return, records per page,
-    //what column to sort by, and whether or not to sort in reverse order
-    private QueryParam queryParam = new QueryParam();
+    // QueryParams holds page number to return, records per page, what column to sort by, and whether or not to sort in
+    // reverse order
+    private QueryParams queryParam;
 
-    public void setQueryParam(QueryParam queryParam) {
-        this.queryParam = queryParam;
+    public void setQueryParams(QueryParams queryParams) {
+        this.queryParam = queryParams;
     }
 
-    public QueryParam getQueryParam() {
+    public QueryParams getQueryParams() {
         return queryParam;
     }
 

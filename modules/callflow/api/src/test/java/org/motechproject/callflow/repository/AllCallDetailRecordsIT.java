@@ -52,7 +52,7 @@ public class AllCallDetailRecordsIT {
         log.setEndDate(DateUtil.now());
         log.setDuration(duration);
         log.setDisposition(CallDisposition.UNKNOWN);
-        log.setCallDirection(CallDirection.Inbound);
+        log.setCallDirection(CallDirection.INBOUND);
         return log;
     }
 
@@ -66,7 +66,7 @@ public class AllCallDetailRecordsIT {
         DateTime startTime = DateTime.now().minusDays(1);
         int maxDuration = MAX_CALL_DURATION;
         final List<CallDetailRecord> rowList = allCallDetailRecords.search(PHONE_NUMBER_1, startTime, endTime, null, null, null, null, 0, maxDuration,
-                Arrays.asList(CallDisposition.UNKNOWN.name()), Arrays.asList(CallDirection.Inbound.name()), null, false);
+                Arrays.asList(CallDisposition.UNKNOWN.name()), Arrays.asList(CallDirection.INBOUND.name()), null, false);
         assertTrue(rowList.size() > 0);
     }
 
