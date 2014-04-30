@@ -4,6 +4,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.mds.annotations.Entity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,8 +20,8 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 /**
  * Call Detail Record represents call events and data captured in a call along with call metrics.
  */
-@TypeDiscriminator("doc.type === 'CallDetailRecord'")
-public class CallDetailRecord extends MotechBaseDataObject implements CallDetail {
+@Entity
+public class CallDetailRecord implements CallDetail {
 
     private DateTime startDate;
     private DateTime endDate;

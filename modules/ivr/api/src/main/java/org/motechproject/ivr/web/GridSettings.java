@@ -2,6 +2,8 @@ package org.motechproject.ivr.web;
 
 import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
+import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 
 
 /**
@@ -222,7 +224,7 @@ public class GridSettings {
         if (rows == null) {
             rows = DEFAULT_PAGE_SIZE;
         }
-        params.setQueryParam(new QueryParam(page, rows, sortColumn, reverse));
+        params.setQueryParams(new QueryParams(page, rows, new Order(sortColumn, sortDirection)));
         return params;
     }
 

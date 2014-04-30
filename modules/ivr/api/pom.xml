@@ -30,12 +30,8 @@
         </dependency>
         <dependency>
             <groupId>${motech.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <artifactId>motech-platform-dataservices</artifactId>
             <version>${motech.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ldriscoll</groupId>
-            <artifactId>org.motechproject.ektorplucene</artifactId>
         </dependency>
         <dependency>
             <groupId>${motech.groupId}</groupId>
@@ -139,7 +135,6 @@
                             org.motechproject.ivr.service.contract;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
