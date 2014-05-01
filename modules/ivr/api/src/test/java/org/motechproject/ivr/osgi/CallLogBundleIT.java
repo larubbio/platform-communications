@@ -4,7 +4,7 @@ import com.google.gson.JsonParser;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.ivr.service.contract.CallRecordsService;
+import org.motechproject.ivr.service.contract.CallRecordsDataService;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.TestContext;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class CallLogBundleIT extends BasePaxIT {
 
     @Inject
-    private CallRecordsService callRecordsService;
+    private CallRecordsDataService callRecordsDataService;
 
     @Test
     public void testCalllogSearch() throws IOException, InterruptedException {
@@ -36,6 +36,6 @@ public class CallLogBundleIT extends BasePaxIT {
 
     @Test
     public void testThatCallRecordsServiceIsAvailable() {
-        assertNotNull(callRecordsService);
+        assertNotNull(callRecordsDataService);
     }
 }

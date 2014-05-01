@@ -1,9 +1,7 @@
 package org.motechproject.ivr.domain;
 
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.mds.annotations.Entity;
 
 import java.util.ArrayList;

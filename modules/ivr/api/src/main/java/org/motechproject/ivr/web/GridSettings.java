@@ -1,6 +1,5 @@
 package org.motechproject.ivr.web;
 
-import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
 import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryParams;
@@ -201,7 +200,6 @@ public class GridSettings {
 
     public CallRecordSearchParameters toCallRecordSearchParameters() {
         CallRecordSearchParameters params = new CallRecordSearchParameters();
-        boolean reverse = "desc".equalsIgnoreCase(sortDirection);
         params.setAnswered(answered);
         params.setBusy(busy);
         params.setFailed(failed);

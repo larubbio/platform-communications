@@ -2,7 +2,11 @@ package org.motechproject.ivr.domain;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.motechproject.commons.api.Range;
 import org.motechproject.mds.util.QueryParams;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -52,6 +56,23 @@ public class CallRecordSearchParameters {
         return inbound;
     }
 
+    public Set<CallDirection> getDirections() {
+        Set<CallDirection> directions = new HashSet<>();
+        if (inbound) { directions.add(CallDirection.INBOUND); }
+        if (outbound) { directions.add(CallDirection.OUTBOUND); }
+        return directions;
+    }
+
+    public Set<CallDisposition> getDispositions() {
+        Set<CallDisposition> dispositions = new HashSet<>();
+        if (answered) { dispositions.add(CallDisposition.ANSWERED); }
+        if (busy) { dispositions.add(CallDisposition.BUSY); }
+        if (failed) { dispositions.add(CallDisposition.FAILED); }
+        if (noAnswer) { dispositions.add(CallDisposition.NO_ANSWER); }
+        if (unknown) { dispositions.add(CallDisposition.UNKNOWN); }
+        return dispositions;
+    }
+
     public void setOutbound(boolean outbound) {
         this.outbound = outbound;
     }
@@ -79,6 +100,10 @@ public class CallRecordSearchParameters {
     public String getStartFromDate() {
         return startFromDate.toString(DEFAULT_DATE_FORMAT);
     }
+
+    public Range<DateTime> getStartTimeRange() { return new Range<DateTime>(startFromDate, startToDate); }
+    public Range<DateTime> getAnswerTimeRange() { return new Range<DateTime>(answerFromDate, answerToDate); }
+    public Range<DateTime> getEndTimeRange() { return new Range<DateTime>(endFromDate, endToDate); }
 
     public DateTime getStartFromDateAsDateTime() {
         return startFromDate;
@@ -146,6 +171,8 @@ public class CallRecordSearchParameters {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public Range<Integer> getDurationRange() { return new Range<Integer>(minDuration, maxDuration); }
 
     public Integer getMaxDuration() {
         return maxDuration;
