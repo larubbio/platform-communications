@@ -25,6 +25,7 @@ public class IVRDataServiceImpl implements IVRDataService {
         this.callDetailRecordService = callDetailRecordService;
     }
 
+    @Override
     public List<CallDetailRecord> search(CallRecordSearchParameters callLogSearchParameters) {
         return this.callDetailRecordService.findByCriteria(callLogSearchParameters.getPhoneNumber(),
                 callLogSearchParameters.getStartTimeRange(), callLogSearchParameters.getAnswerTimeRange(),
@@ -32,6 +33,7 @@ public class IVRDataServiceImpl implements IVRDataService {
                 callLogSearchParameters.getDispositions(), callLogSearchParameters.getDirections());
     }
 
+    @Override
     public long count(CallRecordSearchParameters callLogSearchParameters) {
         return this.callDetailRecordService.countByCriteria(callLogSearchParameters.getPhoneNumber(),
                 callLogSearchParameters.getStartTimeRange(), callLogSearchParameters.getAnswerTimeRange(),
@@ -40,6 +42,7 @@ public class IVRDataServiceImpl implements IVRDataService {
     }
 
     //TODO: this is horrible code, it must _never_ make it to production. Eew. Gross.
+    @Override
     public List<String> getAllPhoneNumbers() {
         List<CallDetailRecord> allCallDetailRecords = this.callDetailRecordService.retrieveAll();
         List<String> allPhoneNumbers = new ArrayList<>();
@@ -50,6 +53,7 @@ public class IVRDataServiceImpl implements IVRDataService {
     }
 
     //TODO: this is slightly less horrible code, but it also must never make it to production
+    @Override
     public int findMaxCallDuration() {
         int maxCallDuration = 0;
         Order order = new Order("duration", Order.Direction.DESC);

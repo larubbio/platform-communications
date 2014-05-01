@@ -17,30 +17,28 @@ import java.util.Set;
  */
 public interface CallDetailRecordService extends MotechDataService<CallDetailRecord> {
 
-    //TODO: use Range instead of separate From/To fields
-
-    @Lookup
+    @Lookup(name = "Search")
     List<CallDetailRecord> findByCriteria(
             @LookupField(name = "phoneNumber") String phoneNumber, //NO CHECKSTYLE ParameterNumber
-            @LookupField(name = "startTime") Range<DateTime> startTime,
-            @LookupField(name = "answerTime") Range<DateTime> answerTime,
-            @LookupField(name = "endTime") Range<DateTime> endTime,
-            @LookupField(name = "durationInSeconds") Range<Integer> durationInSeconds,
-            @LookupField(name = "dispositions") Set<CallDisposition> dispositions,
-            @LookupField(name = "directions") Set<CallDirection> directions
+            @LookupField(name = "startDate") Range<DateTime> startDate,
+            @LookupField(name = "answerDate") Range<DateTime> answerDate,
+            @LookupField(name = "endDate") Range<DateTime> endDate,
+            @LookupField(name = "duration") Range<Integer> duration,
+            @LookupField(name = "disposition") Set<CallDisposition> disposition,
+            @LookupField(name = "callDirection") Set<CallDirection> callDirection
     );
 
-    @Lookup
+    @Lookup(name = "Find by call ID")
     List<CallDetailRecord> findByCallId(@LookupField(name = "callId") String callId);
 
-    @Lookup
+    @Lookup(name = "Search")
     long countByCriteria(
             @LookupField(name = "phoneNumber") String phoneNumber, //NO CHECKSTYLE ParameterNumber
-            @LookupField(name = "startTime") Range<DateTime> startTime,
-            @LookupField(name = "answerTime") Range<DateTime> answerTime,
-            @LookupField(name = "endTime") Range<DateTime> endTime,
-            @LookupField(name = "durationInSeconds") Range<Integer> durationInSeconds,
-            @LookupField(name = "dispositions") Set<CallDisposition> dispositions,
-            @LookupField(name = "directions") Set<CallDirection> directions
+            @LookupField(name = "startDate") Range<DateTime> startDate,
+            @LookupField(name = "answerDate") Range<DateTime> answerDate,
+            @LookupField(name = "endDate") Range<DateTime> endDate,
+            @LookupField(name = "duration") Range<Integer> duration,
+            @LookupField(name = "disposition") Set<CallDisposition> disposition,
+            @LookupField(name = "callDirection") Set<CallDirection> callDirection
     );
 }
