@@ -9,8 +9,8 @@ import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
 import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
-import org.motechproject.ivr.repository.AllCallDetailRecords;
-import org.motechproject.ivr.service.contract.CallRecordsSearchService;
+import org.motechproject.ivr.service.contract.CallDetailRecordDataService;
+import org.motechproject.ivr.service.contract.CallRecordsDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,13 +23,13 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
-public class CallRecordsSearchServiceImplIT {
+public class CallRecordsDataServiceImplIT {
     private static final String PHONE_NUMBER = "232";
     @Autowired
-    CallRecordsSearchService calllogSearchService;
+    CallRecordsDataService calllogSearchService;
 
     @Autowired
-    AllCallDetailRecords repository;
+    CallDetailRecordDataService repository;
 
     @Before
     public void setUp() throws Exception {
@@ -40,8 +40,8 @@ public class CallRecordsSearchServiceImplIT {
         log.setDuration(34);
         log.setCallDirection(CallDirection.INBOUND);
         log.setDisposition(CallDisposition.UNKNOWN);
-        repository.add(log);
-        final CallDetailRecord b = repository.findOrCreate("b", PHONE_NUMBER + "23");
+        repository.create(log);
+        final CallDetailRecord b = repository.create(new CallDetailRecord("b", PHONE_NUMBER + "23"));
         b.setDisposition(CallDisposition.ANSWERED);
         b.setCallDirection(CallDirection.OUTBOUND);
         b.setDuration(324);
@@ -65,7 +65,7 @@ public class CallRecordsSearchServiceImplIT {
 
     @After
     public void tearDown() {
-        repository.remove(repository.findByCallId("a"));
-        repository.remove(repository.findByCallId("b"));
+        repository.delete(repository.findByCallId("a").get(0));
+        repository.delete(repository.findByCallId("b").get(0));
     }
 }
