@@ -9,11 +9,10 @@ import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
 import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
-import org.motechproject.ivr.service.contract.CallDetailRecordDataService;
-import org.motechproject.ivr.service.contract.CallRecordsDataService;
+import org.motechproject.ivr.service.CallDetailRecordService;
+import org.motechproject.ivr.service.IVRDataService;
+import org.motechproject.testing.osgi.BasePaxIT;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
@@ -21,15 +20,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
-public class CallRecordsDataServiceImplIT {
-    private static final String PHONE_NUMBER = "232";
-    @Autowired
-    CallRecordsDataService calllogSearchService;
+import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
+import org.ops4j.pax.exam.ExamFactory;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-    @Autowired
-    CallDetailRecordDataService repository;
+import javax.inject.Inject;
+
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+@ExamFactory(MotechNativeTestContainerFactory.class)
+public class CallRecordsDataServiceImplIT extends BasePaxIT {
+    private static final String PHONE_NUMBER = "232";
+
+    @Inject
+    IVRDataService calllogSearchService;
+
+    @Inject
+    CallDetailRecordService repository;
 
     @Before
     public void setUp() throws Exception {

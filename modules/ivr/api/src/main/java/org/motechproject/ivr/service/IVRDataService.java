@@ -1,11 +1,11 @@
-package org.motechproject.ivr.service.contract;
+package org.motechproject.ivr.service;
 
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
 
 import java.util.List;
 
-public interface CallRecordsDataService {
+public interface IVRDataService {
     List<CallDetailRecord> search(CallRecordSearchParameters callLogSearchParameters);
 
     long count(CallRecordSearchParameters callLogSearchParameters);

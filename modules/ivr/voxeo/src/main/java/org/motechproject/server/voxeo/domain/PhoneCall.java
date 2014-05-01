@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.ivr.domain.CallDisposition;
-import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.CallRequest;
 
 import java.util.Collections;
 import java.util.Date;

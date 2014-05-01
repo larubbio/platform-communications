@@ -3,6 +3,7 @@ package org.motechproject.ivr.domain;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,14 +22,23 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 @Entity
 public class CallDetailRecord implements CallDetail {
 
+    @Field
     private DateTime startDate;
+    @Field
     private DateTime endDate;
+    @Field
     private Date answerDate;
+    @Field
     private CallDisposition disposition;
+    @Field
     private String errorMessage;
+    @Field
     private String phoneNumber;
+    @Field
     private String callId;
+    @Field
     private Integer duration;
+    @Field
     private CallDirection callDirection;
 
     private List<CallEventLog> callEventLogs = new ArrayList<CallEventLog>();

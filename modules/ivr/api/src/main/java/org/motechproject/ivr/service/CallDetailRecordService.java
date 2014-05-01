@@ -1,4 +1,4 @@
-package org.motechproject.ivr.service.contract;
+package org.motechproject.ivr.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.Range;
@@ -8,7 +8,6 @@ import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.service.MotechDataService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
@@ -16,8 +15,7 @@ import java.util.Set;
 /**
  * TODO
  */
-@Service("callDetailRecordDataService")
-public interface CallDetailRecordDataService extends MotechDataService<CallDetailRecord> {
+public interface CallDetailRecordService extends MotechDataService<CallDetailRecord> {
 
     //TODO: use Range instead of separate From/To fields
 

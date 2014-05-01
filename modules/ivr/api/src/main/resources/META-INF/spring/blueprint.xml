@@ -29,8 +29,11 @@
     </bean>
 
 
-    <osgi:service ref="callRecordsDataService" interface="org.motechproject.ivr.service.contract.CallRecordsDataService"/>
-    <osgi:service ref="callDetailRecordDataService" interface="org.motechproject.ivr.service.contract.CallDetailRecordDataService"/>
+    <osgi:service ref="ivrDataService" interface="org.motechproject.ivr.service.IVRDataService"
+                  auto-export="interfaces"/>
+
+    <osgi:reference id="callDetailRecordService"
+                    interface="org.motechproject.ivr.service.CallDetailRecordService"/>
 
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
