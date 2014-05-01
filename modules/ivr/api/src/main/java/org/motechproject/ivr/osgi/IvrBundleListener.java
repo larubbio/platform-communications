@@ -1,6 +1,6 @@
 package org.motechproject.ivr.osgi;
 
-import org.motechproject.ivr.service.contract.IVRService;
+import org.motechproject.ivr.service.IVRService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -36,7 +36,7 @@ public final class IvrBundleListener implements ServiceListener {
         ServiceReference serviceReference = event.getServiceReference();
         String[] objectClass = (String[]) serviceReference.getProperty("objectClass");
 
-        if (objectClass.length > 0 && "org.motechproject.ivr.service.contract.IVRService".equals(objectClass[0])) {
+        if (objectClass.length > 0 && "org.motechproject.ivr.service.IVRService".equals(objectClass[0])) {
             String provider = (String) serviceReference.getProperty("IvrProvider");
             if (event.getType() == ServiceEvent.REGISTERED) {
                 allProviderBundles.register(provider, (IVRService) bundleContext.getService(serviceReference));

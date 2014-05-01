@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.model.FlowSession;
-import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;

@@ -9,7 +9,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.event.IVREventDelegate;
 import org.motechproject.ivr.domain.CallDetailRecord;
-import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.CallRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

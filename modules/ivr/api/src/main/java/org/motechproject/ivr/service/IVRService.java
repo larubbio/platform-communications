@@ -1,7 +1,5 @@
-package org.motechproject.ivr.service.contract;
+package org.motechproject.ivr.service;
 
-
-import org.motechproject.ivr.service.contract.CallRequest;
 
 /**
  * Interface to IVR Dial out call. Originates call as per given call request.

@@ -1,4 +1,4 @@
-package org.motechproject.ivr.service.contract;
+package org.motechproject.ivr.service;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.event.MotechEvent;

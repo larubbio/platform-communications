@@ -5,7 +5,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.ivr.service.contract.IVRService;
+import org.motechproject.ivr.service.IVRService;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.motechproject.testing.osgi.BasePaxIT;

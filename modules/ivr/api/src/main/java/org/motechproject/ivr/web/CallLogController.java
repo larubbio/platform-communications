@@ -3,7 +3,7 @@ package org.motechproject.ivr.web;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallRecordSearchParameters;
-import org.motechproject.ivr.service.contract.CallRecordsDataService;
+import org.motechproject.ivr.service.IVRDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,13 +26,13 @@ import java.util.List;
 public class CallLogController {
 
     @Autowired
-    private CallRecordsDataService callRecordsDataService;
+    private IVRDataService ivrDataService;
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     @ResponseBody
     public CallLogRecords search(@ModelAttribute GridSettings settings) throws IOException {
         CallRecordSearchParameters params = settings.toCallRecordSearchParameters();
-        List<CallDetailRecord> records = callRecordsDataService.search(params);
+        List<CallDetailRecord> records = ivrDataService.search(params);
         return new CallLogRecords(settings.getPage(), settings.getRows(), records);
     }
 
@@ -41,7 +41,7 @@ public class CallLogController {
     public String count(@ModelAttribute GridSettings settings) throws IOException {
         HashMap<String, Long> map = new HashMap<>();
         CallRecordSearchParameters params = settings.toCallRecordSearchParameters();
-        map.put("count", callRecordsDataService.count(params));
+        map.put("count", ivrDataService.count(params));
         return new ObjectMapper().writeValueAsString(map);
     }
 
@@ -49,13 +49,13 @@ public class CallLogController {
     @ResponseBody
     public String findMaxCallDuration() throws IOException {
         HashMap<String, Integer> map = new HashMap<>();
-        map.put("maxDuration", callRecordsDataService.findMaxCallDuration());
+        map.put("maxDuration", ivrDataService.findMaxCallDuration());
         return new ObjectMapper().writeValueAsString(map);
     }
 
     @RequestMapping(value = "/phone-numbers",  method = RequestMethod.GET)
     @ResponseBody
     public List<String> allPhoneNumbers() throws IOException {
-        return callRecordsDataService.getAllPhoneNumbers();
+        return ivrDataService.getAllPhoneNumbers();
     }
 }

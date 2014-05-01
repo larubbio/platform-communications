@@ -12,15 +12,4 @@
     <context:component-scan base-package="org.motechproject.ivr"/>
     <mvc:annotation-driven/>
 
-
-    <bean id="platformIVRDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-ivr"/>
-    </bean>
-
-
-    <!-- get a couchdb connector to access motech's datastore -->
-    <bean id="callLogDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-calllog"/>
-    </bean>
-
 </beans>
