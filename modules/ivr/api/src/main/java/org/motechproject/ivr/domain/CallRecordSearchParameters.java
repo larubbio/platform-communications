@@ -113,6 +113,23 @@ public class CallRecordSearchParameters {
         this.startFromDate = toDate(fromDate);
     }
 
+    public void setStartFromDate(DateTime date) {
+        this.startFromDate = date;
+    }
+
+    public void setStartToDate(DateTime date) {
+        this.startToDate = date;
+    }
+
+
+    public void setEndFromDate(DateTime date) {
+        this.endFromDate = date;
+    }
+
+    public void setEndToDate(DateTime date) {
+        this.endToDate = date;
+    }
+
 
     public String getAnswerToDate() {
         return answerToDate.toString(DEFAULT_DATE_FORMAT);

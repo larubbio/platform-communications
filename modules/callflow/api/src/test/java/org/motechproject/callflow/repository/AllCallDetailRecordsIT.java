@@ -5,17 +5,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.Range;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.ivr.domain.CallDetail;
-import org.motechproject.ivr.domain.CallDetailRecord;
-import org.motechproject.ivr.domain.CallDirection;
-import org.motechproject.ivr.domain.CallDisposition;
-import org.motechproject.ivr.repository.AllCallDetailRecords;
+import org.motechproject.ivr.domain.*;
+import org.motechproject.ivr.service.CallDetailRecordService;
+import org.motechproject.ivr.service.IVRDataService;
+import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -23,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests functionality of AllCallDetailRecords.
+ * Tests functionality of CallDetailRecordService.
  * Assumes the database is empty before tests
  * (if it's not, the shouldFindMaxCallDuration test may fail).
  */
@@ -37,12 +39,13 @@ public class AllCallDetailRecordsIT {
     private static final int MAX_CALL_DURATION = 50;
 
     @Autowired
-    AllCallDetailRecords allCallDetailRecords;
+    CallDetailRecordService allCallDetailRecords;
+    IVRDataService ivrDataService;
 
     @Before
     public void setUp() {
-        allCallDetailRecords.add(getRecord(PHONE_NUMBER_1, MAX_CALL_DURATION - 10));
-        allCallDetailRecords.add(getRecord(PHONE_NUMBER_2, MAX_CALL_DURATION));
+        allCallDetailRecords.create(getRecord(PHONE_NUMBER_1, MAX_CALL_DURATION - 10));
+        allCallDetailRecords.create(getRecord(PHONE_NUMBER_2, MAX_CALL_DURATION));
     }
 
     private CallDetailRecord getRecord(String phoneNumber, int duration) {
@@ -65,72 +68,87 @@ public class AllCallDetailRecordsIT {
         DateTime endTime = DateTime.now().plusDays(1);
         DateTime startTime = DateTime.now().minusDays(1);
         int maxDuration = MAX_CALL_DURATION;
-        final List<CallDetailRecord> rowList = allCallDetailRecords.search(PHONE_NUMBER_1, startTime, endTime, null, null, null, null, 0, maxDuration,
-                Arrays.asList(CallDisposition.UNKNOWN.name()), Arrays.asList(CallDirection.INBOUND.name()), null, false);
+        final List<CallDetailRecord> rowList = allCallDetailRecords.findByCriteria(PHONE_NUMBER_1,
+                new Range(startTime, startTime), null, new Range(endTime, endTime), new Range(0, maxDuration),
+                new HashSet<CallDisposition>(Arrays.asList(CallDisposition.UNKNOWN)),
+                new HashSet<CallDirection>(Arrays.asList(CallDirection.INBOUND)));
         assertTrue(rowList.size() > 0);
     }
 
     @Test
     public void shouldSearchCallsWithSpecificDuration() throws Exception {
-        final List<CallDetailRecord> rowList = allCallDetailRecords.search(null, DateTime.now().minusDays(1),
-                DateTime.now().plusDays(1), null, null, null, null, null, null, null, null, null, false);
+        final List<CallDetailRecord> rowList = allCallDetailRecords.findByCriteria(null,
+                new Range(DateTime.now().minusDays(1), DateTime.now().plusDays(1)), null, null, null, null, null);
         assertTrue(rowList.size() > 0);
     }
 
     @Test
     public void shouldReturnBasedOnGivenSortByParamInDescendingOrder() throws Exception {
-        List<CallDetailRecord> rowList = allCallDetailRecords.search("99991234*", DateTime.now().minusDays(1),
-                DateTime.now().plusDays(1), null, null, null, null, null, null, null,null, "phoneNumber", true);
+        final CallRecordSearchParameters searchParameters = new CallRecordSearchParameters();
+        searchParameters.setPhoneNumber("99991234*");
+        searchParameters.setEndFromDate(DateTime.now().minusDays(1));
+        searchParameters.setEndToDate(DateTime.now().plusDays(1));
+        searchParameters.setQueryParams(new QueryParams(new Order("phone", Order.Direction.DESC)));
+        final List<CallDetailRecord> rowList = ivrDataService.search(searchParameters);
         assertEquals(rowList.get(0).getPhoneNumber(), PHONE_NUMBER_2);
-
     }
 
     @Test
     public void shouldReturnBasedOnGivenSortByParamInAscendingOrder() throws Exception {
-        List<CallDetailRecord> rowList = allCallDetailRecords.search("99991234*", DateTime.now().minusDays(1),
-                DateTime.now().plusDays(1), null, null, null, null, null, null, null, null, "phoneNumber", false);
-        assertEquals(PHONE_NUMBER_1, rowList.get(0).getPhoneNumber());
+        final CallRecordSearchParameters searchParameters = new CallRecordSearchParameters();
+        searchParameters.setPhoneNumber("99991234*");
+        searchParameters.setEndFromDate(DateTime.now().minusDays(1));
+        searchParameters.setEndToDate(DateTime.now().plusDays(1));
+        searchParameters.setQueryParams(new QueryParams(new Order("phone", Order.Direction.ASC)));
+        final List<CallDetailRecord> rowList = ivrDataService.search(searchParameters);
+        assertEquals(rowList.get(0).getPhoneNumber(), PHONE_NUMBER_1);
     }
 
     @Test
     public void shouldReturnTheTotalNumberOfCallRecords() {
-        long count = allCallDetailRecords.countRecords("99991234*", DateTime.now().minusDays(1),
-                DateTime.now().plusDays(1), null, null, null, null, null, null, null, null);
+        final CallRecordSearchParameters searchParameters = new CallRecordSearchParameters();
+        searchParameters.setPhoneNumber("99991234*");
+        searchParameters.setEndFromDate(DateTime.now().minusDays(1));
+        searchParameters.setEndToDate(DateTime.now().plusDays(1));
+        long count = ivrDataService.count(searchParameters);
         assertEquals(2, count);
     }
 
     @Test
     public void shouldFindMaxCallDuration() {
-        assertEquals(MAX_CALL_DURATION, allCallDetailRecords.findMaxCallDuration());
+        assertEquals(MAX_CALL_DURATION, ivrDataService.findMaxCallDuration());
     }
 
     @Test
     public void shouldUpdateExistingCallRecords() {
         CallDetailRecord cdr = new CallDetailRecord("callId", PHONE_NUMBER_1);
-        allCallDetailRecords.addOrUpdate(cdr);
+        allCallDetailRecords.create(cdr);
 
-        CallDetailRecord fromDb = allCallDetailRecords.findByCallId("callId");
-        assertNotNull(fromDb);
-        assertEquals("callId", fromDb.getCallId());
-        assertEquals(PHONE_NUMBER_1, fromDb.getPhoneNumber());
+        List<CallDetailRecord> cdrs = allCallDetailRecords.findByCallId("callId");
+        assertNotNull(cdrs);
+        assertEquals(1, cdrs.size());
+        cdr = cdrs.get(0);
+        assertEquals("callId", cdr.getCallId());
+        assertEquals(PHONE_NUMBER_1, cdr.getPhoneNumber());
 
         cdr = new CallDetailRecord("callId", PHONE_NUMBER_2);
-        allCallDetailRecords.addOrUpdate(cdr);
+        allCallDetailRecords.update(cdr);
 
-        fromDb = allCallDetailRecords.findByCallId("callId");
-        assertNotNull(fromDb);
-        assertEquals("callId", fromDb.getCallId());
-        assertEquals(PHONE_NUMBER_2, fromDb.getPhoneNumber());
+        cdrs = allCallDetailRecords.findByCallId("callId");
+        assertNotNull(cdrs);
+        assertEquals(1, cdrs.size());
+        cdr = cdrs.get(0);
+        assertEquals(PHONE_NUMBER_2, cdr.getPhoneNumber());
     }
 
     @After
     public void tearDown() {
-        final List<CallDetailRecord> logs = allCallDetailRecords.search(PHONE_NUMBER_1, DateTime.now().minusDays(1), DateTime.now().plusDays(1),
-                null, null, null, null, null, null, null,null, null, false);
-        logs.addAll(allCallDetailRecords.search(PHONE_NUMBER_2, DateTime.now().minusDays(1), DateTime.now().plusDays(1),
-                null, null, null, null, null, null, null, null, null, false));
-        for (CallDetail log : logs) {
-            allCallDetailRecords.remove((CallDetailRecord) log);
+        final List<CallDetailRecord> cdrs = allCallDetailRecords.findByCriteria(PHONE_NUMBER_1,
+                new Range(DateTime.now().minusDays(1), DateTime.now().plusDays(1)), null, null, null, null, null);
+        cdrs.addAll(allCallDetailRecords.findByCriteria(PHONE_NUMBER_2,
+                new Range(DateTime.now().minusDays(1), DateTime.now().plusDays(1)), null, null, null, null, null));
+        for (CallDetailRecord cdr : cdrs) {
+            allCallDetailRecords.delete((CallDetailRecord) cdr);
         }
     }
 

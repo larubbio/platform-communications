@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.repository.AllFlowSessionRecords;
-import org.motechproject.ivr.service.contract.CallRecordsService;
+import org.motechproject.ivr.service.CallDetailRecordService;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -20,7 +20,7 @@ public class IVRSessionManagementServiceImplTest {
     @Mock
     private AllFlowSessionRecords allFlowSessionRecords;
     @Mock
-    private CallRecordsService callRecordsService;
+    private CallDetailRecordService callRecordsService;
 
     private FlowSessionServiceImpl ivrSessionManagementService;
 
