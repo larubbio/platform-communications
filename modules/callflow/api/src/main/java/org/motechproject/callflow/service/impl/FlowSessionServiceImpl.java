@@ -5,7 +5,7 @@ import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.repository.AllFlowSessionRecords;
 import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.model.FlowSession;
-import org.motechproject.ivr.service.contract.CallRecordsService;
+import org.motechproject.ivr.service.CallDetailRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,12 +21,12 @@ import java.util.UUID;
 public class FlowSessionServiceImpl implements FlowSessionService {
 
     private AllFlowSessionRecords allFlowSessionRecords;
-    private CallRecordsService callRecordsService;
+    private CallDetailRecordService callDetailRecordService;
 
     @Autowired
-    public FlowSessionServiceImpl(AllFlowSessionRecords allFlowSessionRecords, CallRecordsService callRecordsService) {
+    public FlowSessionServiceImpl(AllFlowSessionRecords allFlowSessionRecords, CallDetailRecordService callDetailRecordService) {
         this.allFlowSessionRecords = allFlowSessionRecords;
-        this.callRecordsService = callRecordsService;
+        this.callDetailRecordService = callDetailRecordService;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class FlowSessionServiceImpl implements FlowSessionService {
 
     @Override
     public void updateSession(FlowSession flowSession) {
-        callRecordsService.add(flowSession.getCallDetailRecord());
+        callDetailRecordService.create(flowSession.getCallDetailRecord());
         allFlowSessionRecords.update((FlowSessionRecord) flowSession);
     }
 

@@ -20,7 +20,9 @@
                   interface="org.motechproject.callflow.service.FlowSessionService"/>
 
 
-    <osgi:reference id="callRecordsService" interface="org.motechproject.ivr.service.contract.CallRecordsService" />
+    <osgi:reference id="callDetailRecordsService" interface="org.motechproject.ivr.service.CallDetailRecordService" />
+
+    <osgi:reference id="ivrDataService" interface="org.motechproject.ivr.service.IVRDataService" />
 
     <osgi:reference id="decisionTreeService" interface="org.motechproject.decisiontree.core.DecisionTreeService"/>
 

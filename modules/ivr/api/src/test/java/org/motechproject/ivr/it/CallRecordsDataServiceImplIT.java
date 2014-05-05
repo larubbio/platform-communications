@@ -72,6 +72,8 @@ public class CallRecordsDataServiceImplIT extends BasePaxIT {
         assertTrue(callDetailRecords.size() >= 2);
     }
 
+    //todo: test searching using criteria
+
     @After
     public void tearDown() {
         repository.delete(repository.findByCallId("a").get(0));
