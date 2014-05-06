@@ -79,25 +79,4 @@ public class CallRecordsDataServiceImplIT extends BasePaxIT {
         repository.delete(repository.findByCallId("a").get(0));
         repository.delete(repository.findByCallId("b").get(0));
     }
-
-    @RunWith(PaxExam.class)
-    @ExamReactorStrategy(PerSuite.class)
-    @ExamFactory(MotechNativeTestContainerFactory.class)
-    public static class CallLogBundleIT extends BasePaxIT {
-
-        @Inject
-        private IVRDataService ivrDataService;
-
-        @Test
-        public void testThatCallRecordsServiceIsAvailable() {
-            assertNotNull(ivrDataService);
-        }
-    //
-    //    @Test
-    //    public void testCalllogSearch() throws IOException, InterruptedException {
-    //        String response = getHttpClient().get(String.format("http://localhost:%d/ivr/api/calllog/search",
-    //                TestContext.getJettyPort()), new BasicResponseHandler());
-    //        assertTrue(new JsonParser().parse(response).isJsonObject());
-    //    }
-    }
 }
