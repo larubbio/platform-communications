@@ -13,14 +13,6 @@
         <property name="moduleName" value="callflow"/>
     </bean>
 
-    <bean id="flowSession" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="flowSession"/>
-    </bean>
-
-    <bean id="callDetailRecord" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-calllog"/>
-    </bean>
-
     <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>
 
 </beans>

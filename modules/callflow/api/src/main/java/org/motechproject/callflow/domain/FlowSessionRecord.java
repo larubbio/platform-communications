@@ -5,10 +5,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.decisiontree.core.model.FlowSession;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.mds.annotations.Entity;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * A record representing a call flow session, persisted in Couchdb.
  */
-@TypeDiscriminator("doc.type === 'FlowSessionRecord'")
-public class FlowSessionRecord extends MotechBaseDataObject implements FlowSession {
+@Entity
+public class FlowSessionRecord implements FlowSession {
 
     @JsonProperty
     private CallDetailRecord callDetailRecord;
