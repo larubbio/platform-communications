@@ -5,11 +5,7 @@ import org.joda.time.Period;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
@@ -40,10 +36,6 @@ public class CallDetailRecord implements CallDetail {
     private Integer duration;
     @Field
     private CallDirection callDirection;
-
-    private List<CallEventLog> callEventLogs = new ArrayList<CallEventLog>();
-
-    private Map<String, Object> customProperties = new HashMap<>();
 
     private CallDetailRecord() {
     }
@@ -135,70 +127,37 @@ public class CallDetailRecord implements CallDetail {
         return callDirection;
     }
 
-    public List<CallEventLog> getCallEvents() {
-        return callEventLogs;
-    }
-
-    public CallDetailRecord setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        return this;
     }
 
-    public CallDetailRecord setCallEvents(List<CallEventLog> callEventLogs) {
-        this.callEventLogs = callEventLogs;
-        return this;
-    }
-
-    public CallDetailRecord setCallDirection(CallDirection callDirection) {
+    public void setCallDirection(CallDirection callDirection) {
         this.callDirection = callDirection;
-        return this;
     }
 
-    public CallDetailRecord setStartDate(DateTime startDate) {
+    public void setStartDate(DateTime startDate) {
         this.startDate = startDate;
-        return this;
     }
 
-    public CallDetailRecord setEndDate(DateTime endDate) {
+    public void setEndDate(DateTime endDate) {
         this.endDate = endDate;
         duration = new Period(startDate, endDate).toStandardSeconds().getSeconds();
-        return this;
     }
 
-    public CallDetailRecord setAnswerDate(Date answerDate) {
+    public void setAnswerDate(Date answerDate) {
         this.answerDate = answerDate;
-        return this;
     }
 
-    public CallDetailRecord setDisposition(CallDisposition disposition) {
+    public void setDisposition(CallDisposition disposition) {
         this.disposition = disposition;
-        return this;
     }
 
-    public CallDetailRecord setErrorMessage(String errorMessage) {
+    public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-        return this;
     }
 
-    public Map<String, Object> getCustomProperties() {
-        return customProperties;
-    }
-
-    public CallDetailRecord setCustomProperties(Map<String, Object> customProperties) {
-        if (customProperties != null) {
-            this.customProperties = customProperties;
-        }
-        return this;
-    }
-
-    public CallDetailRecord addCustomProperty(String key, Object value) {
-        this.customProperties.put(key, value);
-        return this;
-    }
-
-    public CallDetailRecord setCallId(String callId) {
+    public void setCallId(String callId) {
         this.callId = callId;
-        return this;
     }
 
     public Integer getDuration() {
@@ -208,24 +167,4 @@ public class CallDetailRecord implements CallDetail {
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
-
-    /**
-     * Adds IVR events such as key press, hangup etc., to current call detail record.
-     *
-     * @param callEventLog
-     */
-    public CallDetailRecord addCallEvent(CallEventLog callEventLog) {
-        callEventLogs.add(callEventLog);
-        return this;
-    }
-
-    /**
-     * Get last call event for current call.
-     *
-     * @return Call event
-     */
-    public CallEventLog lastCallEvent() {
-        return callEventLogs.size() == 0 ? null : callEventLogs.get(callEventLogs.size() - 1);
-    }
-
 }
