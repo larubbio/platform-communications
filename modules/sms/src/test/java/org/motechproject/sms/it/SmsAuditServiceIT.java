@@ -4,13 +4,17 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.sms.audit.*;
+import org.motechproject.sms.audit.DeliveryStatus;
+import org.motechproject.sms.audit.SmsAuditService;
+import org.motechproject.sms.audit.SmsDirection;
+import org.motechproject.sms.audit.SmsRecord;
 import org.motechproject.testing.osgi.BasePaxIT;
 import org.motechproject.testing.osgi.container.MotechNativeTestContainerFactory;
 import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+
 import javax.inject.Inject;
 import java.util.List;
 
@@ -20,8 +24,14 @@ import static org.junit.Assert.assertTrue;
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class SmsAuditServiceIT  extends BasePaxIT {
+
     @Inject
     private SmsAuditService smsAuditService;
+
+    @Override
+    protected boolean shouldFakeModuleStartupEvent() {
+        return false;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -31,7 +41,6 @@ public class SmsAuditServiceIT  extends BasePaxIT {
 
     @Test
     public void shouldFindAllRecords() throws Exception {
-
         List<SmsRecord> smsRecords = smsAuditService.findAllSmsRecords();
         assertTrue(smsRecords.size() >= 1);
     }
