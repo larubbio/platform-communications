@@ -91,8 +91,10 @@
             <version>${motech.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.ldriscoll</groupId>
-            <artifactId>org.motechproject.ektorplucene</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -166,7 +168,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/osgi/applicationSms.xml</Context-File>
                         <Context-Path>sms</Context-Path>
                         <Resource-Path>sms/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
@@ -234,4 +235,61 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.12.4</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <!-- Execute only the test suite -->
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/*IntegrationTests.java</include>
+                                    </includes>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    <forkMode>always</forkMode>
+                                    <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <!-- Don't run the old OSGi test execution -->
+                            <execution>
+                                <id>integration-test-osgi</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Only one summary file -->
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
