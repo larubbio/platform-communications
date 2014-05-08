@@ -14,6 +14,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -25,13 +26,8 @@ import static org.junit.Assert.assertTrue;
 @ExamFactory(MotechNativeTestContainerFactory.class)
 public class SmsAuditServiceIT  extends BasePaxIT {
 
-    @Inject
+    @Inject @Filter(timeout=360000)
     private SmsAuditService smsAuditService;
-
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return false;
-    }
 
     @Before
     public void setUp() throws Exception {
