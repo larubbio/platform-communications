@@ -42,7 +42,6 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
     public void setUp() throws Exception {
         final CallDetailRecord callDetailRecordA = callDetailRecordService.create(
                 new CallDetailRecord(CALL_ID_A, PHONE_NUMBER));
-        PersistenceManager pm = JDOHelper.getPersistenceManager(callDetailRecordA);
         final CallDetailRecord callDetailRecordB = callDetailRecordService.create(
                 new CallDetailRecord(CALL_ID_B, PHONE_NUMBER + "23"));
         callDetailRecordB.setDisposition(CallDisposition.ANSWERED);
@@ -52,15 +51,14 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
 
     @Test
     public void shouldSearchByCallId() throws Exception {
-        final List<CallDetailRecord> callDetailRecords = callDetailRecordService.findByCallId("a");
-        assertEquals("a", callDetailRecords.get(0).getCallId());
+        final List<CallDetailRecord> callDetailRecords = callDetailRecordService.findByCallId(CALL_ID_A);
+        assertEquals(CALL_ID_A, callDetailRecords.get(0).getCallId());
     }
 
     @After
     public void tearDown() {
         CallDetailRecord callDetailRecordA = callDetailRecordService.findByCallId(CALL_ID_A).get(0);
         CallDetailRecord callDetailRecordB = callDetailRecordService.findByCallId(CALL_ID_B).get(0);
-        PersistenceManager pm = JDOHelper.getPersistenceManager(callDetailRecordA);
         callDetailRecordService.delete(callDetailRecordA);
         callDetailRecordService.delete(callDetailRecordB);
     }
