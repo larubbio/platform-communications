@@ -61,6 +61,11 @@
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test-mvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>${motech.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
@@ -89,6 +94,30 @@
             <artifactId>motech-testing-utils</artifactId>
             <version>${motech.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${motech.groupId}</groupId>
+            <artifactId>motech-pax-it</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${motech.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${motech.version}</version>
         </dependency>
     </dependencies>
 
@@ -131,10 +160,10 @@
                         <Context-Path>ivr/api</Context-Path>
                         <Context-File>META-INF/servlet/applicationIvrApiBundle.xml</Context-File>
                         <Export-Package>
-                            org.motechproject.ivr.domain;version=${project.version},
-                            org.motechproject.ivr.event;version=${project.version},
-                            org.motechproject.ivr.exception;version=${project.version},
-                            org.motechproject.ivr.service;version=${project.version}
+                            org.motechproject.ivr.domain;version=${motech.version},
+                            org.motechproject.ivr.event;version=${motech.version},
+                            org.motechproject.ivr.exception;version=${motech.version},
+                            org.motechproject.ivr.service;version=${motech.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.server.config,
@@ -192,5 +221,55 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <!-- Execute only the test suite -->
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/*IntegrationTests.java</include>
+                                    </includes>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    <forkMode>always</forkMode>
+                                    <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <!-- Don't run the old OSGi test execution -->
+                            <execution>
+                                <id>integration-test-osgi</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Only one summary file -->
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
