@@ -7,5 +7,5 @@ import org.junit.runners.Suite;
  * TODO
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({CallLogBundleIT.class, CallDetailRecordServiceIT.class})
-public class IntegrationTests { }
+@Suite.SuiteClasses({CallDetailRecordServiceIT.class})
+public class IvrIntegrationTests { }

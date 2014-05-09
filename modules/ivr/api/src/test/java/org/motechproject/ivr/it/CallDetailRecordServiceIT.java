@@ -22,6 +22,7 @@ import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
+import org.ops4j.pax.exam.util.Filter;
 
 import javax.inject.Inject;
 import javax.jdo.JDOHelper;
@@ -35,7 +36,7 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
     private static final String CALL_ID_B = "call-id-b";
     private static final String PHONE_NUMBER = "232";
 
-    @Inject
+    @Inject @Filter(timeout = 360000)
     CallDetailRecordService callDetailRecordService;
 
     @Before
