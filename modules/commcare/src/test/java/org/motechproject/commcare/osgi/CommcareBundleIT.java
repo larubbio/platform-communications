@@ -36,11 +36,6 @@ public class CommcareBundleIT extends BasePaxIT {
     @Inject
     private CommcareApplicationDataService commcareApplicationDataService;
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
     @Test
     public void testServices() {
         assertNotNull(commcareCaseService);
