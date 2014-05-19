@@ -1,16 +1,25 @@
 package org.motechproject.commcare.domain;
 
 import com.google.gson.annotations.SerializedName;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 
 import java.util.List;
 
+@Entity
 public class CommcareModuleJson {
 
     @SerializedName("case_properties")
+    @Field
     private List<String> caseProperties;
+
     @SerializedName("case_type")
+    @Field
     private String caseType;
+
     @SerializedName("forms")
+    @Ignore
     private List<FormSchemaJson> formSchemas;
 
     public List<String> getCaseProperties() {

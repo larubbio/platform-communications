@@ -25,7 +25,7 @@ public class AppSchemaChangeEventHandler {
         commcareApplicationDataService.deleteAll();
 
         for (CommcareApplicationJson app : applications) {
-            commcareApplicationDataService.create(app.toCommcareApplication());
+            commcareApplicationDataService.create(app);
         }
     }
 }

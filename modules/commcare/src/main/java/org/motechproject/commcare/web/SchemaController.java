@@ -1,7 +1,6 @@
 package org.motechproject.commcare.web;
 
 import org.motechproject.commcare.domain.CaseInfo;
-import org.motechproject.commcare.domain.CommcareApplication;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commcare.service.CommcareCaseService;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,12 +26,7 @@ public class SchemaController {
     @RequestMapping(value = "/schema")
     @ResponseBody
     public List<CommcareApplicationJson> schema() {
-        List<CommcareApplication> commcareApplicationsList = commcareApplicationDataService.retrieveAll();
-        List<CommcareApplicationJson> commcareApplicationJsonList = new ArrayList<>();
-        for (CommcareApplication commcareApplication : commcareApplicationsList) {
-            commcareApplicationJsonList.add(new CommcareApplicationJson(commcareApplication));
-        }
-        return commcareApplicationJsonList;
+        return commcareApplicationDataService.retrieveAll();
     }
 
     @RequestMapping(value = "/caseList")

@@ -1,20 +1,33 @@
 package org.motechproject.commcare.domain;
 
 import com.google.gson.annotations.SerializedName;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 
 import java.util.List;
 
+@Entity
 public class FormSchemaQuestionJson {
 
     @SerializedName("label")
+    @Field
     private String questionLabel;
+
     @SerializedName("repeat")
+    @Field
     private String questionRepeat;
+
     @SerializedName("tag")
+    @Field
     private String questionTag;
+
     @SerializedName("value")
+    @Field
     private String questionValue;
+
     @SerializedName("options")
+    @Ignore
     private List<FormSchemaQuestionOptionJson> options;
 
     public String getQuestionLabel() {

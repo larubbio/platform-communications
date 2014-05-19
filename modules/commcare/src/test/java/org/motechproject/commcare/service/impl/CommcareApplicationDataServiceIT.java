@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
-import org.motechproject.commcare.domain.CommcareApplication;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.domain.CommcareModuleJson;
 import org.motechproject.commcare.service.CommcareApplicationDataService;
@@ -51,19 +50,19 @@ public class CommcareApplicationDataServiceIT extends BasePaxIT {
         List<CommcareApplicationJson> commcareApplicationJsonList = application();
 
         for (CommcareApplicationJson app : commcareApplicationJsonList) {
-            commareApplicationDataService.create(app.toCommcareApplication());
+            commareApplicationDataService.create(app);
         }
 
-        List<CommcareApplication> commcareApplications = commareApplicationDataService.retrieveAll();
+        List<CommcareApplicationJson> commcareApplications = commareApplicationDataService.retrieveAll();
 
         assertEquals(commcareApplications.size(), 1);
 
-        CommcareApplication application = commcareApplications.get(0);
+        CommcareApplicationJson application = commcareApplications.get(0);
         assertEquals(application.getApplicationName(), APPLICATION_NAME);
         assertEquals(application.getResourceUri(), RESOURCE_URI);
         assertEquals(application.getModules().size(), 1);
 
-        CommcareModuleJson commcareModule = moduleJson(application.getModules().get(0));
+        CommcareModuleJson commcareModule = application.getModules().get(0);
         assertEquals(commcareModule.getCaseType(), CASE_TYPE);
         assertEquals(commcareModule.getCaseProperties().size(), 2);
         assertEquals(commcareModule.getFormSchemas().size(), 1);
@@ -82,10 +81,5 @@ public class CommcareApplicationDataServiceIT extends BasePaxIT {
             return ((AppStructureResponseJson) motechJsonReader.readFromStream(in, appStructureResponseType))
                     .getApplications();
         }
-    }
-
-    private CommcareModuleJson moduleJson(String module) {
-        return (CommcareModuleJson) motechJsonReader.readFromString(module,
-                new TypeToken<CommcareModuleJson>(){}.getType());
     }
 }

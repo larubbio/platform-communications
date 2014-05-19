@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
-import org.motechproject.commcare.domain.CommcareApplication;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -18,7 +17,6 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -50,8 +48,7 @@ public class SchemaControllerTest {
     @Test
     public void shouldReturnAppStructure() throws Exception {
         List<CommcareApplicationJson> apps = application();
-        List<CommcareApplication> appsFromDatabase = convert(apps);
-        when(commcareApplicationDataService.retrieveAll()).thenReturn(appsFromDatabase);
+        when(commcareApplicationDataService.retrieveAll()).thenReturn(apps);
 
         final String expectedResponse = objectMapper.writeValueAsString(apps);
 
@@ -64,14 +61,6 @@ public class SchemaControllerTest {
         ).andExpect(
                 content().string(expectedResponse)
         );
-    }
-
-    private List<CommcareApplication> convert(List<CommcareApplicationJson> apps) {
-        List<CommcareApplication> result = new ArrayList<>();
-        for (CommcareApplicationJson app : apps) {
-            result.add(app.toCommcareApplication());
-        }
-        return result;
     }
 
     private List<CommcareApplicationJson> application() throws IOException {
