@@ -45,6 +45,13 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
     @Before
     public void setUp() throws Exception {
         LOG.info("********** setUp() in  **********");
+        callDetailRecordService.deleteAll();
+        LOG.info("********** setUp() out **********");
+    }
+
+    @Test
+    public void shouldSearchByCallId() throws Exception {
+        LOG.info("********** shouldSearchByCallId() in  **********");
         final CallDetailRecord callDetailRecordA = callDetailRecordService.create(
                 new CallDetailRecord(CALL_ID_A, PHONE_NUMBER));
         final CallDetailRecord callDetailRecordB = callDetailRecordService.create(
@@ -52,12 +59,6 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
         callDetailRecordB.setDisposition(CallDisposition.ANSWERED);
         callDetailRecordB.setCallDirection(CallDirection.OUTBOUND);
         callDetailRecordService.update(callDetailRecordB);
-        LOG.info("********** setUp() out **********");
-    }
-
-    @Test
-    public void shouldSearchByCallId() throws Exception {
-        LOG.info("********** shouldSearchByCallId() in  **********");
         final List<CallDetailRecord> callDetailRecords = callDetailRecordService.findByCallId(CALL_ID_A);
         assertEquals(CALL_ID_A, callDetailRecords.get(0).getCallId());
         LOG.info("********** shouldSearchByCallId() out **********");
@@ -66,16 +67,6 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
     @After
     public void tearDown() {
         LOG.info("********** tearDown() in  **********");
-        //TODO: erase the records we created in setUp()
-        // but right now calling .delete() brings up the weird error below:
-        // Object with id "5" is managed by a different persistence manager
-        // See https://applab.atlassian.net/browse/MOTECH-1008
-        /*
-        CallDetailRecord callDetailRecordA = callDetailRecordService.findByCallId(CALL_ID_A).get(0);
-        CallDetailRecord callDetailRecordB = callDetailRecordService.findByCallId(CALL_ID_B).get(0);
-        callDetailRecordService.delete(callDetailRecordA);
-        callDetailRecordService.delete(callDetailRecordB);
-        */
         LOG.info("********** tearDown() out **********");
     }
 }
