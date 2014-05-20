@@ -3,8 +3,8 @@ package org.motechproject.commcare.domain;
 import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 
+import javax.jdo.annotations.Join;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class FormSchemaJson {
     private Map<String, String> formNames;
 
     @SerializedName("questions")
-    @Ignore
+    @Join
     private List<FormSchemaQuestionJson> questions;
 
     public Map<String, String> getFormNames() {

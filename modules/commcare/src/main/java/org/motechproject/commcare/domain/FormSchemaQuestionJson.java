@@ -3,8 +3,8 @@ package org.motechproject.commcare.domain;
 import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 
+import javax.jdo.annotations.Join;
 import java.util.List;
 
 @Entity
@@ -27,7 +27,7 @@ public class FormSchemaQuestionJson {
     private String questionValue;
 
     @SerializedName("options")
-    @Ignore
+    @Join
     private List<FormSchemaQuestionOptionJson> options;
 
     public String getQuestionLabel() {

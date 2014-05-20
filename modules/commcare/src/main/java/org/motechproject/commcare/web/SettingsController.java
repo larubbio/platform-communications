@@ -1,8 +1,13 @@
 package org.motechproject.commcare.web;
 
+import com.google.gson.reflect.TypeToken;
+import org.motechproject.commcare.domain.AppStructureResponseJson;
+import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.domain.CommcareDataForwardingEndpoint;
 import org.motechproject.commcare.domain.SettingsDto;
+import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commcare.service.CommcareDataForwardingEndpointService;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.config.service.ConfigurationService;
 import org.osgi.framework.BundleException;
@@ -15,6 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -39,6 +49,9 @@ public class SettingsController {
     @Autowired
     private CommcareDataForwardingEndpointService forwardingEndpointService;
 
+    @Autowired
+    private CommcareApplicationDataService cads;
+
     private SettingsFacade settingsFacade;
 
     @Autowired
@@ -48,7 +61,8 @@ public class SettingsController {
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     @ResponseBody
-    public SettingsDto getSettings() {
+    public SettingsDto getSettings() throws IOException {
+        test();
         SettingsDto dto = new SettingsDto();
         dto.setCommcareBaseUrl(getPropertyValue(COMMCARE_BASE_URL_KEY));
         dto.setCommcareDomain(getPropertyValue(COMMCARE_DOMAIN_KEY));
@@ -60,6 +74,18 @@ public class SettingsController {
         dto.setForwardFormStubs(getBooleanPropertyValue(FORWARD_FORM_STUBS_KEY));
         dto.setForwardAppStructure(getBooleanPropertyValue(FORWARD_SCHEMA_CHANGES_KEY));
         return dto;
+    }
+
+    private void test() throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("appStructure.json")) {
+            Type appStructureResponseType = new TypeToken<AppStructureResponseJson>() {}.getType();
+            List<CommcareApplicationJson> apps = ((AppStructureResponseJson) new MotechJsonReader().readFromStream(in, appStructureResponseType))
+                    .getApplications();
+
+            for (CommcareApplicationJson app : apps) {
+                cads.create(app);
+            }
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)

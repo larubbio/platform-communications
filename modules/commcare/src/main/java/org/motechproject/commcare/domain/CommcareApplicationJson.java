@@ -3,8 +3,8 @@ package org.motechproject.commcare.domain;
 import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 
+import javax.jdo.annotations.Join;
 import java.util.List;
 
 @Entity
@@ -19,7 +19,7 @@ public class CommcareApplicationJson {
     private String resourceUri;
 
     @SerializedName("modules")
-    @Ignore
+    @Join
     private List<CommcareModuleJson> modules;
 
     public CommcareApplicationJson(String applicationName, String resourceUri, List<CommcareModuleJson> modules) {
