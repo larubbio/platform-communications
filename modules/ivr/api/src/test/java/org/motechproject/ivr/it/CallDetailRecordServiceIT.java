@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
 import org.motechproject.ivr.domain.CallDisposition;
+import org.motechproject.ivr.domain.CallEventLog;
 import org.motechproject.ivr.service.CallDetailRecordService;
 import org.motechproject.testing.osgi.BasePaxIT;
 
@@ -27,8 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
@@ -36,10 +35,11 @@ import javax.jdo.PersistenceManager;
 public class CallDetailRecordServiceIT extends BasePaxIT {
     private static final String CALL_ID_A = "call-id-a";
     private static final String CALL_ID_B = "call-id-b";
-    private static final String PHONE_NUMBER = "232";
+    private static final String PHONE_NUMBER_A = "555-1212";
+    private static final String PHONE_NUMBER_B = "555-1313";
     private static final Logger LOG = LoggerFactory.getLogger(CallDetailRecordServiceIT.class);
 
-    @Inject @Filter(timeout = 360000)
+    @Inject
     CallDetailRecordService callDetailRecordService;
 
     @Before
@@ -52,16 +52,29 @@ public class CallDetailRecordServiceIT extends BasePaxIT {
     @Test
     public void shouldSearchByCallId() throws Exception {
         LOG.info("********** shouldSearchByCallId() in  **********");
-        final CallDetailRecord callDetailRecordA = callDetailRecordService.create(
-                new CallDetailRecord(CALL_ID_A, PHONE_NUMBER));
-        final CallDetailRecord callDetailRecordB = callDetailRecordService.create(
-                new CallDetailRecord(CALL_ID_B, PHONE_NUMBER + "23"));
-        callDetailRecordB.setDisposition(CallDisposition.ANSWERED);
-        callDetailRecordB.setCallDirection(CallDirection.OUTBOUND);
-        callDetailRecordService.update(callDetailRecordB);
+        CallDetailRecord c = callDetailRecordService.create(new CallDetailRecord(CALL_ID_A, PHONE_NUMBER_A));
+        c.getCustomProperties().put("foo", "bar");
+        c.getCallEvents().add(new CallEventLog("fubar"));
+        c.setBar("foowee!");
+        callDetailRecordService.update(c);
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_B, PHONE_NUMBER_B));
         final List<CallDetailRecord> callDetailRecords = callDetailRecordService.findByCallId(CALL_ID_A);
         assertEquals(CALL_ID_A, callDetailRecords.get(0).getCallId());
         LOG.info("********** shouldSearchByCallId() out **********");
+    }
+
+    @Test
+    public void shouldCountAccurately() throws Exception {
+        LOG.info("********** shouldCouldAccurately() in  **********");
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_A, PHONE_NUMBER_A));
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_B, PHONE_NUMBER_B));
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_A, PHONE_NUMBER_A));
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_B, PHONE_NUMBER_B));
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_A, PHONE_NUMBER_A));
+        callDetailRecordService.create(new CallDetailRecord(CALL_ID_B, PHONE_NUMBER_B));
+        long count = callDetailRecordService.countByCallId(CALL_ID_A);
+        assertEquals(3, count);
+        LOG.info("********** shouldCouldAccurately() out **********");
     }
 
     @After

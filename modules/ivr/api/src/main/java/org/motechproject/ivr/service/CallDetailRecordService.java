@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public interface CallDetailRecordService extends MotechDataService<CallDetailRecord> {
 
-    @Lookup(name = "Search")
+    @Lookup(name = "Find by Criteria")
     List<CallDetailRecord> findByCriteria(
             @LookupField(name = "phoneNumber") String phoneNumber, //NO CHECKSTYLE ParameterNumber
             @LookupField(name = "startDate") Range<DateTime> startDate,
@@ -28,10 +28,7 @@ public interface CallDetailRecordService extends MotechDataService<CallDetailRec
             @LookupField(name = "callDirection") Set<CallDirection> callDirection
     );
 
-    @Lookup(name = "Find by call ID")
-    List<CallDetailRecord> findByCallId(@LookupField(name = "callId") String callId);
-
-    @Lookup(name = "Search")
+    @Lookup(name = "Count by Criteria")
     long countByCriteria(
             @LookupField(name = "phoneNumber") String phoneNumber, //NO CHECKSTYLE ParameterNumber
             @LookupField(name = "startDate") Range<DateTime> startDate,
@@ -41,4 +38,10 @@ public interface CallDetailRecordService extends MotechDataService<CallDetailRec
             @LookupField(name = "disposition") Set<CallDisposition> disposition,
             @LookupField(name = "callDirection") Set<CallDirection> callDirection
     );
+
+    @Lookup(name = "Find by Call ID")
+    List<CallDetailRecord> findByCallId(@LookupField(name = "callId") String callId);
+
+    @Lookup(name = "Count by Call ID")
+    long countByCallId(@LookupField(name = "callId") String callId);
 }
