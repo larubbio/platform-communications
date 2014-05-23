@@ -1,7 +1,6 @@
 package org.motechproject.decisiontree.core.model;
 
 import org.motechproject.decisiontree.core.model.Node;
-import org.motechproject.ivr.domain.CallDetailRecord;
 
 import java.io.Serializable;
 
@@ -19,5 +18,4 @@ public interface FlowSession {
     <T extends Serializable> void set(String key, T value);
     Node getCurrentNode();
     void setCurrentNode(Node node);
-    CallDetailRecord getCallDetailRecord();
 }

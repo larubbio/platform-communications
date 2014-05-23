@@ -27,9 +27,30 @@ public class TreeRecord {
     private String description;
 
     @Field
-    private byte[] data;
+    private Byte[] data;
 
-    private static byte[] serializeTree(Tree tree) {
+    private static Byte[] toByteClassArray(byte[] data) {
+        Byte[] bytes = new Byte[data.length];
+        int i = 0;
+        for (byte b : data) {
+            bytes[i++] = b;
+        }
+        return bytes;
+    }
+
+    private static byte[] toBytePrimitiveArray(Byte[] data) {
+        return ArrayUtils.toPrimitive(data);
+    }
+
+    private static Byte[] bytesFromString(String string) {
+        try {
+            return toByteClassArray(string.getBytes("UTF-8"));
+        } catch (IOException e) {
+            throw new IllegalStateException("String to byte[] conversion error: " + e.getMessage());
+        }
+    }
+
+    private static Byte[] serializeTree(Tree tree) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return bytesFromString(mapper.writeValueAsString(tree));
@@ -38,17 +59,9 @@ public class TreeRecord {
         }
     }
 
-    private static byte[] bytesFromString(String string) {
+    private static String stringFromBytes(Byte[] bytes) {
         try {
-            return string.getBytes("UTF-8");
-        } catch (IOException e) {
-            throw new IllegalStateException("String to byte[] conversion error: " + e.getMessage());
-        }
-    }
-
-    private static String stringFromBytes(byte[] bytes) {
-        try {
-            return new String(bytes, "UTF-8");
+            return new String(toBytePrimitiveArray(bytes), "UTF-8");
         } catch (IOException e) {
             throw new IllegalStateException("Error converting byte[] to String: " + e.getMessage());
         }
@@ -105,15 +118,10 @@ public class TreeRecord {
     }
 
     public Byte[] getData() {
-        Byte[] bytes = new Byte[data.length];
-        int i = 0;
-        for (byte b : data) {
-            bytes[i++] = b;
-        }
-        return bytes;
+        return data.clone();
     }
 
     public void setData(Byte[] data) {
-        this.data = ArrayUtils.toPrimitive(data);
+        this.data = data.clone();
     }
 }
