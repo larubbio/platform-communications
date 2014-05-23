@@ -3,12 +3,14 @@ package org.motechproject.decisiontree.core;
 import org.motechproject.decisiontree.core.model.FlowSession;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Tree;
-import org.motechproject.decisiontree.core.repository.AllTrees;
+import org.motechproject.decisiontree.core.repository.TreeRecord;
+import org.motechproject.decisiontree.core.repository.TreeRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -17,12 +19,12 @@ import static java.lang.String.format;
 public class DecisionTreeServiceImpl implements DecisionTreeService {
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    private AllTrees allTrees;
+    private TreeRecordService treeRecordService;
     private TreeNodeLocator treeNodeLocator;
 
     @Autowired
-    public DecisionTreeServiceImpl(AllTrees allTrees, TreeNodeLocator treeNodeLocator) {
-        this.allTrees = allTrees;
+    public DecisionTreeServiceImpl(TreeRecordService treeRecordService, TreeNodeLocator treeNodeLocator) {
+        this.treeRecordService = treeRecordService;
         this.treeNodeLocator = treeNodeLocator;
     }
 
@@ -44,29 +46,37 @@ public class DecisionTreeServiceImpl implements DecisionTreeService {
 
     @Override
     public List<Tree> getDecisionTrees() {
-        return allTrees.getAll();
+        List<TreeRecord> treeRecords = treeRecordService.retrieveAll();
+        List<Tree> trees = new ArrayList<>();
+        for (TreeRecord treeRecord : treeRecords) {
+            trees.add(treeRecord.toTree());
+        }
+        return trees;
     }
 
     @Override
     public Tree getDecisionTree(String treeId) {
-        return allTrees.get(treeId);
+        TreeRecord treeRecord = treeRecordService.retrieve("id", treeId);
+        return treeRecord.toTree();
     }
 
     @Override
     public void saveDecisionTree(final Tree tree) {
-        allTrees.addOrReplace(tree);
+//todo: magic
+        //cmt treeRecordService.addOrReplace(tree);
     }
 
     @Override
     public void deleteDecisionTree(final String treeId) {
-        Tree tree = allTrees.get(treeId);
-        logger.info(format("Removing tree with name: %s and id: %s", tree.getName(), tree.getId()));
-        allTrees.remove(tree);
+//todo: magic
+//cmt        Tree tree = treeRecordService.get(treeId);
+//cmt        logger.info(format("Removing tree with name: %s and id: %s", tree.getName(), tree.getId()));
+//cmt        treeRecordService.remove(tree);
     }
 
     private Tree findTreeByName(String treeName) {
-        Tree tree = allTrees.findByName(treeName);
-        logger.info(format("Looking for tree by name: %s, found: %s", treeName, tree));
-        return tree;
+        TreeRecord treeRecord = treeRecordService.findByName(treeName);
+        logger.info(format("Looking for tree by name: %s, found: %s", treeName, treeRecord));
+        return treeRecord.toTree();
     }
 }

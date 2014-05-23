@@ -10,7 +10,7 @@ public class Transition implements ITransition {
 
     private String name;
     private Node destinationNode;
-    private List<Action> actions;
+    private List<Action> actions = Collections.<Action>emptyList();
 
     public String getName() {
         return name;

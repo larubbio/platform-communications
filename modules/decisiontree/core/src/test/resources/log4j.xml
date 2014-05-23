@@ -10,8 +10,8 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject">
-        <level value="WARN"/>
+    <logger name="org.motechproject.decisiontree">
+        <level value="ALL"/>
     </logger>
 
     <root>

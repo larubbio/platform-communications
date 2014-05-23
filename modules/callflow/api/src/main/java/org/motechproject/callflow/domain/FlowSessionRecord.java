@@ -20,13 +20,9 @@ import java.util.Map;
 @Entity
 public class FlowSessionRecord implements FlowSession {
 
-    @JsonProperty
     private CallDetailRecord callDetailRecord;
-    @JsonProperty
     private String language;
-    @JsonProperty
     private Map<String, Object> data;
-    @JsonProperty
     private Node currentNode;
 
     private FlowSessionRecord() {

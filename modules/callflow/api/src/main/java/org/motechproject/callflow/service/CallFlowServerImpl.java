@@ -2,7 +2,6 @@ package org.motechproject.callflow.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.callflow.domain.FlowSessionRecord;
-import org.motechproject.ivr.domain.CallEventLog;
 import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.model.FlowSession;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -86,7 +86,8 @@ public class CallFlowServerImpl implements CallFlowServer {
         FlowSession session = flowSessionService.getSession(flowSessionId);
         CallDetailRecord callDetail = session.getCallDetailRecord();
         if (callEvent.isEndOfCall()) {
-            callDetail.setEndDate(now()).addCallEvent(new CallEventLog(callEvent.getEventSubject()));
+            callDetail.setEndDate(now());
+            callDetail.addEventLog(callEvent.getEventSubject());
             flowSessionService.updateSession(session);
         }
         eventRelay.sendEventMessage(new CallEvent(callEvent.getEventSubject(), callDetail).toMotechEvent());
@@ -147,22 +148,18 @@ public class CallFlowServerImpl implements CallFlowServer {
     }
 
     private void addDTMFEvent(FlowSession session, String transitionKey) {
-        final CallEventLog callEventLog = new CallEventLog(IvrEvent.Dtmf.getEventSubject());
-        callEventLog.appendData("input", transitionKey);
-
-        saveEvent(session, callEventLog);
+        String event = IvrEvent.Dtmf.getEventSubject() + " - input: " + transitionKey;
+        saveEvent(session, event);
     }
 
     private void addFlowStartEvent(FlowSession session, String tree) {
-        final CallEventLog callEventLog = new CallEventLog("FlowStart:" + tree);
-        callEventLog.appendData("treeName", tree);
-
-        saveEvent(session, callEventLog);
+        String event = "FlowStart: " + tree;
+        saveEvent(session, event);
     }
 
-    private void saveEvent(FlowSession session, CallEventLog callEventLog) {
+    private void saveEvent(FlowSession session, String event) {
         CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
-        callDetailRecord.addCallEvent(callEventLog);
+        callDetailRecord.addEventLog(event);
         flowSessionService.updateSession(session);
     }
 

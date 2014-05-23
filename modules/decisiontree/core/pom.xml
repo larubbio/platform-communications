@@ -58,6 +58,11 @@
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${motech.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${motech.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -74,7 +79,6 @@
                             org.motechproject.decisiontree.core.repository;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,

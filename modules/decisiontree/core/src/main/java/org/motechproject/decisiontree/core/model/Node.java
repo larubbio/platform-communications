@@ -22,14 +22,14 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public class Node implements Serializable {
     private static final long serialVersionUID = -59058061959085064L;
-    private List<Action> actionsBefore;
-    private List<Action> actionsAfter;
+    private List<Action> actionsBefore = Collections.<Action>emptyList();
+    private List<Action> actionsAfter = Collections.<Action>emptyList();
     @JsonProperty
     private List<Prompt> noticePrompts = new ArrayList<Prompt>();
     @JsonProperty
     private List<Prompt> prompts = new ArrayList<Prompt>();
     @JsonProperty
-    private Map<String, ITransition> transitions;
+    private Map<String, ITransition> transitions = Collections.<String, ITransition>emptyMap();
     @JsonProperty
     private List<INodeOperation> operations = new ArrayList<>();
     @JsonProperty

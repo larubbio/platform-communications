@@ -1,16 +1,10 @@
 package org.motechproject.decisiontree.core.model;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-
 /**
  * Represents a decision tree.
  */
-public class Tree extends MotechBaseDataObject {
+public class Tree {
 
-    private static final long serialVersionUID = 1L;
-
-    @TypeDiscriminator
     private String name;
     private String description;
     private ITransition rootTransition;
