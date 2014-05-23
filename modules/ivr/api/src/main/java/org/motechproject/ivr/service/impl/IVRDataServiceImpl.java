@@ -35,7 +35,7 @@ public class IVRDataServiceImpl implements IVRDataService {
 
     @Override
     public long count(CallRecordSearchParameters callLogSearchParameters) {
-        return this.callDetailRecordService.countByCriteria(callLogSearchParameters.getPhoneNumber(),
+        return this.callDetailRecordService.countFindByCriteria(callLogSearchParameters.getPhoneNumber(),
                 callLogSearchParameters.getStartTimeRange(), callLogSearchParameters.getAnswerTimeRange(),
                 callLogSearchParameters.getEndTimeRange(), callLogSearchParameters.getDurationRange(),
                 callLogSearchParameters.getDispositions(), callLogSearchParameters.getDirections());

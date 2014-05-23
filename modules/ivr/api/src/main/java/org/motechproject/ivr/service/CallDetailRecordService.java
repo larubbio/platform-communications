@@ -28,8 +28,7 @@ public interface CallDetailRecordService extends MotechDataService<CallDetailRec
             @LookupField(name = "callDirection") Set<CallDirection> callDirection
     );
 
-    @Lookup(name = "Count by Criteria")
-    long countByCriteria(
+    long countFindByCriteria(
             @LookupField(name = "phoneNumber") String phoneNumber, //NO CHECKSTYLE ParameterNumber
             @LookupField(name = "startDate") Range<DateTime> startDate,
             @LookupField(name = "answerDate") Range<DateTime> answerDate,
@@ -42,6 +41,5 @@ public interface CallDetailRecordService extends MotechDataService<CallDetailRec
     @Lookup(name = "Find by Call ID")
     List<CallDetailRecord> findByCallId(@LookupField(name = "callId") String callId);
 
-    @Lookup(name = "Count by Call ID")
-    long countByCallId(@LookupField(name = "callId") String callId);
+    long countFindByCallId(@LookupField(name = "callId") String callId);
 }

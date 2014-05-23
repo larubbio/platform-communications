@@ -3,13 +3,12 @@ package org.motechproject.ivr.domain;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.mds.annotations.Entity;
-import org.motechproject.mds.annotations.Ignore;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
@@ -31,15 +30,8 @@ public class CallDetailRecord implements CallDetail {
     private String callId;
     private Integer duration;
     private CallDirection callDirection;
-    private List<CallEventLog> callEventLogs = new ArrayList<CallEventLog>();
     private Map<String, Object> customProperties = new HashMap<>();
-
-    public String getBar() {
-        return "constant bar";
-    }
-
-    public void setBar(String foo) {
-    }
+    private List<String> eventLog = new ArrayList<>();
 
 
     private CallDetailRecord() {
@@ -132,22 +124,6 @@ public class CallDetailRecord implements CallDetail {
         return callDirection;
     }
 
-    @Ignore
-    public List<CallEventLog> getCallEvents() {
-        return callEventLogs;
-    }
-
-    public CallDetailRecord setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    @Ignore
-    public CallDetailRecord setCallEvents(List<CallEventLog> callEventLogs) {
-        this.callEventLogs = callEventLogs;
-        return this;
-    }
-
     public CallDetailRecord setCallDirection(CallDirection callDirection) {
         this.callDirection = callDirection;
         return this;
@@ -195,6 +171,23 @@ public class CallDetailRecord implements CallDetail {
         return this;
     }
 
+    public List<String> getEventLog() {
+        return eventLog;
+    }
+
+    public CallDetailRecord setEventLog(List<String> eventLog) {
+        if (eventLog != null) {
+            this.eventLog = eventLog;
+        }
+        return this;
+    }
+
+    public CallDetailRecord addEventLog(Object value) {
+        //todo: double check happiness about the date string format
+        this.eventLog.add(DateTime.now().toLocalDateTime().toString() + " - " + value.toString());
+        return this;
+    }
+
     public CallDetailRecord setCallId(String callId) {
         this.callId = callId;
         return this;
@@ -206,25 +199,6 @@ public class CallDetailRecord implements CallDetail {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
-    }
-
-    /**
-     * Adds IVR events such as key press, hangup etc., to current call detail record.
-     *
-     * @param callEventLog
-     */
-    public CallDetailRecord addCallEvent(CallEventLog callEventLog) {
-        callEventLogs.add(callEventLog);
-        return this;
-    }
-
-    /**
-     * Get last call event for current call.
-     *
-     * @return Call event
-     */
-    public CallEventLog lastCallEvent() {
-        return callEventLogs.size() == 0 ? null : callEventLogs.get(callEventLogs.size() - 1);
     }
 
 }
