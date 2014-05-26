@@ -3,6 +3,7 @@ package org.motechproject.commcare.service.impl;
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
+import org.motechproject.commcare.parser.CommcareApplicationNamingStrategy;
 import org.motechproject.commcare.service.CommcareAppStructureService;
 import org.motechproject.commcare.client.CommCareAPIHttpClient;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -18,11 +19,13 @@ public class CommcareAppStructureServiceImpl implements CommcareAppStructureServ
 
     private MotechJsonReader motechJsonReader;
     private CommCareAPIHttpClient commcareHttpClient;
+    private CommcareApplicationNamingStrategy namingStrategy;
 
     @Autowired
-    public CommcareAppStructureServiceImpl(CommCareAPIHttpClient commcareHttpClient) {
+    public CommcareAppStructureServiceImpl(CommCareAPIHttpClient commcareHttpClient,
+                                           CommcareApplicationNamingStrategy namingStrategy) {
         this.commcareHttpClient = commcareHttpClient;
-        this.motechJsonReader = new MotechJsonReader();
+        this.motechJsonReader = new MotechJsonReader(namingStrategy);
     }
 
     @Override

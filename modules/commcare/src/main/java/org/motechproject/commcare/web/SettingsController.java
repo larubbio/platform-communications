@@ -5,6 +5,7 @@ import org.motechproject.commcare.domain.AppStructureResponseJson;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.domain.CommcareDataForwardingEndpoint;
 import org.motechproject.commcare.domain.SettingsDto;
+import org.motechproject.commcare.parser.CommcareApplicationNamingStrategy;
 import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commcare.service.CommcareDataForwardingEndpointService;
 import org.motechproject.commons.api.json.MotechJsonReader;
@@ -52,6 +53,9 @@ public class SettingsController {
     @Autowired
     private CommcareApplicationDataService cads;
 
+    @Autowired
+    private CommcareApplicationNamingStrategy namingStrategy;
+
     private SettingsFacade settingsFacade;
 
     @Autowired
@@ -61,7 +65,7 @@ public class SettingsController {
 
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
     @ResponseBody
-    public SettingsDto getSettings() throws IOException {
+    public SettingsDto getSettings() {
         test();
         SettingsDto dto = new SettingsDto();
         dto.setCommcareBaseUrl(getPropertyValue(COMMCARE_BASE_URL_KEY));
@@ -76,15 +80,17 @@ public class SettingsController {
         return dto;
     }
 
-    private void test() throws IOException {
+    private void test() {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("appStructure.json")) {
             Type appStructureResponseType = new TypeToken<AppStructureResponseJson>() {}.getType();
-            List<CommcareApplicationJson> apps = ((AppStructureResponseJson) new MotechJsonReader().readFromStream(in, appStructureResponseType))
+            List<CommcareApplicationJson> apps = ((AppStructureResponseJson) new MotechJsonReader(namingStrategy).readFromStream(in, appStructureResponseType))
                     .getApplications();
 
             for (CommcareApplicationJson app : apps) {
                 cads.create(app);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

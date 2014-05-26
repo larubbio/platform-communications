@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
-import javax.jdo.annotations.Join;
 import java.util.List;
 
 @Entity
@@ -27,7 +26,6 @@ public class FormSchemaQuestionJson {
     private String questionValue;
 
     @SerializedName("options")
-    @Join
     private List<FormSchemaQuestionOptionJson> options;
 
     public String getQuestionLabel() {
