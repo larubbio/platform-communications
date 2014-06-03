@@ -1,5 +1,6 @@
 package org.motechproject.commcare.domain;
 
+import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
@@ -9,11 +10,14 @@ import java.util.List;
 public class CommcareApplicationJson {
 
     @Field
+    @SerializedName("name")
     private String applicationName;
 
     @Field
+    @SerializedName("resource_uri")
     private String resourceUri;
 
+    @Field
     private List<CommcareModuleJson> modules;
 
     public CommcareApplicationJson(String applicationName, String resourceUri, List<CommcareModuleJson> modules) {

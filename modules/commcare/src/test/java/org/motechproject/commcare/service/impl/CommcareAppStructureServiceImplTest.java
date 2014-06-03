@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,7 +34,7 @@ public class CommcareAppStructureServiceImplTest {
     @Mock
     private CommCareAPIHttpClient commcareHttpClient;
 
-    private CommcareApplicationNamingStrategy namingStrategy;
+    private CommcareApplicationNamingStrategy namingStrategy = new CommcareApplicationNamingStrategy();
 
     @Before
     public void setUp() {
@@ -58,8 +59,8 @@ public class CommcareAppStructureServiceImplTest {
         List<FormSchemaJson> formSchemas = modules.get(0).getFormSchemas();
         assertTrue(!formSchemas.isEmpty());
 
-/*        Map<String, Object> formNames = formSchemas.get(0).getFormNames();
-        assertTrue(!formNames.isEmpty());*/
+        Map<String, String> formNames = formSchemas.get(0).getFormNames();
+        assertTrue(!formNames.isEmpty());
 
         List<FormSchemaQuestionJson> questions = formSchemas.get(0).getQuestions();
         assertTrue(!questions.isEmpty());
@@ -70,7 +71,7 @@ public class CommcareAppStructureServiceImplTest {
         assertEquals("name", caseProperties.get(0));
         assertEquals("user_bednet", caseProperties.get(1));
         assertEquals("myCase1", modules.get(0).getCaseType());
-        //assertEquals("myForm1", formNames.get("en"));
+        assertEquals("myForm1", formNames.get("en"));
         assertEquals("questionName", questions.get(0).getQuestionLabel());
         assertEquals("", questions.get(0).getQuestionRepeat());
         assertEquals("input", questions.get(0).getQuestionTag());

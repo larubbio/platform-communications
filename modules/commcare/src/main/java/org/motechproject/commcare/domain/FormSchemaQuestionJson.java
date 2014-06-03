@@ -26,6 +26,7 @@ public class FormSchemaQuestionJson {
     private String questionValue;
 
     @SerializedName("options")
+    @Field
     private List<FormSchemaQuestionOptionJson> options;
 
     public String getQuestionLabel() {

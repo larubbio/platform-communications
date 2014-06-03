@@ -1,16 +1,16 @@
 package org.motechproject.commcare.web;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.io.IOUtils;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.domain.CommcareDataForwardingEndpoint;
 import org.motechproject.commcare.domain.SettingsDto;
-import org.motechproject.commcare.parser.CommcareApplicationNamingStrategy;
 import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commcare.service.CommcareDataForwardingEndpointService;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -53,9 +52,6 @@ public class SettingsController {
     @Autowired
     private CommcareApplicationDataService cads;
 
-    @Autowired
-    private CommcareApplicationNamingStrategy namingStrategy;
-
     private SettingsFacade settingsFacade;
 
     @Autowired
@@ -81,16 +77,22 @@ public class SettingsController {
     }
 
     private void test() {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream("appStructure.json")) {
-            Type appStructureResponseType = new TypeToken<AppStructureResponseJson>() {}.getType();
-            List<CommcareApplicationJson> apps = ((AppStructureResponseJson) new MotechJsonReader(namingStrategy).readFromStream(in, appStructureResponseType))
-                    .getApplications();
+        InputStream in = null;
+        try {
+            in = getClass().getClassLoader().getResourceAsStream("appStructure.json");
+            if (in != null) {
+                Type appStructureResponseType = new TypeToken<AppStructureResponseJson>() {}.getType();
+                List<CommcareApplicationJson> apps = ((AppStructureResponseJson) new MotechJsonReader().readFromStream(in, appStructureResponseType))
+                        .getApplications();
 
-            for (CommcareApplicationJson app : apps) {
-                cads.create(app);
+                for (CommcareApplicationJson app : apps) {
+                    if (cads != null) {
+                        cads.create(app);
+                    }
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(in);
         }
     }
 

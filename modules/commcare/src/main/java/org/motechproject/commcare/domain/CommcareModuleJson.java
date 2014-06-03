@@ -2,6 +2,7 @@ package org.motechproject.commcare.domain;
 
 import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 
@@ -9,11 +10,11 @@ import java.util.List;
 public class CommcareModuleJson {
 
     @SerializedName("case_properties")
-    //@Field
+    @Field
     private List<String> caseProperties;
 
     @SerializedName("case_type")
-    //@Field
+    @Field
     private String caseType;
 
     @SerializedName("forms")

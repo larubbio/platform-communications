@@ -19,7 +19,6 @@ public class CommcareAppStructureServiceImpl implements CommcareAppStructureServ
 
     private MotechJsonReader motechJsonReader;
     private CommCareAPIHttpClient commcareHttpClient;
-    private CommcareApplicationNamingStrategy namingStrategy;
 
     @Autowired
     public CommcareAppStructureServiceImpl(CommCareAPIHttpClient commcareHttpClient,

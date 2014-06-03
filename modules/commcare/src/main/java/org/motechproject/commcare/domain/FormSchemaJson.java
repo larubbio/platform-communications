@@ -2,26 +2,29 @@ package org.motechproject.commcare.domain;
 
 import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class FormSchemaJson {
 
-/*    @SerializedName("name")
+    @SerializedName("name")
     @Field
-    private Map<String, Object> formNames;*/
+    private Map<String, String> formNames;
 
     @SerializedName("questions")
+    @Field
     private List<FormSchemaQuestionJson> questions;
-/*
-    public Map<String, Object> getFormNames() {
+
+    public Map<String, String> getFormNames() {
         return formNames;
     }
 
-    public void setFormNames(Map<String, Object> formNames) {
+    public void setFormNames(Map<String, String> formNames) {
         this.formNames = formNames;
-    }*/
+    }
 
     public List<FormSchemaQuestionJson> getQuestions() {
         return questions;
