@@ -56,13 +56,11 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="platformSettingsService"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService"/>
-
     <osgi:reference id="configurationService"
                     interface="org.motechproject.config.service.ConfigurationService"/>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+    <osgi:reference id="commcareApplicationDataService"
+                    interface="org.motechproject.commcare.service.CommcareApplicationDataService"/>
 
     <mvc:annotation-driven/>
 </beans>

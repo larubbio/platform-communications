@@ -1,10 +1,10 @@
 package org.motechproject.commcare.service.impl;
 
 import com.google.gson.reflect.TypeToken;
+import org.motechproject.commcare.client.CommCareAPIHttpClient;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
 import org.motechproject.commcare.domain.CommcareApplicationJson;
 import org.motechproject.commcare.service.CommcareAppStructureService;
-import org.motechproject.commcare.client.CommCareAPIHttpClient;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

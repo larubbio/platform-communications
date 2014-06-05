@@ -185,7 +185,7 @@ public class CommCareAPIHttpClient {
         commonsHttpClient.getParams().setAuthenticationPreemptive(true);
 
         commonsHttpClient.getState().setCredentials(
-                new AuthScope(null, -1, null, null),
+                AuthScope.ANY,
                 new UsernamePasswordCredentials(getUsername(), getPassword()));
     }
 

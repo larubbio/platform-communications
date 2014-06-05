@@ -45,10 +45,10 @@ public class CommcareFormBuilder {
 
     private Multimap<String, FormValueElement> toFormValueElements(Multimap<String, Map<String, Object>> elements) {
         if (elements == null) {
-            return new LinkedHashMultimap<>();
+            return LinkedHashMultimap.create();
         }
 
-        LinkedHashMultimap<String, FormValueElement> formValueElements = new LinkedHashMultimap<>();
+        LinkedHashMultimap<String, FormValueElement> formValueElements = LinkedHashMultimap.create();
 
         for (Map.Entry<String, Map<String, Object>> entry: elements.entries()) {
             formValueElements.put(entry.getKey(), toFormValueElement(entry.getValue()));

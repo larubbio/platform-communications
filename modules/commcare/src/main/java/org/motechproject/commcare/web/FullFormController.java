@@ -78,7 +78,7 @@ public class FullFormController {
     }
 
     private Multimap<String, Map<String, Object>> convertToMap(Multimap<String, FormValueElement> subElements) {
-        Multimap<String, Map<String, Object>> elements = new LinkedHashMultimap<>();
+        Multimap<String, Map<String, Object>> elements = LinkedHashMultimap.create();
 
         for (Map.Entry<String, FormValueElement> entry : subElements.entries()) {
             Map<String, Object> elementAsMap = new HashMap<>(4); //NO CHECKSTYLE MagicNumber

@@ -40,10 +40,6 @@
             <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.collect</groupId>
-            <artifactId>com.springsource.com.google.common.collect</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
         </dependency>
@@ -56,6 +52,17 @@
             <groupId>${motech.groupId}</groupId>
             <artifactId>motech-platform-commons-api</artifactId>
             <version>${motech.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${motech.groupId}</groupId>
+            <artifactId>motech-platform-dataservices</artifactId>
+            <version>${motech.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.xerces</groupId>
+                    <artifactId>com.springsource.org.apache.xerces</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${motech.groupId}</groupId>
@@ -171,7 +178,6 @@
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
-                            org.motechproject.commons.couchdb.service,
                             org.springframework.context.config,
                             org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,
@@ -239,4 +245,127 @@
         </plugins>
     </build>
 
+    <!--
+        We override the failsafe plugin so that it only runs our test suite,
+        so that OSGi testing is more effective. For now we have to this on pom by pom basis.
+        This should be removed after all migrations are finished.
+    -->
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <!-- Create the admin user -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>Pre IT - Drop Web Security DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Pre IT - Create Web Security DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="PUT" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Pre IT - Create Admin User</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Login/Password: motech/motech -->
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="POST" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                            <arg value="-d" />
+                                            <arg value="@${modules.root.dir}/testdata/adminuser.json" />
+                                            <arg value="-H" />
+                                            <arg value="Content-Type: application/json" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.12.4</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <!-- Execute only the test suite -->
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <includes>
+                                        <include>**/**/*IntegrationTests.java</include>
+                                    </includes>
+                                    <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    <forkMode>always</forkMode>
+                                    <systemPropertiesFile>${modules.root.dir}/maven.properties</systemPropertiesFile>
+                                </configuration>
+                            </execution>
+                            <!-- Don't run the old OSGi test execution -->
+                            <execution>
+                                <id>integration-test-osgi</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Only one summary file -->
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <summaryFiles>
+                                        <summaryFile>target/failsafe-reports/failsafe-summary-it.xml</summaryFile>
+                                    </summaryFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

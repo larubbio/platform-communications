@@ -18,7 +18,7 @@ import java.util.Vector;
 public class FormValueElement implements FormNode {
 
     private String elementName;
-    private Multimap<String, FormValueElement> subElements = new LinkedHashMultimap<>();
+    private Multimap<String, FormValueElement> subElements = LinkedHashMultimap.create();
     private Map<String, String> attributes = new HashMap<>();
     private String value;
 

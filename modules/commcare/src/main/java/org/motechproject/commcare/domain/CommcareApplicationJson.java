@@ -1,15 +1,23 @@
 package org.motechproject.commcare.domain;
 
 import com.google.gson.annotations.SerializedName;
+import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 
+@Entity(name = "Commcare Application")
 public class CommcareApplicationJson {
 
+    @Field(displayName = "Application Name")
     @SerializedName("name")
     private String applicationName;
+
+    @Field(displayName = "Resource URI")
     @SerializedName("resource_uri")
     private String resourceUri;
+
+    @Field(displayName = "Commcare Modules")
     @SerializedName("modules")
     private List<CommcareModuleJson> modules;
 

@@ -3,8 +3,8 @@ package org.motechproject.commcare.web;
 import org.motechproject.commcare.domain.CommcareDataForwardingEndpoint;
 import org.motechproject.commcare.domain.SettingsDto;
 import org.motechproject.commcare.service.CommcareDataForwardingEndpointService;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -94,7 +94,7 @@ public class SettingsController {
         if (!getBooleanPropertyValue(FORWARD_SCHEMA_CHANGES_KEY) && settings.shouldForwardAppStructure()) {
             settingsFacade.setProperty(FORWARD_SCHEMA_CHANGES_KEY, String.valueOf(settings.shouldForwardAppStructure()));
 
-            forward("AppStructureRepeater", getShemaChangeUrl());
+            forward("AppStructureRepeater", getSchemaChangeUrl());
         }
     }
 
@@ -127,7 +127,7 @@ public class SettingsController {
         return settingsService.getPlatformSettings().getServerUrl() + "/module/commcare/stub/";
     }
 
-    private String getShemaChangeUrl() {
+    private String getSchemaChangeUrl() {
         return settingsService.getPlatformSettings().getServerUrl() + "/module/commcare/appSchemaChange/";
     }
 }
