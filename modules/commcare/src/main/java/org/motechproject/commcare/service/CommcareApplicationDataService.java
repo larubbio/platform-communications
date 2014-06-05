@@ -7,6 +7,6 @@ import org.motechproject.mds.service.MotechDataService;
 
 public interface CommcareApplicationDataService extends MotechDataService<CommcareApplicationJson> {
 
-    @Lookup
+    @Lookup(name = "By Application Name")
     CommcareApplicationJson byApplicationName(@LookupField(name = "applicationName") String applicationName);
 }

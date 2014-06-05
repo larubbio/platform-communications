@@ -6,18 +6,19 @@ import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "Commcare Application")
 public class CommcareApplicationJson {
 
-    @Field
+    @Field(displayName = "Application Name")
     @SerializedName("name")
     private String applicationName;
 
-    @Field
+    @Field(displayName = "Resource URI")
     @SerializedName("resource_uri")
     private String resourceUri;
 
-    @Field
+    @Field(displayName = "Commcare Modules")
+    @SerializedName("modules")
     private List<CommcareModuleJson> modules;
 
     public CommcareApplicationJson(String applicationName, String resourceUri, List<CommcareModuleJson> modules) {

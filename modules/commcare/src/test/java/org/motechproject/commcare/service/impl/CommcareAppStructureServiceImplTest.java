@@ -10,7 +10,6 @@ import org.motechproject.commcare.domain.CommcareModuleJson;
 import org.motechproject.commcare.domain.FormSchemaJson;
 import org.motechproject.commcare.domain.FormSchemaQuestionJson;
 import org.motechproject.commcare.domain.FormSchemaQuestionOptionJson;
-import org.motechproject.commcare.parser.CommcareApplicationNamingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +33,10 @@ public class CommcareAppStructureServiceImplTest {
     @Mock
     private CommCareAPIHttpClient commcareHttpClient;
 
-    private CommcareApplicationNamingStrategy namingStrategy = new CommcareApplicationNamingStrategy();
-
     @Before
     public void setUp() {
         initMocks(this);
-        appStructureService = new CommcareAppStructureServiceImpl(commcareHttpClient, namingStrategy);
+        appStructureService = new CommcareAppStructureServiceImpl(commcareHttpClient);
     }
 
     @Test

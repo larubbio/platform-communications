@@ -2,7 +2,6 @@ package org.motechproject.commcare.web;
 
 import org.motechproject.commcare.domain.CommcareDataForwardingEndpoint;
 import org.motechproject.commcare.domain.SettingsDto;
-import org.motechproject.commcare.service.CommcareApplicationDataService;
 import org.motechproject.commcare.service.CommcareDataForwardingEndpointService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.SettingsFacade;
@@ -39,9 +38,6 @@ public class SettingsController {
 
     @Autowired
     private CommcareDataForwardingEndpointService forwardingEndpointService;
-
-    @Autowired
-    private CommcareApplicationDataService cads;
 
     private SettingsFacade settingsFacade;
 

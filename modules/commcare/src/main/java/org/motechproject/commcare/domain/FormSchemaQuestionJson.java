@@ -6,27 +6,27 @@ import org.motechproject.mds.annotations.Field;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "Form Schema Question")
 public class FormSchemaQuestionJson {
 
+    @Field(displayName = "Question Label")
     @SerializedName("label")
-    @Field
     private String questionLabel;
 
+    @Field(displayName = "Question Repeat")
     @SerializedName("repeat")
-    @Field
     private String questionRepeat;
 
+    @Field(displayName = "Question Tag")
     @SerializedName("tag")
-    @Field
     private String questionTag;
 
+    @Field(displayName = "Question Value")
     @SerializedName("value")
-    @Field
     private String questionValue;
 
+    @Field(displayName = "Form Question Options")
     @SerializedName("options")
-    @Field
     private List<FormSchemaQuestionOptionJson> options;
 
     public String getQuestionLabel() {

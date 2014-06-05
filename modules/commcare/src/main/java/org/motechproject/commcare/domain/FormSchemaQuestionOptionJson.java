@@ -4,15 +4,15 @@ import com.google.gson.annotations.SerializedName;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 
-@Entity
+@Entity(name = "Form Schema Question Option")
 public class FormSchemaQuestionOptionJson {
 
+    @Field(displayName = "Label")
     @SerializedName("label")
-    @Field
     private String label;
 
+    @Field(displayName = "Value")
     @SerializedName("value")
-    @Field
     private String value;
 
     public String getLabel() {

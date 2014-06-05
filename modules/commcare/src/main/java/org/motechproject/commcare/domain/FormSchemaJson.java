@@ -7,15 +7,15 @@ import org.motechproject.mds.annotations.Field;
 import java.util.List;
 import java.util.Map;
 
-@Entity
+@Entity(name = "Form Schema")
 public class FormSchemaJson {
 
+    @Field(displayName = "Form Names")
     @SerializedName("name")
-    @Field
     private Map<String, String> formNames;
 
+    @Field(displayName = "Form Questions")
     @SerializedName("questions")
-    @Field
     private List<FormSchemaQuestionJson> questions;
 
     public Map<String, String> getFormNames() {
