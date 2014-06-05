@@ -35,9 +35,9 @@ public class CommcareFormBuilderTest {
         attributes.put("xmlns", "myNs");
         attributes.put("uiVersion", "myUiVersion");
         attributes.put("version", "myVersion");
-        Multimap<String, Map<String, Object>> subElements = new LinkedHashMultimap<>();
+        Multimap<String, Map<String, Object>> subElements = LinkedHashMultimap.create();
         Map<String, Object> metaElement = new HashMap<>();
-        Multimap<String, Map<String, Object>> metaSubElements = new LinkedHashMultimap<>();
+        Multimap<String, Map<String, Object>> metaSubElements = LinkedHashMultimap.create();
 
         motechEvent.getParameters().put(EventDataKeys.ELEMENT_NAME, elementName);
         motechEvent.getParameters().put(EventDataKeys.ATTRIBUTES, attributes);
@@ -209,7 +209,7 @@ public class CommcareFormBuilderTest {
         public FormValueElementMapBuilder addSubElement(Map<String, Object> subElement, String elementName) {
             Multimap<String, Map<String, Object>> subElements = (Multimap<String, Map<String, Object>>) map.get(EventDataKeys.SUB_ELEMENTS);
             if (subElements == null) {
-                subElements = new LinkedHashMultimap<>();
+                subElements = LinkedHashMultimap.create();
                 map.put(EventDataKeys.SUB_ELEMENTS, subElements);
             }
 

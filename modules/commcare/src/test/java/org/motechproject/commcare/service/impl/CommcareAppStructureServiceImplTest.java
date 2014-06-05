@@ -4,8 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.commcare.domain.*;
 import org.motechproject.commcare.client.CommCareAPIHttpClient;
+import org.motechproject.commcare.domain.CommcareApplicationJson;
+import org.motechproject.commcare.domain.CommcareModuleJson;
+import org.motechproject.commcare.domain.FormSchemaJson;
+import org.motechproject.commcare.domain.FormSchemaQuestionJson;
+import org.motechproject.commcare.domain.FormSchemaQuestionOptionJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

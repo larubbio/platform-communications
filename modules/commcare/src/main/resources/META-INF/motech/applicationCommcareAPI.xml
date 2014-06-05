@@ -28,9 +28,4 @@
         <constructor-arg ref="multiThreadedHttpConnectionManager"/>
     </bean>
 
-    <bean id="commcareApplicationDatabaseConnector" factory-bean="couchDbManager"
-          factory-method="getConnector">
-        <constructor-arg value="motech-commcare" />
-    </bean>
-
 </beans>
