@@ -1,4 +1,4 @@
-package org.motechproject.commcare.osgi;
+package org.motechproject.commcare.it;
 
 import com.google.gson.JsonParser;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -35,14 +35,6 @@ public class CommcareBundleIT extends BasePaxIT {
     private CommcareFormService commcareFormService;
     @Inject
     private CommcareApplicationDataService commcareApplicationDataService;
-
-    @Test
-    public void testServices() {
-        assertNotNull(commcareCaseService);
-        assertNotNull(commcareFormService);
-        assertNotNull(commcareUserService);
-        assertNotNull(commcareApplicationDataService);
-    }
 
     @Test
     public void testSettingsController() throws IOException, InterruptedException {

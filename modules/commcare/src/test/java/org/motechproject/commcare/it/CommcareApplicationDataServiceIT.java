@@ -1,7 +1,8 @@
-package org.motechproject.commcare.service.impl;
+package org.motechproject.commcare.it;
 
 import com.google.gson.reflect.TypeToken;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commcare.domain.AppStructureResponseJson;
@@ -40,11 +41,6 @@ public class CommcareApplicationDataServiceIT extends BasePaxIT {
 
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
-    @Override
-    protected boolean shouldFakeModuleStartupEvent() {
-        return true;
-    }
-
     @Test
     public void shouldSaveAndRetrieveCommcareApplications() throws Exception {
         List<CommcareApplicationJson> commcareApplicationJsonList = application();
@@ -55,19 +51,24 @@ public class CommcareApplicationDataServiceIT extends BasePaxIT {
 
         List<CommcareApplicationJson> commcareApplications = commareApplicationDataService.retrieveAll();
 
-        assertEquals(commcareApplications.size(), 1);
+        assertEquals(1, commcareApplications.size());
 
         CommcareApplicationJson application = commcareApplications.get(0);
-        assertEquals(application.getApplicationName(), APPLICATION_NAME);
-        assertEquals(application.getResourceUri(), RESOURCE_URI);
-        assertEquals(application.getModules().size(), 1);
+        assertEquals(APPLICATION_NAME, application.getApplicationName());
+        assertEquals(RESOURCE_URI, application.getResourceUri());
+        assertEquals(1, application.getModules().size());
 
         CommcareModuleJson commcareModule = application.getModules().get(0);
-        assertEquals(commcareModule.getCaseType(), CASE_TYPE);
-        assertEquals(commcareModule.getCaseProperties().size(), 2);
-        assertEquals(commcareModule.getFormSchemas().size(), 1);
-        assertEquals(commcareModule.getCaseProperties().get(0), CASE_PROPERTY_1);
-        assertEquals(commcareModule.getCaseProperties().get(1), CASE_PROPERTY_2);
+        assertEquals(CASE_TYPE, commcareModule.getCaseType());
+        assertEquals(2, commcareModule.getCaseProperties().size());
+        assertEquals(1, commcareModule.getFormSchemas().size());
+        assertEquals(CASE_PROPERTY_1, commcareModule.getCaseProperties().get(0));
+        assertEquals(CASE_PROPERTY_2, commcareModule.getCaseProperties().get(1));
+    }
+
+    @Before
+    public void setUp() {
+        commareApplicationDataService.deleteAll();
     }
 
     @After
